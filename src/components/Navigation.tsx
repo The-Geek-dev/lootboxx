@@ -56,6 +56,7 @@ const Navigation = () => {
 
   const globalNavItems: NavItem[] = [
     { name: "About", href: "/about" },
+    { name: "Features", href: "/features" },
     { name: "How It Works", href: "/how-it-works" },
     { name: "FAQ", href: "/faq" },
     { name: "Contact", href: "/contact" },

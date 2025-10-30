@@ -8,27 +8,39 @@ const HowItWorks = () => {
   const steps = [
     {
       number: "01",
-      title: "Connect Your Exchange",
-      description: "Securely link Astra to your preferred crypto exchange using API keys. Your funds stay in your account - we never have withdrawal access.",
-      details: ["Support for major exchanges", "Encrypted API connections", "Read-only access option"]
+      title: "Start on Telegram",
+      description: "Connect with our Astra Bot on Telegram. This is where your entire investment journey begins. Our bot guides you through setup and provides 24/7 support.",
+      details: ["Easy-to-follow conversation flow", "Instant notifications and updates", "Manage everything from your phone"]
     },
     {
       number: "02",
-      title: "Configure Your Strategy",
-      description: "Choose from pre-built strategies or customize your own. Set risk levels, trading pairs, and investment amounts.",
-      details: ["Conservative to aggressive strategies", "Multiple asset support", "Customizable risk parameters"]
+      title: "Create Your Account",
+      description: "Sign up with basic information through the bot. Set a secure password and verify your identity. The entire process takes less than 2 minutes.",
+      details: ["No complicated forms", "Quick identity verification", "Instant account activation"]
     },
     {
       number: "03",
-      title: "AI Analyzes Markets",
-      description: "Astra's advanced algorithms continuously scan markets, analyzing thousands of data points to identify profitable opportunities.",
-      details: ["24/7 market monitoring", "Technical analysis", "Sentiment analysis"]
+      title: "Generate Your Wallet",
+      description: "Receive your secure crypto wallet addresses generated exclusively for you. Support for Bitcoin, Ethereum, USDT, and 10+ other cryptocurrencies.",
+      details: ["Multi-currency support", "Bank-grade encryption", "Your addresses are unique and secure"]
     },
     {
       number: "04",
-      title: "Automatic Execution",
-      description: "When opportunities arise, Astra executes trades instantly with precision timing and optimal pricing.",
-      details: ["Lightning-fast execution", "Smart order routing", "Risk management built-in"]
+      title: "Make Your First Deposit",
+      description: "Transfer cryptocurrency to your wallet. Minimum deposit is just $10 to get started. Funds appear in your account instantly—no waiting periods.",
+      details: ["Minimum $10 to start", "Instant fund confirmation", "No hidden fees or charges"]
+    },
+    {
+      number: "05",
+      title: "Choose Your Strategy",
+      description: "Select from multiple automated trading strategies based on your risk tolerance. Conservative, Balanced, or Aggressive—we have options for every investor.",
+      details: ["Professional trading algorithms", "Risk-adjusted strategies", "Change strategies anytime"]
+    },
+    {
+      number: "06",
+      title: "Let It Grow",
+      description: "Your automated trading system is now live. Watch your portfolio grow 24/7 as our AI executes trades based on real-time market signals. Monitor everything via the bot.",
+      details: ["Live performance tracking", "Real-time profit updates", "Withdraw anytime, no lockups"]
     }
   ];
 
@@ -44,11 +56,11 @@ const HowItWorks = () => {
           className="max-w-4xl mx-auto"
         >
           <h1 className="text-5xl md:text-6xl font-bold mb-6 text-center">
-            How <span className="text-primary">Astra</span> Works
+            Your Journey to <span className="text-primary">Automated Crypto Investing</span>
           </h1>
           
           <p className="text-xl text-gray-300 mb-16 text-center max-w-3xl mx-auto">
-            Get started in minutes and let AI handle the complexity of crypto trading
+            Follow our simple 6-step process to start growing your wealth with Astra. From account creation to your first automated trade in minutes.
           </p>
 
           <div className="space-y-12 mb-20">
@@ -87,9 +99,9 @@ const HowItWorks = () => {
             transition={{ delay: 0.6 }}
             className="glass rounded-2xl p-8 md:p-12 text-center"
           >
-            <h2 className="text-3xl font-bold mb-4">Ready to Start?</h2>
+            <h2 className="text-3xl font-bold mb-4">Ready to Begin Your Journey?</h2>
             <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
-              Join thousands of traders who are already earning passive income with Astra's intelligent trading.
+              Start automated trading in under 5 minutes. Join thousands earning passive income with Astra.
             </p>
             <Button size="lg" className="button-gradient">
               Activate Your Bot <ArrowRight className="ml-2 w-4 h-4" />
