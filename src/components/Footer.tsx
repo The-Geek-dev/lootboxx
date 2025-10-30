@@ -1,5 +1,6 @@
 import { Github, Twitter } from "lucide-react";
 import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -23,33 +24,38 @@ const Footer = () => {
             </div>
 
             <div className="space-y-4">
-              <h4 className="font-medium">Trading</h4>
+              <h4 className="font-medium">Product</h4>
               <ul className="space-y-2">
                 <li>
-                  <a href="#features" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                    Markets
-                  </a>
+                  <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    About
+                  </Link>
                 </li>
                 <li>
-                  <a href="#pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                    Trading Fees
-                  </a>
+                  <Link to="/how-it-works" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    How It Works
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    Dashboard
+                  </Link>
                 </li>
               </ul>
             </div>
 
             <div className="space-y-4">
-              <h4 className="font-medium">Resources</h4>
+              <h4 className="font-medium">Support</h4>
               <ul className="space-y-2">
                 <li>
-                  <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                    Trading Guide
-                  </a>
+                  <Link to="/faq" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    FAQ
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                    Market Analysis
-                  </a>
+                  <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    Contact
+                  </Link>
                 </li>
               </ul>
             </div>

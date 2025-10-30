@@ -2,10 +2,13 @@ import { useState, useEffect } from "react";
 import { Command, Menu } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { Link, useLocation } from "react-router-dom";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,11 +42,26 @@ const Navigation = () => {
     }
   };
 
-  const navItems = [
+  type NavItem = {
+    name: string;
+    href: string;
+    onClick?: () => void;
+  };
+
+  const homeNavItems: NavItem[] = [
     { name: "Features", href: "#features", onClick: () => scrollToSection('features') },
     { name: "Prices", href: "#pricing", onClick: () => scrollToSection('pricing') },
     { name: "Testimonials", href: "#testimonials", onClick: () => scrollToSection('testimonials') },
   ];
+
+  const globalNavItems: NavItem[] = [
+    { name: "About", href: "/about" },
+    { name: "How It Works", href: "/how-it-works" },
+    { name: "FAQ", href: "/faq" },
+    { name: "Contact", href: "/contact" },
+  ];
+
+  const navItems = isHomePage ? homeNavItems : globalNavItems;
 
   return (
     <header
@@ -55,35 +73,46 @@ const Navigation = () => {
     >
       <div className="mx-auto h-full px-6">
         <nav className="flex items-center justify-between h-full">
-          <div className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <Command className="w-5 h-5 text-primary" />
             <span className="font-bold text-base">Astra</span>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
             {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (item.onClick) {
+              item.onClick ? (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  onClick={(e) => {
+                    e.preventDefault();
                     item.onClick();
-                  }
-                }}
-                className="text-sm text-muted-foreground hover:text-foreground transition-all duration-300"
-              >
-                {item.name}
-              </a>
+                  }}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-all duration-300"
+                >
+                  {item.name}
+                </a>
+              ) : (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-all duration-300"
+                >
+                  {item.name}
+                </Link>
+              )
             ))}
-            <Button 
-              onClick={() => scrollToSection('cta')}
-              size="sm"
-              className="button-gradient"
-            >
-              Start Trading
-            </Button>
+            <Link to="/login">
+              <Button size="sm" variant="ghost">
+                Login
+              </Button>
+            </Link>
+            <Link to="/signup">
+              <Button size="sm" className="button-gradient">
+                Get Started
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Navigation */}
@@ -97,30 +126,40 @@ const Navigation = () => {
               <SheetContent className="bg-[#1B1B1B]">
                 <div className="flex flex-col gap-4 mt-8">
                   {navItems.map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      className="text-lg text-muted-foreground hover:text-foreground transition-colors"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setIsMobileMenuOpen(false);
-                        if (item.onClick) {
+                    item.onClick ? (
+                      <a
+                        key={item.name}
+                        href={item.href}
+                        className="text-lg text-muted-foreground hover:text-foreground transition-colors"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setIsMobileMenuOpen(false);
                           item.onClick();
-                        }
-                      }}
-                    >
-                      {item.name}
-                    </a>
+                        }}
+                      >
+                        {item.name}
+                      </a>
+                    ) : (
+                      <Link
+                        key={item.name}
+                        to={item.href}
+                        className="text-lg text-muted-foreground hover:text-foreground transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        {item.name}
+                      </Link>
+                    )
                   ))}
-                  <Button 
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      scrollToSection('cta');
-                    }}
-                    className="button-gradient mt-4"
-                  >
-                    Start Trading
-                  </Button>
+                  <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full">
+                      Login
+                    </Button>
+                  </Link>
+                  <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button className="button-gradient w-full">
+                      Get Started
+                    </Button>
+                  </Link>
                 </div>
               </SheetContent>
             </Sheet>
