@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CardSpotlight } from "./CardSpotlight";
+import { useSolanaPrice } from "@/hooks/useSolanaPrice";
 
 const PricingTier = ({
   name,
@@ -9,13 +10,20 @@ const PricingTier = ({
   description,
   features,
   isPopular,
+  solAmount,
+  solPrice,
 }: {
   name: string;
   price: string;
   description: string;
   features: string[];
   isPopular?: boolean;
-}) => (
+  solAmount?: number;
+  solPrice?: number | null;
+}) => {
+  const usdValue = solAmount && solPrice ? (solAmount * solPrice).toFixed(2) : null;
+  
+  return (
   <CardSpotlight className={`h-full ${isPopular ? "border-primary" : "border-white/10"} border-2`}>
     <div className="relative h-full p-6 flex flex-col">
       {isPopular && (
@@ -26,6 +34,11 @@ const PricingTier = ({
       <h3 className="text-xl font-medium mb-2">{name}</h3>
       <div className="mb-4">
         <span className="text-4xl font-bold">{price}</span>
+        {usdValue && (
+          <span className="text-lg text-gray-400 ml-2">
+            ${usdValue}
+          </span>
+        )}
       </div>
       <p className="text-gray-400 mb-6">{description}</p>
       <ul className="space-y-3 mb-8 flex-grow">
@@ -41,9 +54,12 @@ const PricingTier = ({
       </Button>
     </div>
   </CardSpotlight>
-);
+  );
+};
 
 export const PricingSection = () => {
+  const { price: solPrice } = useSolanaPrice();
+  
   return (
     <section className="container px-4 py-24">
       <div className="max-w-2xl mx-auto text-center mb-12">
@@ -77,6 +93,8 @@ export const PricingSection = () => {
             "Basic market analysis",
             "Email support"
           ]}
+          solAmount={3}
+          solPrice={solPrice}
         />
         <PricingTier
           name="Pro AI"
@@ -90,12 +108,15 @@ export const PricingSection = () => {
             "API access"
           ]}
           isPopular
+          solAmount={5}
+          solPrice={solPrice}
         />
         <PricingTier
           name="Custom AI"
           price="15 SOLANA"
           description="Enterprise-grade solutions for institutions"
           features={[
+            "30% of SOL per day",
             "Custom trading solutions",
             "Unlimited trading volume",
             "OTC desk access",
@@ -103,6 +124,8 @@ export const PricingSection = () => {
             "Custom API integration",
             "24/7 priority support"
           ]}
+          solAmount={15}
+          solPrice={solPrice}
         />
       </div>
     </section>
