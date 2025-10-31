@@ -26,7 +26,6 @@ const PricingTier = ({
       <h3 className="text-xl font-medium mb-2">{name}</h3>
       <div className="mb-4">
         <span className="text-4xl font-bold">{price}</span>
-        {price !== "Custom" && <span className="text-gray-400">/month</span>}
       </div>
       <p className="text-gray-400 mb-6">{description}</p>
       <ul className="space-y-3 mb-8 flex-grow">
@@ -69,8 +68,8 @@ export const PricingSection = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
         <PricingTier
-          name="Basic Trader"
-          price="$0"
+          name="Basic AI"
+          price="3 SOLANA"
           description="Perfect for beginners starting their crypto journey"
           features={[
             "Basic spot trading",
@@ -80,8 +79,8 @@ export const PricingSection = () => {
           ]}
         />
         <PricingTier
-          name="Pro Trader"
-          price="$29"
+          name="Pro AI"
+          price="5 SOLANA"
           description="Advanced features for serious traders"
           features={[
             "Advanced trading tools",
@@ -93,8 +92,8 @@ export const PricingSection = () => {
           isPopular
         />
         <PricingTier
-          name="Institutional"
-          price="Custom"
+          name="Custom AI"
+          price="15 SOLANA"
           description="Enterprise-grade solutions for institutions"
           features={[
             "Custom trading solutions",
