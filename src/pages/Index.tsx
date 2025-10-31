@@ -5,6 +5,7 @@ import Navigation from "@/components/Navigation";
 import { FeaturesSection } from "@/components/features/FeaturesSection";
 import { PricingSection } from "@/components/pricing/PricingSection";
 import LogoCarousel from "@/components/LogoCarousel";
+import { CryptoCarousel } from "@/components/CryptoCarousel";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import Footer from "@/components/Footer";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
@@ -92,6 +93,9 @@ const Index = () => {
 
       {/* Logo Carousel */}
       <LogoCarousel />
+
+      {/* Crypto Carousel */}
+      <CryptoCarousel />
 
       {/* Features Section */}
       <div id="features" className="bg-black">
