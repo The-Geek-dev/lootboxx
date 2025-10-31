@@ -58,6 +58,7 @@ const Navigation = () => {
     { name: "About", href: "/about" },
     { name: "Features", href: "/features" },
     { name: "How It Works", href: "/how-it-works" },
+    { name: "Mining", href: "/mining" },
     { name: "FAQ", href: "/faq" },
     { name: "Contact", href: "/contact" },
   ];

@@ -12,6 +12,7 @@ import FAQ from "./pages/FAQ";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Mining from "./pages/Mining";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/mining" element={<Mining />} />
           </Routes>
         </BrowserRouter>
       </div>
