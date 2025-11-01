@@ -9,8 +9,45 @@ import { CryptoCarousel } from "@/components/CryptoCarousel";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import Footer from "@/components/Footer";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const Index = () => {
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsLoggedIn(!!session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleActivateBot = () => {
+    if (isLoggedIn) {
+      navigate("/dashboard");
+    } else {
+      setShowLoginDialog(true);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-foreground">
       <Navigation />
@@ -66,12 +103,14 @@ const Index = () => {
             transition={{ delay: 0.5 }}
             className="flex flex-col sm:flex-row gap-4 items-start"
           >
-            <Button size="lg" className="button-gradient">
+            <Button size="lg" className="button-gradient" onClick={handleActivateBot}>
               Activate Astra Bot
             </Button>
-            <Button size="lg" variant="link" className="text-white">
-              See How It Works <ArrowRight className="ml-2 w-4 h-4" />
-            </Button>
+            <Link to="/how-it-works">
+              <Button size="lg" variant="link" className="text-white">
+                See How It Works <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
           </motion.div>
         </div>
 
@@ -134,7 +173,7 @@ const Index = () => {
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
             Join thousands of traders already earning passive income with Astra's AI-powered trading.
           </p>
-          <Button size="lg" className="button-gradient">
+          <Button size="lg" className="button-gradient" onClick={handleActivateBot}>
             Activate Your Bot
             <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
@@ -145,6 +184,24 @@ const Index = () => {
       <div className="bg-black">
         <Footer />
       </div>
+
+      {/* Login Dialog */}
+      <AlertDialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Login Required</AlertDialogTitle>
+            <AlertDialogDescription>
+              You need to be logged in to activate the trading bot. Please login or create an account to continue.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => navigate("/login")}>
+              Go to Login
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
