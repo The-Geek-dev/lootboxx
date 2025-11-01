@@ -1,16 +1,54 @@
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { TrendingUp, DollarSign, Activity, Percent } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+  
   const stats = [
     { icon: DollarSign, label: "Total Profit", value: "$12,847.32", change: "+23.4%" },
     { icon: TrendingUp, label: "Active Trades", value: "8", change: "Live" },
     { icon: Activity, label: "Win Rate", value: "87.3%", change: "+5.2%" },
     { icon: Percent, label: "Monthly ROI", value: "14.2%", change: "+2.1%" },
   ];
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/login");
+      } else {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        navigate("/login");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-foreground">

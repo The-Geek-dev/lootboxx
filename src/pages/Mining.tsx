@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card } from "@/components/ui/card";
 import { Play, Pause, Zap } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import btcLogo from "@/assets/crypto/btc-logo.png";
 import solLogo from "@/assets/crypto/sol-logo.png";
 import bnbLogo from "@/assets/crypto/bnb-logo.png";
@@ -22,11 +24,34 @@ const cryptoCoins = [
 ];
 
 const Mining = () => {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedCoin, setSelectedCoin] = useState(cryptoCoins[0]);
   const [isMining, setIsMining] = useState(false);
   const [progress, setProgress] = useState(0);
   const [earned, setEarned] = useState(0);
   const [hashRate, setHashRate] = useState(0);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/login");
+      } else {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        navigate("/login");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -59,6 +84,17 @@ const Mining = () => {
       setProgress(0);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
