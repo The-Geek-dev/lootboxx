@@ -103,9 +103,11 @@ const Index = () => {
             transition={{ delay: 0.5 }}
             className="flex flex-col sm:flex-row gap-4 items-start"
           >
-            <Button size="lg" className="button-gradient" onClick={handleActivateBot}>
-              Activate Astra Bot
-            </Button>
+            <Link to="/crypto-payment">
+              <Button size="lg" className="button-gradient">
+                Start Trading
+              </Button>
+            </Link>
             <Link to="/how-it-works">
               <Button size="lg" variant="link" className="text-white">
                 See How It Works <ArrowRight className="ml-2 w-4 h-4" />
@@ -173,10 +175,12 @@ const Index = () => {
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
             Join thousands of traders already earning passive income with Astra's AI-powered trading.
           </p>
-          <Button size="lg" className="button-gradient" onClick={handleActivateBot}>
-            Activate Your Bot
-            <ArrowRight className="ml-2 w-4 h-4" />
-          </Button>
+          <Link to="/crypto-payment">
+            <Button size="lg" className="button-gradient">
+              Start Trading
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Button>
+          </Link>
         </motion.div>
       </section>
 

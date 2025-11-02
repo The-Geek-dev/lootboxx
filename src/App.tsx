@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Mining from "./pages/Mining";
 import CryptoPayment from "./pages/CryptoPayment";
+import Whitepaper from "./pages/Whitepaper";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/mining" element={<Mining />} />
             <Route path="/crypto-payment" element={<CryptoPayment />} />
+            <Route path="/whitepaper" element={<Whitepaper />} />
           </Routes>
         </BrowserRouter>
       </div>
