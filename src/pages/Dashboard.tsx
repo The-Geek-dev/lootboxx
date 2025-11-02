@@ -10,12 +10,13 @@ import { supabase } from "@/integrations/supabase/client";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [userName, setUserName] = useState<string>("");
   
   const stats = [
-    { icon: DollarSign, label: "Total Profit", value: "$12,847.32", change: "+23.4%" },
-    { icon: TrendingUp, label: "Active Trades", value: "8", change: "Live" },
-    { icon: Activity, label: "Win Rate", value: "87.3%", change: "+5.2%" },
-    { icon: Percent, label: "Monthly ROI", value: "14.2%", change: "+2.1%" },
+    { icon: DollarSign, label: "Total Profit", value: "$0.00", change: "0%" },
+    { icon: TrendingUp, label: "Active Trades", value: "0", change: "Ready" },
+    { icon: Activity, label: "Win Rate", value: "0%", change: "0%" },
+    { icon: Percent, label: "Monthly ROI", value: "0%", change: "0%" },
   ];
 
   useEffect(() => {
@@ -24,6 +25,16 @@ const Dashboard = () => {
       if (!session) {
         navigate("/login");
       } else {
+        // Fetch user profile
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("user_id", session.user.id)
+          .single();
+        
+        if (profile) {
+          setUserName(profile.full_name);
+        }
         setIsLoading(false);
       }
     };
@@ -62,7 +73,9 @@ const Dashboard = () => {
         >
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
+              <h1 className="text-4xl font-bold mb-2">
+                Welcome, {userName || "Trader"}!
+              </h1>
               <p className="text-gray-400">Monitor your Astra bot performance</p>
             </div>
             <Button className="button-gradient">Configure Bot</Button>
@@ -91,26 +104,8 @@ const Dashboard = () => {
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             <Card className="glass p-6">
               <h3 className="text-xl font-semibold mb-4">Recent Trades</h3>
-              <div className="space-y-4">
-                {[
-                  { pair: "BTC/USDT", action: "Buy", profit: "+$234.12", time: "2 mins ago" },
-                  { pair: "ETH/USDT", action: "Sell", profit: "+$156.78", time: "15 mins ago" },
-                  { pair: "SOL/USDT", action: "Buy", profit: "+$89.45", time: "1 hour ago" },
-                  { pair: "BNB/USDT", action: "Sell", profit: "+$312.90", time: "2 hours ago" },
-                ].map((trade, index) => (
-                  <div key={index} className="flex items-center justify-between border-b border-white/10 pb-3">
-                    <div>
-                      <div className="font-medium">{trade.pair}</div>
-                      <div className="text-sm text-gray-400">{trade.time}</div>
-                    </div>
-                    <div className="text-right">
-                      <div className={trade.action === "Buy" ? "text-green-500" : "text-blue-500"}>
-                        {trade.action}
-                      </div>
-                      <div className="text-green-500 font-medium">{trade.profit}</div>
-                    </div>
-                  </div>
-                ))}
+              <div className="flex items-center justify-center h-48 text-gray-500">
+                No trades yet. Start your bot to begin trading!
               </div>
             </Card>
 
@@ -138,7 +133,7 @@ const Dashboard = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Trades Today</span>
-                  <span>47</span>
+                  <span>0</span>
                 </div>
               </div>
             </Card>

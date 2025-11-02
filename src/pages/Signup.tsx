@@ -56,7 +56,7 @@ const Signup = () => {
         options: {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
-            name: formData.name,
+            full_name: formData.name,
           },
         },
       });
