@@ -12,7 +12,6 @@ import btcLogo from "@/assets/crypto/btc-logo.png";
 import solLogo from "@/assets/crypto/sol-logo.png";
 import bnbLogo from "@/assets/crypto/bnb-logo.png";
 import ethLogo from "@/assets/crypto/eth-logo.png";
-import usdtLogo from "@/assets/crypto/usdt-logo.png";
 
 const cryptoCoins = [
   { name: "Astra", symbol: "ASTRA", logo: "⭐", reward: 0.5 },
@@ -20,7 +19,6 @@ const cryptoCoins = [
   { name: "Solana", symbol: "SOL", logo: solLogo, reward: 0.001 },
   { name: "BNB", symbol: "BNB", logo: bnbLogo, reward: 0.0005 },
   { name: "Ethereum", symbol: "ETH", logo: ethLogo, reward: 0.00005 },
-  { name: "Tether", symbol: "USDT", logo: usdtLogo, reward: 1 },
 ];
 
 const Mining = () => {
@@ -116,7 +114,7 @@ const Mining = () => {
           {/* Coin Selection */}
           <div className="mb-8">
             <h2 className="text-2xl font-medium mb-4">Select Coin</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {cryptoCoins.map((coin) => (
                 <Card
                   key={coin.symbol}
