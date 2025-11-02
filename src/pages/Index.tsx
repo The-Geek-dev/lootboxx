@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Command } from "lucide-react";
+import { ArrowRight, Command, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
 import { FeaturesSection } from "@/components/features/FeaturesSection";
@@ -152,6 +152,38 @@ const Index = () => {
       <div className="bg-black">
         <TestimonialsSection />
       </div>
+
+      {/* Whitepaper Section */}
+      <section className="container px-4 py-20 bg-black">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-4xl mx-auto glass rounded-2xl p-8 md:p-12"
+        >
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="flex-shrink-0">
+              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
+                <FileText className="w-10 h-10 text-primary" />
+              </div>
+            </div>
+            <div className="flex-1 text-center md:text-left">
+              <h2 className="text-3xl font-bold mb-3">
+                Read Our White Paper
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                Learn about Astra's AI-powered trading technology, strategic roadmap, and vision for the future of automated cryptocurrency trading.
+              </p>
+              <Link to="/whitepaper">
+                <Button className="button-gradient">
+                  View White Paper
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      </section>
 
       {/* CTA Section */}
       <section className="container px-4 py-20 relative bg-black">

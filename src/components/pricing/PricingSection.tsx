@@ -3,6 +3,7 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CardSpotlight } from "./CardSpotlight";
 import { useSolanaPrice } from "@/hooks/useSolanaPrice";
+import { Link } from "react-router-dom";
 
 const PricingTier = ({
   name,
@@ -49,9 +50,11 @@ const PricingTier = ({
           </li>
         ))}
       </ul>
-      <Button className="button-gradient w-full">
-        Start Trading
-      </Button>
+      <Link to="/crypto-payment" className="w-full">
+        <Button className="button-gradient w-full">
+          Start Trading
+        </Button>
+      </Link>
     </div>
   </CardSpotlight>
   );
