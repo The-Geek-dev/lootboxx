@@ -74,6 +74,10 @@ export type Database = {
         Args: { token_value: string; user_id: string }
         Returns: boolean
       }
+      verify_user_token: {
+        Args: { token_value: string; user_email: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

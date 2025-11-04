@@ -12,6 +12,7 @@ const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [token, setToken] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -24,9 +25,49 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!token.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter your signup token",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsLoading(true);
 
     try {
+      // First verify the token belongs to this user
+      const { data: tokenValid, error: tokenError } = await supabase.rpc(
+        'verify_user_token',
+        { 
+          user_email: email,
+          token_value: token.trim()
+        }
+      );
+
+      if (tokenError) {
+        toast({
+          title: "Error",
+          description: "Failed to verify token",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      if (!tokenValid) {
+        toast({
+          title: "Invalid Token",
+          description: "The token doesn't match your account",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // If token is valid, proceed with login
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -76,6 +117,24 @@ const Login = () => {
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="token" className="block text-sm font-medium mb-2">
+                Signup Token
+              </label>
+              <Input
+                id="token"
+                type="text"
+                placeholder="ASTRA-XXXXXXXX"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                required
+                className="bg-background/50"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Enter the token you used during signup
+              </p>
+            </div>
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium mb-2">
                 Email Address
