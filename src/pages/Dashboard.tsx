@@ -78,7 +78,11 @@ const Dashboard = () => {
               </h1>
               <p className="text-gray-400">Monitor your Astra bot performance</p>
             </div>
-            <Button className="button-gradient">Configure Bot</Button>
+            <Button className="button-gradient" asChild>
+              <a href="https://t.me/AstraTradeProBot" target="_blank" rel="noopener noreferrer">
+                Configure Bot
+              </a>
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
