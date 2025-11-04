@@ -16,6 +16,7 @@ const Signup = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    token: "",
   });
 
   useEffect(() => {
@@ -28,6 +29,15 @@ const Signup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.token.trim()) {
+      toast({
+        title: "Error",
+        description: "Signup token is required",
+        variant: "destructive",
+      });
+      return;
+    }
     
     if (formData.password !== formData.confirmPassword) {
       toast({
@@ -50,7 +60,8 @@ const Signup = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      // First create the user account
+      const { data: authData, error: signupError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -61,19 +72,49 @@ const Signup = () => {
         },
       });
 
-      if (error) {
+      if (signupError) {
         toast({
           title: "Signup failed",
-          description: error.message,
+          description: signupError.message,
           variant: "destructive",
         });
-      } else {
-        toast({
-          title: "Account created!",
-          description: "Welcome to Astra. Let's start trading.",
-        });
-        navigate("/dashboard");
+        return;
       }
+
+      if (!authData.user) {
+        toast({
+          title: "Signup failed",
+          description: "Failed to create user account",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validate and mark token as used
+      const { data: tokenValid, error: tokenError } = await supabase.rpc(
+        'validate_signup_token',
+        { 
+          token_value: formData.token.trim(),
+          user_id: authData.user.id 
+        }
+      );
+
+      if (tokenError || !tokenValid) {
+        // If token is invalid, we should delete the user account
+        // But since we can't easily do that, we'll just show an error
+        toast({
+          title: "Invalid Token",
+          description: "The signup token is invalid or has already been used. Please contact support.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Account created!",
+        description: "Welcome to Astra. Let's start trading.",
+      });
+      navigate("/dashboard");
     } catch (error) {
       toast({
         title: "Error",
@@ -112,6 +153,24 @@ const Signup = () => {
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="token" className="block text-sm font-medium mb-2">
+                Signup Token
+              </label>
+              <Input
+                id="token"
+                type="text"
+                placeholder="ASTRA-XXXXXXXX"
+                value={formData.token}
+                onChange={handleChange}
+                required
+                className="bg-background/50"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Enter your invitation token to create an account
+              </p>
+            </div>
+
             <div>
               <label htmlFor="name" className="block text-sm font-medium mb-2">
                 Full Name

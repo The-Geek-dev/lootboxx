@@ -38,12 +38,42 @@ export type Database = {
         }
         Relationships: []
       }
+      signup_tokens: {
+        Row: {
+          created_at: string
+          id: string
+          token: string
+          used: boolean
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          token: string
+          used?: boolean
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          token?: string
+          used?: boolean
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      validate_signup_token: {
+        Args: { token_value: string; user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
