@@ -1,7 +1,7 @@
 import { Github, Twitter } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
-import logo from "@/assets/logo.jpg";
+import logo from "@/assets/squanch-logo.png";
 
 const Footer = () => {
   return (

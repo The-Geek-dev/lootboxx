@@ -3,7 +3,7 @@ import { Menu } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Link, useLocation } from "react-router-dom";
-import logo from "@/assets/logo.jpg";
+import logo from "@/assets/squanch-logo.png";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
