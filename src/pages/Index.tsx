@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Command, FileText } from "lucide-react";
+import dashboardHero from "@/assets/dashboard-hero.png";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
 import { FeaturesSection } from "@/components/features/FeaturesSection";
@@ -124,7 +125,7 @@ const Index = () => {
         >
           <div className="glass rounded-xl overflow-hidden">
             <img
-              src="/lovable-uploads/c32c6788-5e4a-4fee-afee-604b03113c7f.png"
+              src={dashboardHero}
               alt="Astra Trading Bot Dashboard"
               className="w-full h-auto"
             />
