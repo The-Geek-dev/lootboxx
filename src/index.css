@@ -7,25 +7,25 @@
 
 @layer base {
   :root {
-    --background: 0 0% 4%;
+    --background: 0 0% 0%;
     --foreground: 0 0% 100%;
     --card: 0 0% 4%;
     --card-foreground: 0 0% 100%;
     --popover: 0 0% 4%;
     --popover-foreground: 0 0% 100%;
-    --primary: 142 84% 58%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 9%;
+    --primary: 180 70% 60%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 260 60% 55%;
     --secondary-foreground: 0 0% 100%;
     --muted: 0 0% 9%;
     --muted-foreground: 0 0% 64%;
-    --accent: 0 0% 9%;
+    --accent: 220 70% 60%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 12%;
-    --input: 0 0% 12%;
-    --ring: 142 84% 58%;
+    --border: 220 30% 15%;
+    --input: 220 30% 15%;
+    --ring: 180 70% 60%;
     --radius: 0.75rem;
   }
 }
@@ -66,9 +66,9 @@
 }
 
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-[#22c55e];
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#5ee7df] via-[#8b5cf6] to-[#6366f1];
 }
 
 .button-gradient {
-  @apply bg-gradient-to-r from-primary to-[#22c55e] hover:opacity-90 transition-opacity rounded-full;
+  @apply bg-gradient-to-r from-[#5ee7df] via-[#8b5cf6] to-[#6366f1] hover:opacity-90 transition-opacity rounded-full text-white;
 }

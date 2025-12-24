@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Command, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Link, useLocation } from "react-router-dom";
+import logo from "@/assets/logo.jpg";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -79,8 +80,8 @@ const Navigation = () => {
       <div className="mx-auto h-full px-6">
         <nav className="flex items-center justify-between h-full">
           <Link to="/" className="flex items-center gap-2">
-            <Command className="w-5 h-5 text-primary" />
-            <span className="font-bold text-base">Astra</span>
+            <img src={logo} alt="Astra Logo" className="w-8 h-8 rounded-full" />
+            <span className="font-bold text-base text-gradient">Astra</span>
           </Link>
 
           {/* Desktop Navigation */}
