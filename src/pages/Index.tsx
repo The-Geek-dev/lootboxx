@@ -10,6 +10,7 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 import Footer from "@/components/Footer";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import CyberpunkParticles from "@/components/CyberpunkParticles";
+import HexagonGrid from "@/components/HexagonGrid";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -60,6 +61,9 @@ const Index = () => {
         transition={{ duration: 0.5 }}
         className="relative container px-4 pt-40 pb-20"
       >
+        {/* Hexagon Grid Background */}
+        <HexagonGrid />
+        
         {/* Cyberpunk Particles Background */}
         <CyberpunkParticles />
         
