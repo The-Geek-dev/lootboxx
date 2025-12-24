@@ -9,6 +9,7 @@ import { CryptoCarousel } from "@/components/CryptoCarousel";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import Footer from "@/components/Footer";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import CyberpunkParticles from "@/components/CyberpunkParticles";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,6 +60,9 @@ const Index = () => {
         transition={{ duration: 0.5 }}
         className="relative container px-4 pt-40 pb-20"
       >
+        {/* Cyberpunk Particles Background */}
+        <CyberpunkParticles />
+        
         {/* Background */}
         <div 
           className="absolute inset-0 -z-10 bg-[#0A0A0A]"
