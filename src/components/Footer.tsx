@@ -1,6 +1,7 @@
 import { Github, Twitter } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
+import logo from "@/assets/logo.jpg";
 
 const Footer = () => {
   return (
@@ -9,7 +10,10 @@ const Footer = () => {
         <div className="glass glass-hover rounded-xl p-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="space-y-4">
-              <h3 className="font-medium text-lg">Astra</h3>
+              <div className="flex items-center gap-2">
+                <img src={logo} alt="Astra Logo" className="w-8 h-8 rounded-full" />
+                <h3 className="font-medium text-lg text-gradient">Astra</h3>
+              </div>
               <p className="text-sm text-muted-foreground">
                 AI-powered crypto trading bot that generates profitable trades automatically.
               </p>
