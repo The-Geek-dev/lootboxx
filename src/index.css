@@ -70,5 +70,23 @@
 }
 
 .button-gradient {
-  @apply bg-gradient-to-r from-[#5ee7df] via-[#8b5cf6] to-[#6366f1] hover:opacity-90 transition-opacity rounded-full text-white;
+  @apply bg-gradient-to-r from-[#5ee7df] via-[#8b5cf6] to-[#6366f1] hover:opacity-90 transition-all rounded-full text-white;
+  box-shadow: 0 0 20px rgba(94, 231, 223, 0.3), 0 0 40px rgba(139, 92, 246, 0.2);
+}
+
+.button-gradient:hover {
+  box-shadow: 0 0 30px rgba(94, 231, 223, 0.5), 0 0 60px rgba(139, 92, 246, 0.4);
+}
+
+.logo-glow {
+  filter: drop-shadow(0 0 8px rgba(94, 231, 223, 0.6)) drop-shadow(0 0 20px rgba(139, 92, 246, 0.4));
+  transition: filter 0.3s ease;
+}
+
+.logo-glow:hover {
+  filter: drop-shadow(0 0 12px rgba(94, 231, 223, 0.8)) drop-shadow(0 0 30px rgba(139, 92, 246, 0.6));
+}
+
+.text-glow {
+  text-shadow: 0 0 10px rgba(94, 231, 223, 0.5), 0 0 20px rgba(139, 92, 246, 0.3);
 }
