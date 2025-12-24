@@ -14,7 +14,7 @@ import bnbLogo from "@/assets/crypto/bnb-logo.png";
 import ethLogo from "@/assets/crypto/eth-logo.png";
 
 const cryptoCoins = [
-  { name: "Astra", symbol: "ASTRA", logo: "⭐", reward: 0.5 },
+  { name: "SQUANCH", symbol: "SQNCH", logo: "⭐", reward: 0.5 },
   { name: "Bitcoin", symbol: "BTC", logo: btcLogo, reward: 0.00001 },
   { name: "Solana", symbol: "SOL", logo: solLogo, reward: 0.001 },
   { name: "BNB", symbol: "BNB", logo: bnbLogo, reward: 0.0005 },
@@ -234,7 +234,7 @@ const Mining = () => {
             <Card className="p-6 bg-card/30">
               <h3 className="text-lg font-medium mb-2">💎 Multi-Coin</h3>
               <p className="text-sm text-gray-400">
-                Mine multiple cryptocurrencies including our exclusive Astra coin
+                Mine multiple cryptocurrencies including our exclusive SQUANCH coin
               </p>
             </Card>
           </div>

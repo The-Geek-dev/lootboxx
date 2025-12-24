@@ -9,7 +9,7 @@ const HowItWorks = () => {
     {
       number: "01",
       title: "Start on Telegram",
-      description: "Connect with our Astra Bot on Telegram. This is where your entire investment journey begins. Our bot guides you through setup and provides 24/7 support.",
+      description: "Connect with our SQUANCH Bot on Telegram. This is where your entire investment journey begins. Our bot guides you through setup and provides 24/7 support.",
       details: ["Easy-to-follow conversation flow", "Instant notifications and updates", "Manage everything from your phone"]
     },
     {
@@ -60,7 +60,7 @@ const HowItWorks = () => {
           </h1>
           
           <p className="text-xl text-gray-300 mb-16 text-center max-w-3xl mx-auto">
-            Follow our simple 6-step process to start growing your wealth with Astra. From account creation to your first automated trade in minutes.
+            Follow our simple 6-step process to start growing your wealth with SQUANCH. From account creation to your first automated trade in minutes.
           </p>
 
           <div className="space-y-12 mb-20">
@@ -101,7 +101,7 @@ const HowItWorks = () => {
           >
             <h2 className="text-3xl font-bold mb-4">Ready to Begin Your Journey?</h2>
             <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
-              Start automated trading in under 5 minutes. Join thousands earning passive income with Astra.
+              Start automated trading in under 5 minutes. Join thousands earning passive income with SQUANCH.
             </p>
             <Button size="lg" className="button-gradient">
               Activate Your Bot <ArrowRight className="ml-2 w-4 h-4" />

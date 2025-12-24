@@ -11,12 +11,12 @@ import {
 const FAQ = () => {
   const faqs = [
     {
-      question: "How does Astra make trading decisions?",
-      answer: "Astra uses advanced machine learning algorithms that analyze thousands of market indicators, including price movements, volume patterns, order book data, and social sentiment. The AI continuously learns from market conditions and adjusts its strategies to optimize for profitability."
+      question: "How does SQUANCH make trading decisions?",
+      answer: "SQUANCH uses advanced machine learning algorithms that analyze thousands of market indicators, including price movements, volume patterns, order book data, and social sentiment. The AI continuously learns from market conditions and adjusts its strategies to optimize for profitability."
     },
     {
-      question: "Is my money safe with Astra?",
-      answer: "Yes. Astra never has withdrawal access to your funds. We connect to your exchange via API keys with trading permissions only. Your funds always remain in your exchange account, and you maintain full control. We use bank-grade encryption for all data transmission."
+      question: "Is my money safe with SQUANCH?",
+      answer: "Yes. SQUANCH never has withdrawal access to your funds. We connect to your exchange via API keys with trading permissions only. Your funds always remain in your exchange account, and you maintain full control. We use bank-grade encryption for all data transmission."
     },
     {
       question: "What is the minimum investment required?",
@@ -27,8 +27,8 @@ const FAQ = () => {
       answer: "Returns vary based on market conditions, your chosen strategy, and risk settings. While past performance isn't indicative of future results, our users have averaged 5-15% monthly returns. Conservative strategies offer lower but more stable returns, while aggressive strategies aim for higher gains with increased risk."
     },
     {
-      question: "Which exchanges does Astra support?",
-      answer: "Astra currently supports major exchanges including Binance, Coinbase Pro, Kraken, and KuCoin. We're continuously adding support for more exchanges based on user demand."
+      question: "Which exchanges does SQUANCH support?",
+      answer: "SQUANCH currently supports major exchanges including Binance, Coinbase Pro, Kraken, and KuCoin. We're continuously adding support for more exchanges based on user demand."
     },
     {
       question: "Can I stop the bot at any time?",
@@ -36,19 +36,19 @@ const FAQ = () => {
     },
     {
       question: "Do I need trading experience?",
-      answer: "No trading experience is required. Astra is designed for both beginners and experienced traders. We offer pre-configured strategies for those new to trading, and advanced customization options for experienced users."
+      answer: "No trading experience is required. SQUANCH is designed for both beginners and experienced traders. We offer pre-configured strategies for those new to trading, and advanced customization options for experienced users."
     },
     {
       question: "What are the fees?",
-      answer: "Astra operates on a subscription model with three tiers: Basic ($29/month), Pro ($79/month), and Elite ($199/month). There are no hidden fees or commissions on your profits. You only pay the subscription fee."
+      answer: "SQUANCH operates on a subscription model with three tiers: Basic ($29/month), Pro ($79/month), and Elite ($199/month). There are no hidden fees or commissions on your profits. You only pay the subscription fee."
     },
     {
       question: "How quickly can I withdraw profits?",
-      answer: "Since your funds are always in your exchange account, you can withdraw at any time according to your exchange's policies. Astra doesn't hold your funds, so there's no withdrawal process through us."
+      answer: "Since your funds are always in your exchange account, you can withdraw at any time according to your exchange's policies. SQUANCH doesn't hold your funds, so there's no withdrawal process through us."
     },
     {
       question: "What if the market crashes?",
-      answer: "Astra includes risk management features like stop-loss orders and position sizing to protect your capital during downturns. The bot can be configured to take defensive positions or pause trading during extreme market volatility."
+      answer: "SQUANCH includes risk management features like stop-loss orders and position sizing to protect your capital during downturns. The bot can be configured to take defensive positions or pause trading during extreme market volatility."
     }
   ];
 
@@ -68,7 +68,7 @@ const FAQ = () => {
           </h1>
           
           <p className="text-xl text-gray-300 mb-16 text-center max-w-3xl mx-auto">
-            Everything you need to know about Astra and automated crypto trading
+            Everything you need to know about SQUANCH and automated crypto trading
           </p>
 
           <motion.div

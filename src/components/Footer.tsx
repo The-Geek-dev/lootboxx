@@ -11,8 +11,8 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <img src={logo} alt="Astra Logo" className="w-8 h-8 rounded-full logo-glow" />
-                <h3 className="font-medium text-lg text-gradient text-glow">Astra</h3>
+                <img src={logo} alt="SQUANCH Logo" className="w-8 h-8 rounded-full logo-glow" />
+                <h3 className="font-medium text-lg text-gradient text-glow">SQUANCH</h3>
               </div>
               <p className="text-sm text-muted-foreground">
                 AI-powered crypto trading bot that generates profitable trades automatically.

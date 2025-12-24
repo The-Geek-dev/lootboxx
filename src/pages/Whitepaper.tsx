@@ -29,7 +29,7 @@ const Whitepaper = () => {
           </motion.div>
 
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            Astra White Paper
+            SQUANCH White Paper
           </h1>
           
           <p className="text-lg text-muted-foreground mb-8">
@@ -39,10 +39,10 @@ const Whitepaper = () => {
           <div className="glass rounded-xl p-8 mb-8">
             <h2 className="text-2xl font-semibold mb-4">Executive Summary</h2>
             <p className="text-muted-foreground mb-6">
-              Astra is a cutting-edge, non-custodial cryptocurrency trading platform that harnesses the power of advanced Machine Learning (AI) algorithms to perform high-frequency, automated trading. This powerful functionality is delivered directly through the user-friendly and highly accessible Telegram bot interface.
+              SQUANCH is a cutting-edge, non-custodial cryptocurrency trading platform that harnesses the power of advanced Machine Learning (AI) algorithms to perform high-frequency, automated trading. This powerful functionality is delivered directly through the user-friendly and highly accessible Telegram bot interface.
             </p>
             
-            <a href="/Astra-Whitepaper.pdf" download>
+            <a href="/SQUANCH-Whitepaper.pdf" download>
               <Button className="button-gradient">
                 <Download className="mr-2 w-4 h-4" />
                 Download Full White Paper
@@ -54,7 +54,7 @@ const Whitepaper = () => {
             <div className="glass rounded-xl p-6">
               <h3 className="text-xl font-semibold mb-3">Project Vision</h3>
               <p className="text-muted-foreground">
-                The Astra Project is committed to a long-term vision of transforming into a comprehensive, decentralized, AI-driven financial ecosystem, extending well beyond the confines of a simple execution bot. Astra's enduring vision is to become the world's most accessible, secure, and intelligent automated trading platform.
+                The SQUANCH Project is committed to a long-term vision of transforming into a comprehensive, decentralized, AI-driven financial ecosystem, extending well beyond the confines of a simple execution bot. SQUANCH's enduring vision is to become the world's most accessible, secure, and intelligent automated trading platform.
               </p>
             </div>
 
@@ -78,7 +78,7 @@ const Whitepaper = () => {
                 </div>
                 <div>
                   <h4 className="text-white font-medium mb-2">Phase 2: 2026 - Ecosystem Build-out</h4>
-                  <p>Multi-exchange API support, social trading module, and $ASTRA token launch with internal mining.</p>
+                  <p>Multi-exchange API support, social trading module, and $SQUANCH token launch with internal mining.</p>
                 </div>
                 <div>
                   <h4 className="text-white font-medium mb-2">Phase 3: 2027 - Decentralization</h4>
@@ -90,7 +90,7 @@ const Whitepaper = () => {
             <div className="glass rounded-xl p-6">
               <h3 className="text-xl font-semibold mb-3">Technology Stack</h3>
               <p className="text-muted-foreground">
-                Astra leverages cutting-edge technologies including advanced machine learning models, high-frequency trading algorithms, and secure non-custodial wallet integrations. The platform is built on a robust infrastructure designed to handle millions of transactions while maintaining security and performance.
+                SQUANCH leverages cutting-edge technologies including advanced machine learning models, high-frequency trading algorithms, and secure non-custodial wallet integrations. The platform is built on a robust infrastructure designed to handle millions of transactions while maintaining security and performance.
               </p>
             </div>
           </div>
@@ -99,7 +99,7 @@ const Whitepaper = () => {
             <p className="text-muted-foreground mb-4">
               For complete technical details, tokenomics, and strategic roadmap
             </p>
-            <a href="/Astra-Whitepaper.pdf" download>
+            <a href="/SQUANCH-Whitepaper.pdf" download>
               <Button size="lg" className="button-gradient">
                 <Download className="mr-2 w-5 h-5" />
                 Download Complete White Paper
