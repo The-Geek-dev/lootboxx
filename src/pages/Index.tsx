@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import CyberpunkParticles from "@/components/CyberpunkParticles";
 import HexagonGrid from "@/components/HexagonGrid";
+import dashboardPreview from "@/assets/dashboard-preview.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -130,9 +131,9 @@ const Index = () => {
           transition={{ delay: 0.6 }}
           className="relative mx-auto max-w-5xl mt-20"
         >
-          <div className="glass rounded-xl overflow-hidden">
+          <div className="glass rounded-xl overflow-hidden border border-primary/20 shadow-[0_0_30px_rgba(94,231,223,0.15)]">
             <img
-              src="/lovable-uploads/c32c6788-5e4a-4fee-afee-604b03113c7f.png"
+              src={dashboardPreview}
               alt="SQUANCH Trading Bot Dashboard"
               className="w-full h-auto"
             />
