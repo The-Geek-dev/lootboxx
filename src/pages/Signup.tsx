@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
-import { Command } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import squanchLogo from "@/assets/squanch-logo.png";
 
 const Signup = () => {
   const { toast } = useToast();
@@ -16,7 +16,6 @@ const Signup = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    token: "",
   });
 
   useEffect(() => {
@@ -29,15 +28,6 @@ const Signup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.token.trim()) {
-      toast({
-        title: "Error",
-        description: "Signup token is required",
-        variant: "destructive",
-      });
-      return;
-    }
     
     if (formData.password !== formData.confirmPassword) {
       toast({
@@ -60,7 +50,6 @@ const Signup = () => {
     setIsLoading(true);
 
     try {
-      // First create the user account
       const { data: authData, error: signupError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -90,29 +79,9 @@ const Signup = () => {
         return;
       }
 
-      // Validate and mark token as used
-      const { data: tokenValid, error: tokenError } = await supabase.rpc(
-        'validate_signup_token',
-        { 
-          token_value: formData.token.trim(),
-          user_id: authData.user.id 
-        }
-      );
-
-      if (tokenError || !tokenValid) {
-        // If token is invalid, we should delete the user account
-        // But since we can't easily do that, we'll just show an error
-        toast({
-          title: "Invalid Token",
-          description: "The signup token is invalid or has already been used. Please contact support.",
-          variant: "destructive",
-        });
-        return;
-      }
-
       toast({
         title: "Account created!",
-        description: "Welcome to Astra. Let's start trading.",
+        description: "Welcome to SQUANCH. Let's start trading.",
       });
       navigate("/dashboard");
     } catch (error) {
@@ -142,8 +111,8 @@ const Signup = () => {
         className="w-full max-w-md"
       >
         <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <Command className="w-8 h-8 text-primary" />
-          <span className="font-bold text-2xl">Astra</span>
+          <img src={squanchLogo} alt="SQUANCH" className="h-10 w-auto" />
+          <span className="font-bold text-2xl">SQUANCH</span>
         </Link>
 
         <div className="glass rounded-2xl p-8">
@@ -153,24 +122,6 @@ const Signup = () => {
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="token" className="block text-sm font-medium mb-2">
-                Signup Token
-              </label>
-              <Input
-                id="token"
-                type="text"
-                placeholder="ASTRA-XXXXXXXX"
-                value={formData.token}
-                onChange={handleChange}
-                required
-                className="bg-background/50"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Enter your invitation token to create an account
-              </p>
-            </div>
-
             <div>
               <label htmlFor="name" className="block text-sm font-medium mb-2">
                 Full Name
