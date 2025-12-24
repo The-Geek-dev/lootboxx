@@ -34,7 +34,7 @@ const Contact = () => {
           </h1>
           
           <p className="text-xl text-gray-300 mb-16 text-center max-w-3xl mx-auto">
-            Have questions about Astra? We're here to help you start your profitable trading journey.
+            Have questions about SQUANCH? We're here to help you start your profitable trading journey.
           </p>
 
           <div className="grid md:grid-cols-2 gap-8 mb-12">
@@ -47,8 +47,8 @@ const Contact = () => {
               <Mail className="w-10 h-10 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-2">Email Us</h3>
               <p className="text-gray-400 mb-4">Get in touch via email for detailed inquiries</p>
-              <a href="mailto:support@astra.bot" className="text-primary hover:underline">
-                support@astra.bot
+              <a href="mailto:support@squanch.bot" className="text-primary hover:underline">
+                support@squanch.bot
               </a>
             </motion.div>
 

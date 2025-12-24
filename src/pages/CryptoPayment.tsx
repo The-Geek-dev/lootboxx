@@ -107,7 +107,7 @@ const CryptoPayment = () => {
             Crypto <span className="text-gradient">Payment</span>
           </h1>
           <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
-            Pay for your Astra subscription using your preferred cryptocurrency
+            Pay for your SQUANCH subscription using your preferred cryptocurrency
           </p>
 
           <Tabs defaultValue="BTC" className="w-full max-w-5xl mx-auto">

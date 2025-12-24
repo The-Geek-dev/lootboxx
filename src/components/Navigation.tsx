@@ -80,8 +80,8 @@ const Navigation = () => {
       <div className="mx-auto h-full px-6">
         <nav className="flex items-center justify-between h-full">
           <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Astra Logo" className="w-8 h-8 rounded-full logo-glow" />
-            <span className="font-bold text-base text-gradient text-glow">Astra</span>
+            <img src={logo} alt="SQUANCH Logo" className="w-8 h-8 rounded-full logo-glow" />
+            <span className="font-bold text-base text-gradient text-glow">SQUANCH</span>
           </Link>
 
           {/* Desktop Navigation */}

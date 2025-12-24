@@ -76,10 +76,10 @@ const Dashboard = () => {
               <h1 className="text-4xl font-bold mb-2">
                 Welcome, {userName || "Trader"}!
               </h1>
-              <p className="text-gray-400">Monitor your Astra bot performance</p>
+              <p className="text-gray-400">Monitor your SQUANCH bot performance</p>
             </div>
             <Button className="button-gradient" asChild>
-              <a href="https://t.me/AstraTradeProBot" target="_blank" rel="noopener noreferrer">
+              <a href="https://t.me/SQUANCHTradeBot" target="_blank" rel="noopener noreferrer">
                 Configure Bot
               </a>
             </Button>

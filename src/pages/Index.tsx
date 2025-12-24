@@ -93,7 +93,7 @@ const Index = () => {
             transition={{ delay: 0.4 }}
             className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl text-left"
           >
-            Let Astra's intelligent algorithms analyze markets 24/7 and execute profitable trades automatically.{" "}
+            Let SQUANCH's intelligent algorithms analyze markets 24/7 and execute profitable trades automatically.{" "}
             <span className="text-white">Start generating profits today.</span>
           </motion.p>
           
@@ -125,7 +125,7 @@ const Index = () => {
           <div className="glass rounded-xl overflow-hidden">
             <img
               src="/lovable-uploads/c32c6788-5e4a-4fee-afee-604b03113c7f.png"
-              alt="Astra Trading Bot Dashboard"
+              alt="SQUANCH Trading Bot Dashboard"
               className="w-full h-auto"
             />
           </div>
@@ -172,7 +172,7 @@ const Index = () => {
                 Read Our White Paper
               </h2>
               <p className="text-muted-foreground mb-6">
-                Learn about Astra's AI-powered trading technology, strategic roadmap, and vision for the future of automated cryptocurrency trading.
+                Learn about SQUANCH's AI-powered trading technology, strategic roadmap, and vision for the future of automated cryptocurrency trading.
               </p>
               <Link to="/whitepaper">
                 <Button className="button-gradient">
@@ -202,10 +202,10 @@ const Index = () => {
           className="bg-[#0A0A0A]/80 backdrop-blur-lg border border-white/10 rounded-2xl p-8 md:p-12 text-center relative z-10"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to let Astra trade for you?
+            Ready to let SQUANCH trade for you?
           </h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of traders already earning passive income with Astra's AI-powered trading.
+            Join thousands of traders already earning passive income with SQUANCH's AI-powered trading.
           </p>
           <Link to="/crypto-payment">
             <Button size="lg" className="button-gradient">

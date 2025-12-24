@@ -18,7 +18,7 @@ const About = () => {
     {
       icon: "🌍",
       title: "24/7 Market Coverage",
-      description: "Cryptocurrency markets never sleep, and neither does Astra. Our bots monitor and trade around the clock, ensuring you never miss an opportunity in any time zone."
+      description: "Cryptocurrency markets never sleep, and neither does SQUANCH. Our bots monitor and trade around the clock, ensuring you never miss an opportunity in any time zone."
     }
   ];
 
@@ -98,7 +98,7 @@ const About = () => {
           </h1>
           
           <p className="text-xl text-gray-300 mb-8 text-center max-w-3xl mx-auto">
-            Discover how Astra uses cutting-edge technology to maximize your cryptocurrency investments while you sleep.
+            Discover how SQUANCH uses cutting-edge technology to maximize your cryptocurrency investments while you sleep.
           </p>
         </motion.div>
 
@@ -146,7 +146,7 @@ const About = () => {
                 <tr className="border-b border-primary/20">
                   <th className="text-left py-4 px-4 font-bold">Feature</th>
                   <th className="text-left py-4 px-4 font-bold">Manual Trading</th>
-                  <th className="text-left py-4 px-4 font-bold text-primary">Astra Automated Trading</th>
+                  <th className="text-left py-4 px-4 font-bold text-primary">SQUANCH Automated Trading</th>
                 </tr>
               </thead>
               <tbody>
@@ -204,7 +204,7 @@ const About = () => {
           >
             <h2 className="text-3xl font-bold mb-4">Proven Performance Since 2021</h2>
             <p className="text-lg text-gray-300 max-w-3xl mx-auto">
-              Astra has consistently delivered strong returns across different market conditions, from bull runs to bear markets. 
+              SQUANCH has consistently delivered strong returns across different market conditions, from bull runs to bear markets. 
               Our algorithmic approach adapts to changing conditions while maintaining risk controls.
             </p>
           </motion.div>
