@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import CyberpunkParticles from "@/components/CyberpunkParticles";
 import HexagonGrid from "@/components/HexagonGrid";
+import MascotBackground from "@/components/MascotBackground";
 import dashboardPreview from "@/assets/dashboard-preview.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -148,13 +149,15 @@ const Index = () => {
       <CryptoCarousel />
 
       {/* Features Section */}
-      <div id="features" className="bg-black">
+      <div id="features" className="bg-black relative overflow-hidden">
+        <MascotBackground position="right" />
         <FeaturesSection />
       </div>
 
 
       {/* Testimonials Section */}
-      <div className="bg-black">
+      <div className="bg-black relative overflow-hidden">
+        <MascotBackground position="left" />
         <TestimonialsSection />
       </div>
 
