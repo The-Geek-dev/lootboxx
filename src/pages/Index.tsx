@@ -12,6 +12,7 @@ import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import CyberpunkParticles from "@/components/CyberpunkParticles";
 import HexagonGrid from "@/components/HexagonGrid";
 import dashboardPreview from "@/assets/dashboard-preview.png";
+import mascotImage from "@/assets/mascot.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -85,43 +86,59 @@ const Index = () => {
           </span>
         </motion.div>
         
-        <div className="max-w-4xl relative z-10">
-          <h1 className="text-5xl md:text-7xl font-normal mb-4 tracking-tight text-left">
-            <span className="text-gray-200">
-              <TextGenerateEffect words="AI trading bot that" />
-            </span>
-            <br />
-            <span className="text-white font-medium">
-              <TextGenerateEffect words="maximizes your profits" />
-            </span>
-          </h1>
+        <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
+          <div className="max-w-4xl flex-1">
+            <h1 className="text-5xl md:text-7xl font-normal mb-4 tracking-tight text-left">
+              <span className="text-gray-200">
+                <TextGenerateEffect words="AI trading bot that" />
+              </span>
+              <br />
+              <span className="text-white font-medium">
+                <TextGenerateEffect words="maximizes your profits" />
+              </span>
+            </h1>
+            
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl text-left"
+            >
+              Let SQUANCH's intelligent algorithms analyze markets 24/7 and execute profitable trades automatically.{" "}
+              <span className="text-white">Start generating profits today.</span>
+            </motion.p>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="flex flex-col sm:flex-row gap-4 items-start"
+            >
+              <Link to="/crypto-payment">
+                <Button size="lg" className="button-gradient">
+                  Start Trading
+                </Button>
+              </Link>
+              <Link to="/how-it-works">
+                <Button size="lg" variant="link" className="text-white">
+                  See How It Works <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </Link>
+            </motion.div>
+          </div>
           
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl text-left"
-          >
-            Let SQUANCH's intelligent algorithms analyze markets 24/7 and execute profitable trades automatically.{" "}
-            <span className="text-white">Start generating profits today.</span>
-          </motion.p>
-          
+          {/* Mascot Image */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="flex flex-col sm:flex-row gap-4 items-start"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="hidden md:block flex-shrink-0"
           >
-            <Link to="/crypto-payment">
-              <Button size="lg" className="button-gradient">
-                Start Trading
-              </Button>
-            </Link>
-            <Link to="/how-it-works">
-              <Button size="lg" variant="link" className="text-white">
-                See How It Works <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-            </Link>
+            <img 
+              src={mascotImage} 
+              alt="SQUANCH Mascot" 
+              className="w-64 h-64 lg:w-80 lg:h-80 object-contain drop-shadow-[0_0_30px_rgba(94,231,223,0.3)]"
+            />
           </motion.div>
         </div>
 
