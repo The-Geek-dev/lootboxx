@@ -19,6 +19,11 @@ const MascotBackground = ({ position = "center", className = "" }: MascotBackgro
         y: ["-50%", "-53%", "-50%"],
         scale: [1, 1.02, 1],
         opacity: [0.04, 0.06, 0.04],
+        filter: [
+          "drop-shadow(0 0 20px rgba(94, 231, 223, 0.1))",
+          "drop-shadow(0 0 60px rgba(94, 231, 223, 0.25))",
+          "drop-shadow(0 0 20px rgba(94, 231, 223, 0.1))",
+        ],
       }}
       transition={{
         duration: 8,
