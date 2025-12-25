@@ -1,5 +1,6 @@
-import { motion } from "framer-motion";
-import { FileText, Download, Zap, Shield, TrendingUp, Users, Cpu, Coins, Calendar, Target, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FileText, Download, Zap, Shield, TrendingUp, Users, Cpu, Coins, Calendar, Target, ChevronRight, ArrowUp } from "lucide-react";
+import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import MascotBackground from "@/components/MascotBackground";
@@ -30,9 +31,48 @@ const scrollToSection = (id: string) => {
   }
 };
 
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+};
+
 const Whitepaper = () => {
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [readingProgress, setReadingProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Back to top visibility
+      setShowBackToTop(window.scrollY > 400);
+      
+      // Reading progress calculation
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (window.scrollY / totalHeight) * 100;
+      setReadingProgress(Math.min(progress, 100));
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="min-h-screen bg-black text-foreground scroll-smooth">
+      {/* Reading Progress Bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-primary/20 z-50"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        <motion.div
+          className="h-full bg-gradient-to-r from-primary to-primary/70"
+          style={{ width: `${readingProgress}%` }}
+          transition={{ duration: 0.1 }}
+        />
+      </motion.div>
+
       <Navigation />
       
       <motion.section 
@@ -494,6 +534,23 @@ const Whitepaper = () => {
           </motion.div>
         </div>
       </motion.section>
+
+      {/* Back to Top Button */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            transition={{ duration: 0.2 }}
+            onClick={scrollToTop}
+            className="fixed bottom-8 right-8 z-50 p-3 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:bg-primary/90 hover:scale-110 transition-all duration-200"
+            aria-label="Back to top"
+          >
+            <ArrowUp className="w-5 h-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       <Footer />
     </div>
