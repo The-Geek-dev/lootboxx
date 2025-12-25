@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Command, FileText } from "lucide-react";
+import { ArrowRight, Command, FileText, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
 import { FeaturesSection } from "@/components/features/FeaturesSection";
@@ -31,11 +31,24 @@ const Index = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
+  const [showBetaDialog, setShowBetaDialog] = useState(false);
   const [animationKey, setAnimationKey] = useState(Date.now());
 
   // Reset animation key when component mounts to ensure typing effect plays
   useEffect(() => {
     setAnimationKey(Date.now());
+  }, []);
+
+  // Show beta popup after 3 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const hasSeenBeta = sessionStorage.getItem('hasSeenBetaPopup');
+      if (!hasSeenBeta) {
+        setShowBetaDialog(true);
+        sessionStorage.setItem('hasSeenBetaPopup', 'true');
+      }
+    }, 3000);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -250,6 +263,28 @@ const Index = () => {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={() => navigate("/login")}>
               Go to Login
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Beta Phase Dialog */}
+      <AlertDialog open={showBetaDialog} onOpenChange={setShowBetaDialog}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center">
+                <Rocket className="w-8 h-8 text-primary" />
+              </div>
+            </div>
+            <AlertDialogTitle className="text-center text-2xl">Beta Phase</AlertDialogTitle>
+            <AlertDialogDescription className="text-center text-base">
+              Welcome! SQUANCH is currently in beta development. We're working hard to bring you the full experience soon. Stay tuned for exciting updates!
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="justify-center sm:justify-center">
+            <AlertDialogAction className="button-gradient px-8">
+              Got it!
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
