@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import mascotTransparent from "@/assets/mascot-transparent.png";
+import mascotTransparent from "@/assets/squanch-new-logo.png";
 
 interface LoadingScreenProps {
   isLoading: boolean;
