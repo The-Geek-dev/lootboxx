@@ -2,11 +2,13 @@ import { Github, Twitter } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 import logo from "@/assets/squanch-logo.png";
+import MascotBackground from "./MascotBackground";
 
 const Footer = () => {
   return (
-    <footer className="w-full py-12 mt-20">
-      <div className="container px-4">
+    <footer className="w-full py-12 mt-20 relative overflow-hidden">
+      <MascotBackground variant="watermark" corner="bottom-left" />
+      <div className="container px-4 relative z-10">
         <div className="glass glass-hover rounded-xl p-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="space-y-4">
