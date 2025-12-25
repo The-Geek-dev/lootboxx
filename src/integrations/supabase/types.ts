@@ -50,6 +50,33 @@ export type Database = {
         }
         Relationships: []
       }
+      faq_feedback: {
+        Row: {
+          created_at: string
+          id: string
+          is_helpful: boolean
+          question_id: string
+          session_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_helpful: boolean
+          question_id: string
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_helpful?: boolean
+          question_id?: string
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       otp_codes: {
         Row: {
           code: string
