@@ -60,7 +60,6 @@ const Navigation = () => {
     { name: "Features", href: "/features" },
     { name: "How It Works", href: "/how-it-works" },
     { name: "Mining", href: "/mining" },
-    { name: "Crypto Payment", href: "/crypto-payment" },
     { name: "Whitepaper", href: "/whitepaper" },
     { name: "FAQ", href: "/faq" },
     { name: "Contact", href: "/contact" },
