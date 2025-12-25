@@ -129,7 +129,7 @@ const Features = () => {
           </h1>
           
           <p className="text-xl text-gray-300 text-center max-w-3xl mx-auto">
-            Discover everything Astra offers to maximize your crypto investments with automation, analytics, and control.
+            Discover everything SQUANCH offers to maximize your crypto investments with automation, analytics, and control.
           </p>
         </motion.div>
 
