@@ -1,10 +1,12 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, ThumbsUp, ThumbsDown, Check } from "lucide-react";
+import { Search, X, ThumbsUp, ThumbsDown, Check, Send, Loader2 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import MascotBackground from "@/components/MascotBackground";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -30,6 +32,8 @@ const FAQ = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [submittedFeedback, setSubmittedFeedback] = useState<Record<string, boolean | null>>({});
   const [submittingFeedback, setSubmittingFeedback] = useState<string | null>(null);
+  const [showCommentFor, setShowCommentFor] = useState<string | null>(null);
+  const [feedbackComment, setFeedbackComment] = useState("");
 
   const faqs = [
     // General Questions
@@ -176,7 +180,7 @@ const FAQ = () => {
     return counts;
   }, []);
 
-  const submitFeedback = async (questionId: string, isHelpful: boolean) => {
+  const submitFeedback = async (questionId: string, isHelpful: boolean, comment?: string) => {
     // Check if already submitted for this question
     if (submittedFeedback[questionId] !== undefined) {
       return;
@@ -190,6 +194,7 @@ const FAQ = () => {
         .insert({
           question_id: questionId,
           is_helpful: isHelpful,
+          comment: comment || null,
           user_agent: navigator.userAgent,
           session_id: getSessionId(),
         });
@@ -197,6 +202,8 @@ const FAQ = () => {
       if (error) throw error;
 
       setSubmittedFeedback(prev => ({ ...prev, [questionId]: isHelpful }));
+      setShowCommentFor(null);
+      setFeedbackComment("");
       
       toast({
         title: "Thanks for your feedback!",
@@ -214,6 +221,16 @@ const FAQ = () => {
     } finally {
       setSubmittingFeedback(null);
     }
+  };
+
+  const handleNegativeFeedback = (questionId: string) => {
+    setShowCommentFor(questionId);
+    setFeedbackComment("");
+  };
+
+  const cancelComment = () => {
+    setShowCommentFor(null);
+    setFeedbackComment("");
   };
 
   return (
@@ -340,42 +357,103 @@ const FAQ = () => {
                           
                           {/* Feedback Section */}
                           <div className="pt-4 border-t border-white/10">
-                            {submittedFeedback[faq.id] !== undefined ? (
-                              <motion.div
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="flex items-center gap-2 text-sm"
-                              >
-                                <Check className="w-4 h-4 text-green-500" />
-                                <span className="text-green-500">
-                                  Thanks for your feedback!
-                                </span>
-                              </motion.div>
-                            ) : (
-                              <div className="flex items-center gap-4">
-                                <span className="text-sm text-gray-500">
-                                  Was this helpful?
-                                </span>
-                                <div className="flex gap-2">
-                                  <button
-                                    onClick={() => submitFeedback(faq.id, true)}
-                                    disabled={submittingFeedback === faq.id}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-green-500/20 hover:text-green-500 transition-all duration-200 text-sm disabled:opacity-50"
-                                  >
-                                    <ThumbsUp className="w-4 h-4" />
-                                    Yes
-                                  </button>
-                                  <button
-                                    onClick={() => submitFeedback(faq.id, false)}
-                                    disabled={submittingFeedback === faq.id}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-500 transition-all duration-200 text-sm disabled:opacity-50"
-                                  >
-                                    <ThumbsDown className="w-4 h-4" />
-                                    No
-                                  </button>
-                                </div>
-                              </div>
-                            )}
+                            <AnimatePresence mode="wait">
+                              {submittedFeedback[faq.id] !== undefined ? (
+                                <motion.div
+                                  key="submitted"
+                                  initial={{ opacity: 0, scale: 0.9 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  className="flex items-center gap-2 text-sm"
+                                >
+                                  <Check className="w-4 h-4 text-green-500" />
+                                  <span className="text-green-500">
+                                    Thanks for your feedback!
+                                  </span>
+                                </motion.div>
+                              ) : showCommentFor === faq.id ? (
+                                <motion.div
+                                  key="comment-form"
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: -10 }}
+                                  className="space-y-3"
+                                >
+                                  <p className="text-sm text-gray-400">
+                                    What was missing or unclear? (optional)
+                                  </p>
+                                  <Textarea
+                                    placeholder="Help us improve this answer..."
+                                    value={feedbackComment}
+                                    onChange={(e) => setFeedbackComment(e.target.value)}
+                                    className="bg-background/50 border-white/10 resize-none min-h-[80px]"
+                                    maxLength={500}
+                                  />
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs text-gray-500">
+                                      {feedbackComment.length}/500
+                                    </span>
+                                    <div className="flex gap-2">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={cancelComment}
+                                        disabled={submittingFeedback === faq.id}
+                                      >
+                                        Cancel
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        onClick={() => submitFeedback(faq.id, false, feedbackComment)}
+                                        disabled={submittingFeedback === faq.id}
+                                        className="button-gradient"
+                                      >
+                                        {submittingFeedback === faq.id ? (
+                                          <>
+                                            <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                                            Sending...
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Send className="w-4 h-4 mr-1" />
+                                            Submit
+                                          </>
+                                        )}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </motion.div>
+                              ) : (
+                                <motion.div
+                                  key="feedback-buttons"
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  exit={{ opacity: 0 }}
+                                  className="flex items-center gap-4"
+                                >
+                                  <span className="text-sm text-gray-500">
+                                    Was this helpful?
+                                  </span>
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => submitFeedback(faq.id, true)}
+                                      disabled={submittingFeedback === faq.id}
+                                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-green-500/20 hover:text-green-500 transition-all duration-200 text-sm disabled:opacity-50"
+                                    >
+                                      <ThumbsUp className="w-4 h-4" />
+                                      Yes
+                                    </button>
+                                    <button
+                                      onClick={() => handleNegativeFeedback(faq.id)}
+                                      disabled={submittingFeedback === faq.id}
+                                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-500 transition-all duration-200 text-sm disabled:opacity-50"
+                                    >
+                                      <ThumbsDown className="w-4 h-4" />
+                                      No
+                                    </button>
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
                           </div>
                         </AccordionContent>
                       </AccordionItem>

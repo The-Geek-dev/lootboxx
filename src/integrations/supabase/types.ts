@@ -52,6 +52,7 @@ export type Database = {
       }
       faq_feedback: {
         Row: {
+          comment: string | null
           created_at: string
           id: string
           is_helpful: boolean
@@ -60,6 +61,7 @@ export type Database = {
           user_agent: string | null
         }
         Insert: {
+          comment?: string | null
           created_at?: string
           id?: string
           is_helpful: boolean
@@ -68,6 +70,7 @@ export type Database = {
           user_agent?: string | null
         }
         Update: {
+          comment?: string | null
           created_at?: string
           id?: string
           is_helpful?: boolean
