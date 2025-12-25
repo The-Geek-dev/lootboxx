@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import LoadingScreen from "@/components/LoadingScreen";
 import Index from "./pages/Index";
 import About from "./pages/About";
@@ -24,43 +24,60 @@ import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient();
 
-const App = () => {
+const AppRoutes = () => {
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   useEffect(() => {
+    // Show loading screen
+    setIsLoading(true);
+    
+    // Longer duration for first load, shorter for navigation
+    const duration = isFirstLoad ? 2000 : 800;
+    
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000);
+      setIsFirstLoad(false);
+    }, duration);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [location.pathname]);
 
+  return (
+    <>
+      <LoadingScreen isLoading={isLoading} />
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/features" element={<Features />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/mining" element={<Mining />} />
+        <Route path="/crypto-payment" element={<CryptoPayment />} />
+        <Route path="/whitepaper" element={<Whitepaper />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<TermsOfService />} />
+      </Routes>
+    </>
+  );
+};
+
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <LoadingScreen isLoading={isLoading} />
         <div className="min-h-screen bg-background">
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/features" element={<Features />} />
-              <Route path="/how-it-works" element={<HowItWorks />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/mining" element={<Mining />} />
-              <Route path="/crypto-payment" element={<CryptoPayment />} />
-              <Route path="/whitepaper" element={<Whitepaper />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/terms" element={<TermsOfService />} />
-            </Routes>
+            <AppRoutes />
           </BrowserRouter>
         </div>
       </TooltipProvider>
