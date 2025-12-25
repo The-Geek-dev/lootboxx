@@ -1,7 +1,10 @@
-import { motion } from "framer-motion";
+import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, X } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import MascotBackground from "@/components/MascotBackground";
+import { Input } from "@/components/ui/input";
 import {
   Accordion,
   AccordionContent,
@@ -10,6 +13,9 @@ import {
 } from "@/components/ui/accordion";
 
 const FAQ = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+
   const faqs = [
     // General Questions
     {
@@ -111,6 +117,32 @@ const FAQ = () => {
     }
   ];
 
+  // Get unique categories
+  const categories = useMemo(() => {
+    const cats = [...new Set(faqs.map(faq => faq.category))];
+    return ["All", ...cats];
+  }, []);
+
+  // Filter FAQs based on search and category
+  const filteredFaqs = useMemo(() => {
+    return faqs.filter(faq => {
+      const matchesCategory = activeCategory === "All" || faq.category === activeCategory;
+      const matchesSearch = searchQuery === "" || 
+        faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [searchQuery, activeCategory]);
+
+  // Count per category
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { All: faqs.length };
+    faqs.forEach(faq => {
+      counts[faq.category] = (counts[faq.category] || 0) + 1;
+    });
+    return counts;
+  }, []);
+
   return (
     <div className="min-h-screen bg-black text-foreground">
       <Navigation />
@@ -128,33 +160,138 @@ const FAQ = () => {
             Frequently Asked <span className="text-primary">Questions</span>
           </h1>
           
-          <p className="text-xl text-gray-300 mb-16 text-center max-w-3xl mx-auto">
+          <p className="text-xl text-gray-300 mb-10 text-center max-w-3xl mx-auto">
             Everything you need to know about SQUANCH and automated crypto trading
           </p>
 
+          {/* Search Bar */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="relative mb-6"
+          >
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search questions..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-12 pr-12 py-6 text-lg bg-background/50 border-white/10 rounded-xl"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </motion.div>
+
+          {/* Category Tabs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="flex flex-wrap gap-2 mb-8 justify-center"
+          >
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveCategory(category)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                  activeCategory === category
+                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                    : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                {category}
+                <span className={`ml-2 text-xs ${
+                  activeCategory === category ? "opacity-80" : "opacity-50"
+                }`}>
+                  ({categoryCounts[category] || 0})
+                </span>
+              </button>
+            ))}
+          </motion.div>
+
+          {/* Results Count */}
+          <AnimatePresence mode="wait">
+            {(searchQuery || activeCategory !== "All") && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-4 text-center"
+              >
+                <span className="text-gray-400">
+                  Showing {filteredFaqs.length} of {faqs.length} questions
+                  {searchQuery && (
+                    <span> matching "<span className="text-primary">{searchQuery}</span>"</span>
+                  )}
+                </span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* FAQ Accordion */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="glass rounded-2xl p-8 md:p-12"
           >
-            <Accordion type="single" collapsible className="space-y-4">
-              {faqs.map((faq, index) => (
-                <AccordionItem key={index} value={`item-${index}`} className="border-white/10">
-                  <AccordionTrigger className="text-left text-lg font-semibold hover:text-primary">
-                    <div className="flex items-start gap-3">
-                      <span className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary shrink-0 mt-1">
-                        {faq.category}
-                      </span>
-                      <span>{faq.question}</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="text-gray-400 text-base pl-16">
-                    {faq.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+            {filteredFaqs.length > 0 ? (
+              <Accordion type="single" collapsible className="space-y-4">
+                <AnimatePresence mode="popLayout">
+                  {filteredFaqs.map((faq, index) => (
+                    <motion.div
+                      key={`${faq.category}-${faq.question}`}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ delay: index * 0.03 }}
+                    >
+                      <AccordionItem value={`item-${index}`} className="border-white/10">
+                        <AccordionTrigger className="text-left text-lg font-semibold hover:text-primary">
+                          <div className="flex items-start gap-3">
+                            <span className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary shrink-0 mt-1">
+                              {faq.category}
+                            </span>
+                            <span>{faq.question}</span>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="text-gray-400 text-base pl-16">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </Accordion>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-12"
+              >
+                <Search className="w-12 h-12 mx-auto mb-4 text-gray-500" />
+                <p className="text-xl text-gray-400 mb-2">No questions found</p>
+                <p className="text-gray-500">
+                  Try adjusting your search or selecting a different category
+                </p>
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setActiveCategory("All");
+                  }}
+                  className="mt-4 text-primary hover:underline"
+                >
+                  Clear filters
+                </button>
+              </motion.div>
+            )}
           </motion.div>
 
           <motion.div
