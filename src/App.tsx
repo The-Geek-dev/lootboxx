@@ -18,6 +18,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Mining from "./pages/Mining";
 import Whitepaper from "./pages/Whitepaper";
+import Testimonials from "./pages/Testimonials";
 import Privacy from "./pages/Privacy";
 import TermsOfService from "./pages/TermsOfService";
 import Settings from "./pages/Settings";
@@ -59,6 +60,7 @@ const AppRoutes = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/mining" element={<Mining />} />
+        <Route path="/testimonials" element={<Testimonials />} />
         <Route path="/whitepaper" element={<Whitepaper />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<TermsOfService />} />
