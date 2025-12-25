@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import mascotBg from "@/assets/mascot-bg.jpg";
+import mascotTransparent from "@/assets/mascot-transparent.png";
 
 interface LoadingScreenProps {
   isLoading: boolean;
@@ -32,13 +32,13 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
               ease: "easeInOut",
             }}
             className="w-[200px] h-[200px] md:w-[280px] md:h-[280px]"
-            style={{
-              backgroundImage: `url(${mascotBg})`,
-              backgroundSize: "contain",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
-            }}
-          />
+          >
+            <img 
+              src={mascotTransparent} 
+              alt="SQUANCH Mascot" 
+              className="w-full h-full object-contain"
+            />
+          </motion.div>
 
           {/* Loading text */}
           <motion.div
