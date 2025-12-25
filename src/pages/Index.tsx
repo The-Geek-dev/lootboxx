@@ -195,7 +195,8 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="container px-4 py-20 relative bg-black">
+      <section className="container px-4 py-20 relative bg-black overflow-hidden">
+        <MascotBackground variant="watermark" corner="top-left" />
         <div 
           className="absolute inset-0 opacity-40"
           style={{

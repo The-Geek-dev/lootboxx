@@ -1,12 +1,15 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import MascotBackground from "@/components/MascotBackground";
 
 const TermsOfService = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
-      <main className="flex-grow">
-        <div className="container mx-auto px-4 py-20">
+      <main className="flex-grow relative overflow-hidden">
+        <MascotBackground position="left" />
+        <MascotBackground variant="watermark" corner="top-right" />
+        <div className="container mx-auto px-4 py-20 relative z-10">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Terms of Service</h1>
             <p className="text-muted-foreground mb-8">Last updated: November 5, 2025</p>

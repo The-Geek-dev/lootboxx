@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import MascotBackground from "@/components/MascotBackground";
 import {
   Accordion,
   AccordionContent,
@@ -56,7 +57,9 @@ const FAQ = () => {
     <div className="min-h-screen bg-black text-foreground">
       <Navigation />
       
-      <div className="container px-4 pt-32 pb-20">
+      <div className="container px-4 pt-32 pb-20 relative overflow-hidden">
+        <MascotBackground position="right" />
+        <MascotBackground variant="watermark" corner="top-left" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

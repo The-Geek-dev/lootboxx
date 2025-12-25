@@ -118,7 +118,8 @@ const About = () => {
           </p>
         </motion.div>
 
-        <div className="mb-20">
+        <div className="mb-20 relative">
+          <MascotBackground variant="watermark" corner="top-left" />
           <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Why Choose Automation?</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {automationBenefits.map((benefit, index) => (
@@ -167,7 +168,8 @@ const About = () => {
           </div>
         </div>
 
-        <div className="mb-20">
+        <div className="mb-20 relative">
+          <MascotBackground variant="watermark" corner="bottom-right" />
           <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">Security & Your Safety</h2>
           <p className="text-center text-gray-300 mb-12 max-w-2xl mx-auto">
             How we protect your investments

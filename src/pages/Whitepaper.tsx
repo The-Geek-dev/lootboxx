@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { FileText, Download } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import MascotBackground from "@/components/MascotBackground";
 import { Button } from "@/components/ui/button";
 
 const Whitepaper = () => {
@@ -13,8 +14,10 @@ const Whitepaper = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="container px-4 pt-32 pb-20"
+        className="container px-4 pt-32 pb-20 relative overflow-hidden"
       >
+        <MascotBackground position="center" />
+        <MascotBackground variant="watermark" corner="top-right" />
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0 }}
