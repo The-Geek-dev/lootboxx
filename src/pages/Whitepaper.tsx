@@ -1,13 +1,38 @@
 import { motion } from "framer-motion";
-import { FileText, Download, Zap, Shield, TrendingUp, Users, Cpu, Coins, Calendar, Target } from "lucide-react";
+import { FileText, Download, Zap, Shield, TrendingUp, Users, Cpu, Coins, Calendar, Target, ChevronRight } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import MascotBackground from "@/components/MascotBackground";
 import { Button } from "@/components/ui/button";
 
+const sections = [
+  { id: "executive-summary", label: "Executive Summary", number: "1" },
+  { id: "problem-statement", label: "Problem Statement", number: "2" },
+  { id: "solution", label: "The Solution", number: "3" },
+  { id: "architecture", label: "Technical Architecture", number: "4" },
+  { id: "tokenomics", label: "Tokenomics", number: "5" },
+  { id: "roadmap", label: "Roadmap", number: "6" },
+  { id: "team", label: "The Team", number: "7" },
+  { id: "conclusion", label: "Conclusion", number: "8" },
+];
+
+const scrollToSection = (id: string) => {
+  const element = document.getElementById(id);
+  if (element) {
+    const offset = 100;
+    const elementPosition = element.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - offset;
+    
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: "smooth"
+    });
+  }
+};
+
 const Whitepaper = () => {
   return (
-    <div className="min-h-screen bg-black text-foreground">
+    <div className="min-h-screen bg-black text-foreground scroll-smooth">
       <Navigation />
       
       <motion.section 
@@ -43,8 +68,41 @@ const Whitepaper = () => {
             Version 1.0 | 2025
           </p>
 
+          {/* Table of Contents */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="glass rounded-xl p-6 mb-8"
+          >
+            <h3 className="text-lg font-semibold mb-4">Table of Contents</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {sections.map((section, index) => (
+                <motion.button
+                  key={section.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 + index * 0.05 }}
+                  onClick={() => scrollToSection(section.id)}
+                  className="flex items-center gap-2 text-left text-muted-foreground hover:text-primary transition-colors duration-200 group py-2 px-3 rounded-lg hover:bg-white/5"
+                >
+                  <span className="text-primary font-medium">{section.number}.</span>
+                  <span className="group-hover:translate-x-1 transition-transform duration-200">{section.label}</span>
+                  <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ml-auto" />
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+
           {/* Executive Summary */}
-          <div className="glass rounded-xl p-8 mb-8">
+          <motion.div 
+            id="executive-summary"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
+            className="glass rounded-xl p-8 mb-8 scroll-mt-28"
+          >
             <div className="flex items-center gap-3 mb-4">
               <Target className="w-6 h-6 text-primary" />
               <h2 className="text-2xl font-semibold">1. Executive Summary</h2>
@@ -62,10 +120,17 @@ const Whitepaper = () => {
                 Download Full White Paper
               </Button>
             </a>
-          </div>
+          </motion.div>
 
           {/* Problem Statement */}
-          <div className="glass rounded-xl p-6 mb-6">
+          <motion.div 
+            id="problem-statement"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
+            className="glass rounded-xl p-6 mb-6 scroll-mt-28"
+          >
             <div className="flex items-center gap-3 mb-4">
               <Shield className="w-6 h-6 text-primary" />
               <h3 className="text-xl font-semibold">2. Problem Statement</h3>
@@ -91,10 +156,17 @@ const Whitepaper = () => {
                 <span><strong className="text-white">Analytical Inefficiency:</strong> Manual chart reading is prone to bias and fatigue, leading to missed opportunities and poor risk management.</span>
               </li>
             </ul>
-          </div>
+          </motion.div>
 
           {/* Key Ecosystem Features */}
-          <div className="space-y-6 mb-8">
+          <motion.div 
+            id="solution"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
+            className="space-y-6 mb-8 scroll-mt-28"
+          >
             <div className="flex items-center gap-3 mb-2">
               <Zap className="w-6 h-6 text-primary" />
               <h3 className="text-2xl font-semibold">3. The Solution: Key Ecosystem Features</h3>
@@ -103,7 +175,13 @@ const Whitepaper = () => {
               SQUANCH AI addresses these systemic issues through a modular, AI-first architecture.
             </p>
 
-            <div className="glass rounded-xl p-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4 }}
+              className="glass rounded-xl p-6"
+            >
               <h4 className="text-lg font-semibold mb-3 text-primary">3.1 AlphaChain: On-Chain Tracking & AI Trading</h4>
               <p className="text-muted-foreground mb-3">
                 AlphaChain is the engine of the SQUANCH ecosystem. It monitors multi-chain transactions in real-time, pulling data from Etherscan, Solana Explorer, and BSCScan.
@@ -113,9 +191,15 @@ const Whitepaper = () => {
                 <li>• <strong className="text-white">AI-Driven Execution:</strong> Bots utilize reinforcement learning to execute trades autonomously, optimizing for slippage and gas efficiency.</li>
                 <li>• <strong className="text-white">Predictive Modeling:</strong> We utilize Long Short-Term Memory (LSTM) networks for time-series forecasting, predicting price action with sub-second latency.</li>
               </ul>
-            </div>
+            </motion.div>
 
-            <div className="glass rounded-xl p-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              className="glass rounded-xl p-6"
+            >
               <h4 className="text-lg font-semibold mb-3 text-primary">3.2 The Bootstrap Program: Fee-Free Entry</h4>
               <p className="text-muted-foreground mb-3">
                 To foster community growth, the first 10,000 new users are eligible for our Bootstrap Program:
@@ -138,9 +222,15 @@ const Whitepaper = () => {
                   </tbody>
                 </table>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="glass rounded-xl p-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+              className="glass rounded-xl p-6"
+            >
               <h4 className="text-lg font-semibold mb-3 text-primary">3.3 KOLSCAN: Anti-Rug Protocol</h4>
               <p className="text-muted-foreground mb-3">
                 KOLSCAN acts as a decentralized oracle for trust. It evaluates the "Alpha" provided by social media influencers and scans smart contracts for malicious backdoors.
@@ -149,9 +239,15 @@ const Whitepaper = () => {
                 <li>• <strong className="text-white">Sentiment & Accuracy Analysis:</strong> Uses Natural Language Processing (NLP) to score the historical reliability of KOLs on X, Telegram, and Discord.</li>
                 <li>• <strong className="text-white">On-Chain Auditing:</strong> Detects red flags like unlocked liquidity or centralized owner privileges with 95% accuracy.</li>
               </ul>
-            </div>
+            </motion.div>
 
-            <div className="glass rounded-xl p-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+              className="glass rounded-xl p-6"
+            >
               <h4 className="text-lg font-semibold mb-3 text-primary">3.4 AI Chart Reading & Alpha Placements</h4>
               <p className="text-muted-foreground mb-3">
                 Our Computer Vision models identify complex technical patterns (flags, wedges, Fibonacci levels) across multiple timeframes simultaneously.
@@ -160,11 +256,18 @@ const Whitepaper = () => {
                 <li>• <strong className="text-white">Ensemble Methodology:</strong> Combines Random Forest and Gradient Boosting for high-confidence market trend forecasting.</li>
                 <li>• <strong className="text-white">Alpha Placements:</strong> Delivers personalized trade signals with back-tested win rates exceeding 70%.</li>
               </ul>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Technical Architecture */}
-          <div className="glass rounded-xl p-6 mb-6">
+          <motion.div 
+            id="architecture"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
+            className="glass rounded-xl p-6 mb-6 scroll-mt-28"
+          >
             <div className="flex items-center gap-3 mb-4">
               <Cpu className="w-6 h-6 text-primary" />
               <h3 className="text-xl font-semibold">4. Technical Architecture</h3>
@@ -208,10 +311,17 @@ const Whitepaper = () => {
                 </tbody>
               </table>
             </div>
-          </div>
+          </motion.div>
 
           {/* Tokenomics */}
-          <div className="glass rounded-xl p-6 mb-6">
+          <motion.div 
+            id="tokenomics"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
+            className="glass rounded-xl p-6 mb-6 scroll-mt-28"
+          >
             <div className="flex items-center gap-3 mb-4">
               <Coins className="w-6 h-6 text-primary" />
               <h3 className="text-xl font-semibold">5. Tokenomics ($SQH)</h3>
@@ -261,10 +371,17 @@ const Whitepaper = () => {
               <li>• <strong className="text-white">Burn Mechanism:</strong> A 0.5% burn tax on every transaction progressively reduces total supply.</li>
               <li>• <strong className="text-white">Access:</strong> Holding $SQH grants access to premium AI features and governance voting rights.</li>
             </ul>
-          </div>
+          </motion.div>
 
           {/* Roadmap */}
-          <div className="glass rounded-xl p-6 mb-6">
+          <motion.div 
+            id="roadmap"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
+            className="glass rounded-xl p-6 mb-6 scroll-mt-28"
+          >
             <div className="flex items-center gap-3 mb-4">
               <Calendar className="w-6 h-6 text-primary" />
               <h3 className="text-xl font-semibold">6. Roadmap</h3>
@@ -272,22 +389,46 @@ const Whitepaper = () => {
             
             <h4 className="text-white font-medium mb-4">2026: The Year of Deployment</h4>
             <div className="space-y-4 text-muted-foreground mb-6">
-              <div className="border-l-2 border-primary pl-4">
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3 }}
+                className="border-l-2 border-primary pl-4"
+              >
                 <h5 className="text-white font-medium mb-1">Q1: Beta Launch</h5>
                 <p>AlphaChain tracking and core AI trading bots.</p>
-              </div>
-              <div className="border-l-2 border-primary pl-4">
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+                className="border-l-2 border-primary pl-4"
+              >
                 <h5 className="text-white font-medium mb-1">Q2: Expansion</h5>
                 <p>Deployment of the Bootstrap Program and KOLSCAN integration.</p>
-              </div>
-              <div className="border-l-2 border-primary pl-4">
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: 0.2 }}
+                className="border-l-2 border-primary pl-4"
+              >
                 <h5 className="text-white font-medium mb-1">Q3: Intelligence Update</h5>
                 <p>Full AI chart reading and Alpha Placement release.</p>
-              </div>
-              <div className="border-l-2 border-primary pl-4">
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: 0.3 }}
+                className="border-l-2 border-primary pl-4"
+              >
                 <h5 className="text-white font-medium mb-1">Q4: Mainnet</h5>
                 <p>Transition to decentralized governance and DEX partnerships.</p>
-              </div>
+              </motion.div>
             </div>
 
             <h4 className="text-white font-medium mb-4">2027: Global Scaling</h4>
@@ -295,10 +436,17 @@ const Whitepaper = () => {
               <li>• Multi-chain expansion to emerging networks.</li>
               <li>• Advanced AI upgrades focusing on cross-chain arbitrage.</li>
             </ul>
-          </div>
+          </motion.div>
 
           {/* The Team */}
-          <div className="glass rounded-xl p-6 mb-6">
+          <motion.div 
+            id="team"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
+            className="glass rounded-xl p-6 mb-6 scroll-mt-28"
+          >
             <div className="flex items-center gap-3 mb-4">
               <Users className="w-6 h-6 text-primary" />
               <h3 className="text-xl font-semibold">7. The Team</h3>
@@ -306,10 +454,17 @@ const Whitepaper = () => {
             <p className="text-muted-foreground">
               SQUANCH is spearheaded by the APEX ARISTOCRAT CABAL, a collective of seasoned blockchain developers, data scientists, and veteran traders. Our advisory board includes pioneers from leading organizations such as Binance and OpenAI. We believe in radical transparency; our team is fully doxxed, with credentials verifiable via LinkedIn.
             </p>
-          </div>
+          </motion.div>
 
           {/* Conclusion */}
-          <div className="glass rounded-xl p-6 mb-8">
+          <motion.div 
+            id="conclusion"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
+            className="glass rounded-xl p-6 mb-8 scroll-mt-28"
+          >
             <div className="flex items-center gap-3 mb-4">
               <TrendingUp className="w-6 h-6 text-primary" />
               <h3 className="text-xl font-semibold">8. Conclusion</h3>
@@ -318,9 +473,15 @@ const Whitepaper = () => {
               SQUANCH AI is more than a trading tool; it is a fundamental shift in how retail investors interact with decentralized markets. By automating the "hard" parts of crypto—data analysis, risk assessment, and execution—we empower our users to trade with the precision of a machine and the intuition of a pro.
             </p>
             <p className="text-xl font-semibold text-primary">Join the Revolution.</p>
-          </div>
+          </motion.div>
 
-          <div className="text-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center"
+          >
             <p className="text-muted-foreground mb-4">
               For complete technical details, tokenomics, and strategic roadmap
             </p>
@@ -330,7 +491,7 @@ const Whitepaper = () => {
                 Download Complete White Paper
               </Button>
             </a>
-          </div>
+          </motion.div>
         </div>
       </motion.section>
 
