@@ -17,7 +17,6 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Mining from "./pages/Mining";
-import CryptoPayment from "./pages/CryptoPayment";
 import Whitepaper from "./pages/Whitepaper";
 import Privacy from "./pages/Privacy";
 import TermsOfService from "./pages/TermsOfService";
@@ -60,7 +59,6 @@ const AppRoutes = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/mining" element={<Mining />} />
-        <Route path="/crypto-payment" element={<CryptoPayment />} />
         <Route path="/whitepaper" element={<Whitepaper />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<TermsOfService />} />
