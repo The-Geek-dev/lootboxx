@@ -34,7 +34,7 @@ const AppRoutes = () => {
     setIsLoading(true);
     
     // Longer duration for first load, shorter for navigation
-    const duration = isFirstLoad ? 2000 : 800;
+    const duration = isFirstLoad ? 2000 : 550;
     
     const timer = setTimeout(() => {
       setIsLoading(false);
