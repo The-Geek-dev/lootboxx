@@ -18,7 +18,7 @@ const TermsOfService = () => {
               <section>
                 <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
                 <p className="text-muted-foreground">
-                  By accessing and using Astra's cryptocurrency trading bot services, you accept and 
+                  By accessing and using SQUANCH's cryptocurrency trading bot services, you accept and 
                   agree to be bound by these Terms of Service. If you do not agree to these terms, 
                   you may not access or use our services.
                 </p>
@@ -27,7 +27,7 @@ const TermsOfService = () => {
               <section>
                 <h2 className="text-2xl font-semibold mb-4">2. Service Description</h2>
                 <p className="text-muted-foreground">
-                  Astra provides an AI-powered cryptocurrency trading bot that executes automated trades 
+                  SQUANCH provides an AI-powered cryptocurrency trading bot that executes automated trades 
                   on your behalf. Our service analyzes market conditions and executes trades based on 
                   predefined strategies and your configured settings.
                 </p>
@@ -50,7 +50,7 @@ const TermsOfService = () => {
                 <h2 className="text-2xl font-semibold mb-4">4. Account Registration</h2>
                 <div className="space-y-4 text-muted-foreground">
                   <p>
-                    To use Astra, you must register for an account using a valid signup token. 
+                    To use SQUANCH, you must register for an account using a valid signup token. 
                     You agree to:
                   </p>
                   <ul className="list-disc pl-6 space-y-2">
@@ -84,7 +84,7 @@ const TermsOfService = () => {
               <section>
                 <h2 className="text-2xl font-semibold mb-4">6. No Financial Advice</h2>
                 <p className="text-muted-foreground">
-                  Astra is a software tool and does not provide financial, investment, or legal advice. 
+                  SQUANCH is a software tool and does not provide financial, investment, or legal advice. 
                   Our automated trading strategies are based on technical analysis and algorithms, not 
                   personalized financial advice. You should consult with qualified professionals before 
                   making investment decisions.
@@ -110,7 +110,7 @@ const TermsOfService = () => {
                 <h2 className="text-2xl font-semibold mb-4">8. Limitation of Liability</h2>
                 <div className="space-y-4 text-muted-foreground">
                   <p>
-                    To the maximum extent permitted by law, Astra shall not be liable for:
+                    To the maximum extent permitted by law, SQUANCH shall not be liable for:
                   </p>
                   <ul className="list-disc pl-6 space-y-2">
                     <li>Any trading losses or missed opportunities</li>
@@ -149,7 +149,7 @@ const TermsOfService = () => {
               <section>
                 <h2 className="text-2xl font-semibold mb-4">11. Intellectual Property</h2>
                 <p className="text-muted-foreground">
-                  All content, features, and functionality of Astra are owned by us and protected by 
+                  All content, features, and functionality of SQUANCH are owned by us and protected by 
                   international copyright, trademark, and other intellectual property laws. You may not 
                   reproduce, distribute, or create derivative works without our express written permission.
                 </p>
@@ -195,7 +195,7 @@ const TermsOfService = () => {
                 <h2 className="text-2xl font-semibold mb-4">16. Contact Information</h2>
                 <p className="text-muted-foreground">
                   For questions about these Terms of Service, please contact us through our Contact 
-                  page or email us at legal@astra-bot.com.
+                  page or email us at legal@squanch.bot.
                 </p>
               </section>
             </div>

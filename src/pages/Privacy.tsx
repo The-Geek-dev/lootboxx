@@ -130,7 +130,7 @@ const Privacy = () => {
                 <h2 className="text-2xl font-semibold mb-4">10. Contact Us</h2>
                 <p className="text-muted-foreground">
                   If you have any questions about this Privacy Policy, please contact us through our 
-                  Contact page or email us at privacy@astra-bot.com.
+                  Contact page or email us at privacy@squanch.bot.
                 </p>
               </section>
             </div>
