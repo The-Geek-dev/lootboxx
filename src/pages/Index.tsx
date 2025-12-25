@@ -162,12 +162,13 @@ const Index = () => {
       </div>
 
       {/* Whitepaper Section */}
-      <section className="container px-4 py-20 bg-black">
+      <section className="container px-4 py-20 bg-black relative overflow-hidden">
+        <MascotBackground variant="watermark" corner="bottom-right" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-4xl mx-auto glass rounded-2xl p-8 md:p-12"
+          className="max-w-4xl mx-auto glass rounded-2xl p-8 md:p-12 relative z-10"
         >
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="flex-shrink-0">
