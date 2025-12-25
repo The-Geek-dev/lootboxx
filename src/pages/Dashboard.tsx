@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { TrendingUp, DollarSign, Activity, Percent } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { TrendingUp, DollarSign, Activity, Percent, Settings } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -78,11 +78,19 @@ const Dashboard = () => {
               </h1>
               <p className="text-gray-400">Monitor your SQUANCH bot performance</p>
             </div>
-            <Button className="button-gradient" asChild>
-              <a href="https://t.me/SQUANCHTradeBot" target="_blank" rel="noopener noreferrer">
-                Configure Bot
-              </a>
-            </Button>
+            <div className="flex gap-3">
+              <Button className="button-gradient" asChild>
+                <a href="https://t.me/SQUANCHTradeBot" target="_blank" rel="noopener noreferrer">
+                  Configure Bot
+                </a>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link to="/settings">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Settings
+                </Link>
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

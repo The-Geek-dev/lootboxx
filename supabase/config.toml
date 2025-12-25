@@ -1,1 +1,13 @@
 project_id = "xlyflmvfwanwukhycfqs"
+
+[functions.send-otp]
+verify_jwt = false
+
+[functions.verify-otp]
+verify_jwt = false
+
+[functions.generate-api-key]
+verify_jwt = true
+
+[functions.trading-bot-api]
+verify_jwt = false
