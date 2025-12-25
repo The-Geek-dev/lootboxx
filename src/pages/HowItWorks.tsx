@@ -3,6 +3,7 @@ import { CheckCircle2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import MascotBackground from "@/components/MascotBackground";
 
 const HowItWorks = () => {
   const steps = [
@@ -48,7 +49,8 @@ const HowItWorks = () => {
     <div className="min-h-screen bg-black text-foreground">
       <Navigation />
       
-      <div className="container px-4 pt-32 pb-20">
+      <div className="container px-4 pt-32 pb-20 relative overflow-hidden">
+        <MascotBackground position="center" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
