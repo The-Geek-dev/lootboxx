@@ -104,17 +104,17 @@ const Mining = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-4xl md:text-5xl font-medium text-center mb-4">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-medium text-center mb-4">
             Crypto <span className="text-gradient">Mining</span>
           </h1>
-          <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+          <p className="text-gray-400 text-center mb-8 sm:mb-12 max-w-2xl mx-auto text-sm sm:text-base">
             Mine your favorite cryptocurrencies with our AI-powered mining platform
           </p>
 
           {/* Coin Selection */}
           <div className="mb-8">
             <h2 className="text-2xl font-medium mb-4">Select Coin</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
               {cryptoCoins.map((coin) => (
                 <Card
                   key={coin.symbol}
@@ -148,36 +148,34 @@ const Mining = () => {
           </div>
 
           {/* Mining Dashboard */}
-          <Card className="p-8 bg-card/50 backdrop-blur-sm">
-            <div className="grid md:grid-cols-3 gap-8 mb-8">
+          <Card className="p-4 sm:p-8 bg-card/50 backdrop-blur-sm">
+            <div className="grid grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8">
               {/* Hash Rate */}
               <div className="text-center">
-                <Zap className="w-8 h-8 mx-auto mb-2 text-primary" />
-                <p className="text-sm text-gray-400 mb-1">Hash Rate</p>
-                <p className="text-2xl font-bold">
-                  {hashRate.toFixed(2)} <span className="text-sm text-gray-400">H/s</span>
+                <Zap className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1 sm:mb-2 text-primary" />
+                <p className="text-xs sm:text-sm text-gray-400 mb-1">Hash Rate</p>
+                <p className="text-lg sm:text-2xl font-bold">
+                  {hashRate.toFixed(2)} <span className="text-xs sm:text-sm text-gray-400">H/s</span>
                 </p>
               </div>
 
               {/* Total Earned */}
               <div className="text-center">
-                <div className="w-8 h-8 mx-auto mb-2 text-2xl">💰</div>
-                <p className="text-sm text-gray-400 mb-1">Total Earned</p>
-                <p className="text-2xl font-bold">
-                  {earned.toFixed(6)} <span className="text-sm text-gray-400">{selectedCoin.symbol}</span>
+                <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1 sm:mb-2 text-xl sm:text-2xl">💰</div>
+                <p className="text-xs sm:text-sm text-gray-400 mb-1">Total Earned</p>
+                <p className="text-lg sm:text-2xl font-bold">
+                  {earned.toFixed(6)} <span className="text-xs sm:text-sm text-gray-400">{selectedCoin.symbol}</span>
                 </p>
               </div>
 
-              {/* Mining Progress */}
               <div className="text-center">
-                <div className="w-8 h-8 mx-auto mb-2 text-2xl">⚡</div>
-                <p className="text-sm text-gray-400 mb-1">Progress</p>
-                <p className="text-2xl font-bold">{progress}%</p>
+                <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1 sm:mb-2 text-xl sm:text-2xl">⚡</div>
+                <p className="text-xs sm:text-sm text-gray-400 mb-1">Progress</p>
+                <p className="text-lg sm:text-2xl font-bold">{progress}%</p>
               </div>
             </div>
 
-            {/* Progress Bar */}
-            <div className="mb-6">
+            <div className="mb-4 sm:mb-6">
               <Progress value={progress} className="h-3" />
             </div>
 
@@ -218,7 +216,7 @@ const Mining = () => {
           </Card>
 
           {/* Mining Info */}
-          <div className="mt-8 grid md:grid-cols-3 gap-6">
+          <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
             <Card className="p-6 bg-card/30">
               <h3 className="text-lg font-medium mb-2">🚀 Fast Mining</h3>
               <p className="text-sm text-gray-400">
