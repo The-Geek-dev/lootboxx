@@ -71,22 +71,22 @@ const Dashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
             <div>
-              <h1 className="text-4xl font-bold mb-2">
+              <h1 className="text-2xl sm:text-4xl font-bold mb-2">
                 Welcome, {userName || "Trader"}!
               </h1>
-              <p className="text-gray-400">Monitor your SQUANCH bot performance</p>
+              <p className="text-sm sm:text-base text-gray-400">Monitor your SQUANCH bot performance</p>
             </div>
-            <div className="flex gap-3">
-              <Button className="button-gradient" asChild>
+            <div className="flex gap-2 sm:gap-3">
+              <Button className="button-gradient text-xs sm:text-sm" asChild>
                 <a href="https://t.me/SQUANCHTradeBot" target="_blank" rel="noopener noreferrer">
                   Configure Bot
                 </a>
               </Button>
-              <Button variant="outline" asChild>
+              <Button variant="outline" className="text-xs sm:text-sm" asChild>
                 <Link to="/settings">
-                  <Settings className="w-4 h-4 mr-2" />
+                  <Settings className="w-4 h-4 mr-1 sm:mr-2" />
                   Settings
                 </Link>
               </Button>
