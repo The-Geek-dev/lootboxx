@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import mascotBg from "@/assets/mascot-bg.jpg";
+import mascotBg from "@/assets/squanch-new-logo.png";
 
 interface MascotBackgroundProps {
   position?: "left" | "right" | "center";
@@ -31,7 +31,7 @@ const MascotBackground = ({
     return (
       <motion.div
         animate={{
-          opacity: [0.03, 0.05, 0.03],
+          opacity: [0.15, 0.25, 0.15],
           scale: [1, 1.03, 1],
         }}
         transition={{
@@ -45,7 +45,7 @@ const MascotBackground = ({
           backgroundSize: "contain",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
-          filter: "drop-shadow(0 0 15px rgba(94, 231, 223, 0.15))",
+          filter: "drop-shadow(0 0 20px rgba(94, 231, 223, 0.3))",
         }}
       />
     );
@@ -56,11 +56,11 @@ const MascotBackground = ({
       animate={{
         y: ["-50%", "-53%", "-50%"],
         scale: [1, 1.02, 1],
-        opacity: [0.04, 0.06, 0.04],
+        opacity: [0.12, 0.18, 0.12],
         filter: [
-          "drop-shadow(0 0 20px rgba(94, 231, 223, 0.1))",
-          "drop-shadow(0 0 60px rgba(94, 231, 223, 0.25))",
-          "drop-shadow(0 0 20px rgba(94, 231, 223, 0.1))",
+          "drop-shadow(0 0 30px rgba(94, 231, 223, 0.2))",
+          "drop-shadow(0 0 80px rgba(94, 231, 223, 0.4))",
+          "drop-shadow(0 0 30px rgba(94, 231, 223, 0.2))",
         ],
       }}
       transition={{
