@@ -21,7 +21,7 @@ import CryptoPayment from "./pages/CryptoPayment";
 import Whitepaper from "./pages/Whitepaper";
 import Privacy from "./pages/Privacy";
 import TermsOfService from "./pages/TermsOfService";
-
+import Settings from "./pages/Settings";
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
@@ -64,6 +64,7 @@ const AppRoutes = () => {
         <Route path="/whitepaper" element={<Whitepaper />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </>
   );

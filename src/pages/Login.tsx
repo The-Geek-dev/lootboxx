@@ -5,6 +5,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { Loader2, ArrowLeft } from "lucide-react";
 import squanchLogo from "@/assets/squanch-logo.png";
 
 const Login = () => {
@@ -14,6 +16,13 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  
+  // 2FA state
+  const [requires2FA, setRequires2FA] = useState(false);
+  const [pendingUserId, setPendingUserId] = useState<string>("");
+  const [otpValue, setOtpValue] = useState("");
+  const [isVerifying2FA, setIsVerifying2FA] = useState(false);
+  const [isSendingOTP, setIsSendingOTP] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -23,12 +32,38 @@ const Login = () => {
     });
   }, [navigate]);
 
+  const sendOTPCode = async (userId: string, userEmail: string) => {
+    setIsSendingOTP(true);
+    try {
+      const response = await supabase.functions.invoke("send-otp", {
+        body: { email: userEmail, user_id: userId },
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
+      toast({
+        title: "Verification code sent",
+        description: "Check your email for the 6-digit code",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Failed to send code",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSendingOTP(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -39,12 +74,30 @@ const Login = () => {
           description: error.message,
           variant: "destructive",
         });
-      } else {
-        toast({
-          title: "Login successful!",
-          description: "Welcome back to SQUANCH.",
-        });
-        navigate("/dashboard");
+        return;
+      }
+
+      if (data.user) {
+        // Check if 2FA is enabled
+        const { data: twoFaSettings } = await supabase
+          .from("user_2fa_settings")
+          .select("is_enabled")
+          .eq("user_id", data.user.id)
+          .maybeSingle();
+
+        if (twoFaSettings?.is_enabled) {
+          // Sign out temporarily and require 2FA
+          await supabase.auth.signOut();
+          setPendingUserId(data.user.id);
+          setRequires2FA(true);
+          await sendOTPCode(data.user.id, email);
+        } else {
+          toast({
+            title: "Login successful!",
+            description: "Welcome back to SQUANCH.",
+          });
+          navigate("/dashboard");
+        }
       }
     } catch (error) {
       toast({
@@ -54,6 +107,52 @@ const Login = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const verify2FA = async () => {
+    if (otpValue.length !== 6) {
+      toast({
+        title: "Invalid code",
+        description: "Please enter the 6-digit code",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsVerifying2FA(true);
+    try {
+      const response = await supabase.functions.invoke("verify-otp", {
+        body: { user_id: pendingUserId, code: otpValue },
+      });
+
+      if (response.error || !response.data?.success) {
+        throw new Error(response.data?.error || "Verification failed");
+      }
+
+      // Re-authenticate the user
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Login successful!",
+        description: "Welcome back to SQUANCH.",
+      });
+      navigate("/dashboard");
+    } catch (error: any) {
+      toast({
+        title: "Verification failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsVerifying2FA(false);
     }
   };
 
@@ -84,6 +183,87 @@ const Login = () => {
       setIsGoogleLoading(false);
     }
   };
+
+  // 2FA Verification UI
+  if (requires2FA) {
+    return (
+      <div className="min-h-screen bg-black text-foreground flex items-center justify-center px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md"
+        >
+          <Link to="/" className="flex items-center justify-center gap-2 mb-8">
+            <img src={squanchLogo} alt="SQUANCH" className="h-10 w-auto" />
+            <span className="font-bold text-2xl">SQUANCH</span>
+          </Link>
+
+          <div className="glass rounded-2xl p-8">
+            <button
+              onClick={() => {
+                setRequires2FA(false);
+                setOtpValue("");
+                setPendingUserId("");
+              }}
+              className="flex items-center gap-2 text-gray-400 hover:text-white mb-4"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to login
+            </button>
+
+            <h1 className="text-3xl font-bold mb-2 text-center">Two-Factor Authentication</h1>
+            <p className="text-gray-400 text-center mb-8">
+              Enter the 6-digit code sent to <span className="text-primary">{email}</span>
+            </p>
+
+            <div className="space-y-6">
+              <div className="flex justify-center">
+                <InputOTP
+                  maxLength={6}
+                  value={otpValue}
+                  onChange={setOtpValue}
+                >
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+
+              <Button
+                onClick={verify2FA}
+                disabled={isVerifying2FA || otpValue.length !== 6}
+                className="button-gradient w-full"
+                size="lg"
+              >
+                {isVerifying2FA ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Verifying...
+                  </>
+                ) : (
+                  "Verify & Login"
+                )}
+              </Button>
+
+              <button
+                onClick={() => sendOTPCode(pendingUserId, email)}
+                disabled={isSendingOTP}
+                className="text-sm text-primary hover:underline w-full text-center"
+              >
+                {isSendingOTP ? "Sending..." : "Didn't receive the code? Send again"}
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-foreground flex items-center justify-center px-4">
