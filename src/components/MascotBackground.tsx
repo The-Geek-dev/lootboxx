@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import mascotBg from "@/assets/mascot-bg.jpg";
 
 interface MascotBackgroundProps {
@@ -13,8 +14,18 @@ const MascotBackground = ({ position = "center", className = "" }: MascotBackgro
   };
 
   return (
-    <div
-      className={`absolute top-1/2 -translate-y-1/2 w-[500px] h-[500px] md:w-[700px] md:h-[700px] pointer-events-none opacity-[0.04] ${positionClasses[position]} ${className}`}
+    <motion.div
+      animate={{
+        y: ["-50%", "-53%", "-50%"],
+        scale: [1, 1.02, 1],
+        opacity: [0.04, 0.06, 0.04],
+      }}
+      transition={{
+        duration: 8,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+      className={`absolute top-1/2 w-[500px] h-[500px] md:w-[700px] md:h-[700px] pointer-events-none ${positionClasses[position]} ${className}`}
       style={{
         backgroundImage: `url(${mascotBg})`,
         backgroundSize: "contain",
