@@ -12,7 +12,10 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <img src={logo} alt="SQUANCH Logo" className="w-8 h-8 rounded-full logo-glow" />
+                <div className="relative w-10 h-10 flex items-center justify-center">
+                  <div className="absolute inset-0 rounded-full animate-spin-slow" style={{ padding: '2px', background: 'linear-gradient(135deg, #5ee7df, #8b5cf6, #6366f1)', WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude', borderRadius: '50%' }} />
+                  <img src={logo} alt="SQUANCH Logo" className="w-8 h-8 logo-glow relative z-10" />
+                </div>
                 <h3 className="font-medium text-lg text-gradient text-glow">SQUANCH</h3>
               </div>
               <p className="text-sm text-muted-foreground">
