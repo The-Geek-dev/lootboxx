@@ -19,11 +19,11 @@ export const useDepositGate = () => {
 
       const { data } = await supabase
         .from("user_wallets")
-        .select("total_deposited")
+        .select("is_activated")
         .eq("user_id", session.user.id)
         .single();
 
-      if (!data || Number(data.total_deposited) < MIN_DEPOSIT) {
+      if (!data || !data.is_activated) {
         navigate("/deposit", { state: { gated: true } });
         return;
       }
