@@ -10,7 +10,7 @@ import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import CyberpunkParticles from "@/components/CyberpunkParticles";
 import HexagonGrid from "@/components/HexagonGrid";
 import MascotBackground from "@/components/MascotBackground";
-import dashboardPreview from "@/assets/dashboard-preview.png";
+import dashboardPreview from "@/assets/dashboard-preview-new.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
