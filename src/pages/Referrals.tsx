@@ -14,7 +14,7 @@ const REFERRAL_BONUS = 500;
 
 const Referrals = () => {
   const navigate = useNavigate();
-  const { isAuthorized } = useDepositGate();
+  const { isAuthorized, isChecking } = useDepositGate();
   const { toast } = useToast();
   const [referralCode, setReferralCode] = useState("");
   const [referrals, setReferrals] = useState<any[]>([]);
@@ -71,7 +71,14 @@ const Referrals = () => {
     }
   };
 
-  if (!isAuthorized) return null;
+  if (!isAuthorized || isChecking) return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+        <p className="text-muted-foreground">Checking access...</p>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background">
