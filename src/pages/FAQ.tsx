@@ -16,7 +16,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-// Generate a simple session ID for anonymous feedback tracking
 const getSessionId = () => {
   let sessionId = sessionStorage.getItem("faq_session_id");
   if (!sessionId) {
@@ -36,131 +35,91 @@ const FAQ = () => {
   const [feedbackComment, setFeedbackComment] = useState("");
 
   const faqs = [
-    // General Questions
     {
       id: "general-1",
       category: "General",
-      question: "What is SQUANCH AI?",
-      answer: "SQUANCH AI is a comprehensive ecosystem that combines advanced Artificial Intelligence (AI) and Machine Learning (ML) with real-time blockchain analytics. We provide users with 'Alpha'—a tangible competitive edge in the cryptocurrency market through automated signal detection, security risk mitigation via KOLSCAN, and lowered entry barriers through our Bootstrap Program."
+      question: "What is LootBox?",
+      answer: "LootBox is a gaming rewards platform where you can play exciting games like raffles, spin-the-wheel, trivia quizzes, and more to win real rewards. Deposit funds, buy coupons, and start playing!"
     },
     {
       id: "general-2",
       category: "General",
-      question: "What problems does SQUANCH solve?",
-      answer: "SQUANCH addresses four critical bottlenecks in the DeFi environment: 1) Information Overload - tracking transactions across dozens of chains is impossible manually, 2) High Barriers to Entry - steep learning curves and gas fees discourage new participants, 3) Fraud and Market Manipulation - rug pulls cost investors billions annually, and 4) Analytical Inefficiency - manual chart reading leads to missed opportunities."
-    },
-    // AlphaChain & Trading
-    {
-      id: "trading-1",
-      category: "Trading",
-      question: "What is AlphaChain and how does it work?",
-      answer: "AlphaChain is the engine of the SQUANCH ecosystem. It monitors multi-chain transactions in real-time from Etherscan, Solana Explorer, and BSCScan. Features include: instant alerts for whale movements and DEX swaps, AI-driven bots using reinforcement learning for autonomous trade execution, and LSTM networks for time-series price forecasting with sub-second latency."
+      question: "Is LootBox safe and legitimate?",
+      answer: "Yes! LootBox uses bank-grade encryption, provably fair gaming algorithms, and secure payment processing. All games are transparent and results are verifiable."
     },
     {
-      id: "trading-2",
-      category: "Trading",
-      question: "How does the AI make trading decisions?",
-      answer: "Our AI uses Computer Vision models to identify complex technical patterns (flags, wedges, Fibonacci levels) across multiple timeframes simultaneously. We employ an Ensemble Methodology combining Random Forest and Gradient Boosting for high-confidence market trend forecasting, delivering personalized trade signals with back-tested win rates exceeding 70%."
+      id: "deposit-1",
+      category: "Deposits",
+      question: "How do I deposit funds?",
+      answer: "Go to your dashboard and click 'Deposit Now'. We accept multiple payment methods. The minimum deposit is ₦7,000. Your balance updates instantly after payment confirmation."
     },
     {
-      id: "trading-3",
-      category: "Trading",
-      question: "Which blockchains does SQUANCH support?",
-      answer: "SQUANCH currently monitors and trades across multiple major blockchains including Ethereum, Solana, and Binance Smart Chain (BSC). Our infrastructure is built on Ethereum for governance and Polygon for Layer-2 scalability, supporting up to 10,000 transactions per second."
+      id: "deposit-2",
+      category: "Deposits",
+      question: "What is the minimum deposit amount?",
+      answer: "The minimum deposit is ₦7,000. This gives you enough balance to buy coupons and start playing multiple games."
     },
-    // Security & KOLSCAN
+    {
+      id: "games-1",
+      category: "Games",
+      question: "What games are available?",
+      answer: "LootBox offers Raffle Draws, Spin-the-Wheel, Trivia Quizzes, and Lucky Slots. We're constantly adding new games to keep things exciting!"
+    },
+    {
+      id: "games-2",
+      category: "Games",
+      question: "How do coupons work?",
+      answer: "Coupons are your tickets to play games. You purchase coupons with your deposited balance, then use them to enter games. Different games may require different coupon tiers."
+    },
+    {
+      id: "games-3",
+      category: "Games",
+      question: "Are the games fair?",
+      answer: "Absolutely! All games use provably fair algorithms. Results are generated using verified random number generators and can be independently verified for transparency."
+    },
+    {
+      id: "referral-1",
+      category: "Referrals",
+      question: "How does the referral program work?",
+      answer: "Share your unique referral code with friends. When they sign up and make their first deposit, you both earn bonus rewards. There's no limit to how many people you can refer!"
+    },
+    {
+      id: "referral-2",
+      category: "Referrals",
+      question: "How much can I earn from referrals?",
+      answer: "You earn a bonus for every friend who signs up and deposits. The more active referrals you have, the bigger your earnings. Check your dashboard for current referral bonus rates."
+    },
+    {
+      id: "withdraw-1",
+      category: "Withdrawals",
+      question: "How do I withdraw my winnings?",
+      answer: "Go to your dashboard and click on the withdrawal option. Enter the amount and your preferred payment method. Withdrawals are processed quickly with no hidden fees."
+    },
+    {
+      id: "withdraw-2",
+      category: "Withdrawals",
+      question: "Is there a minimum withdrawal amount?",
+      answer: "Yes, there is a minimum withdrawal amount to cover processing costs. Check your dashboard for the current minimum withdrawal threshold."
+    },
     {
       id: "security-1",
       category: "Security",
-      question: "What is KOLSCAN and how does it protect me?",
-      answer: "KOLSCAN is our decentralized oracle for trust that acts as an Anti-Rug Protocol. It evaluates the 'Alpha' provided by social media influencers using Natural Language Processing (NLP) to score their historical reliability on X, Telegram, and Discord. It also performs on-chain auditing to detect red flags like unlocked liquidity or centralized owner privileges with 95% accuracy."
+      question: "How is my money protected?",
+      answer: "Your funds are protected with bank-grade encryption, secure payment gateways, and two-factor authentication. We never store your payment details on our servers."
     },
     {
       id: "security-2",
       category: "Security",
-      question: "Is my money safe with SQUANCH?",
-      answer: "Yes. SQUANCH never has withdrawal access to your funds. We connect to your exchange via API keys with trading permissions only. Your funds always remain in your exchange account, and you maintain full control. We use bank-grade encryption for all data transmission and our KOLSCAN protocol actively protects against rug pulls and market manipulation."
+      question: "Can I enable two-factor authentication?",
+      answer: "Yes! Go to Settings to enable 2FA. This adds an extra layer of security by requiring a verification code sent to your email every time you log in."
     },
-    // Bootstrap Program & Getting Started
-    {
-      id: "started-1",
-      category: "Getting Started",
-      question: "What is the Bootstrap Program?",
-      answer: "To foster community growth, the first 10,000 new users are eligible for our Bootstrap Program which includes: Pre-funded accounts with up to 500 SQH tokens, a Zero-Fee Period with no transaction, withdrawal, or subscription fees for the first 6 months, and secure KYC Integration to ensure the sustainability of the treasury-backed funding pool."
-    },
-    {
-      id: "started-2",
-      category: "Getting Started",
-      question: "What is the minimum investment required?",
-      answer: "The minimum investment varies by exchange and trading pair, but typically starts around $100. With our Bootstrap Program, eligible users can start with pre-funded SQH tokens. We recommend starting with an amount you're comfortable with while you familiarize yourself with the platform."
-    },
-    {
-      id: "started-3",
-      category: "Getting Started",
-      question: "Do I need trading experience?",
-      answer: "No trading experience is required. SQUANCH is designed for both beginners and experienced traders. Our AI handles the complex technical analysis and trade execution. We offer pre-configured strategies for newcomers, while advanced users can customize parameters to their preferences."
-    },
-    // Tokenomics & SQH Token
-    {
-      id: "tokenomics-1",
-      category: "Tokenomics",
-      question: "What is the SQH token and its utility?",
-      answer: "SQH is our native utility and governance token with a total supply of 1 billion tokens. It's used for platform governance voting, accessing premium features, staking rewards, and ecosystem participation. The distribution includes: 40% Community & Ecosystem, 20% Team (3-year vesting), 15% Private Sale, 15% Liquidity & Treasury, and 10% Airdrop & Marketing."
-    },
-    {
-      id: "tokenomics-2",
-      category: "Tokenomics",
-      question: "What are the fees and how do I earn?",
-      answer: "SQUANCH operates on a subscription model with tiered access. Token holders can earn through staking rewards and governance participation. The Bootstrap Program offers a zero-fee period for the first 6 months for early adopters. Platform fees are used to buy back and burn SQH tokens, creating deflationary pressure."
-    },
-    // Technical Questions
-    {
-      id: "technical-1",
-      category: "Technical",
-      question: "What technology powers SQUANCH?",
-      answer: "SQUANCH is built on a high-throughput, hybrid infrastructure: React-based Web & Mobile Apps for frontend, Node.js backend, TensorFlow & PyTorch for AI/ML, Akash/Render Network for decentralized compute, and Ethereum (Governance) with Polygon (Layer-2) for blockchain operations. We can handle up to 10,000 transactions per second."
-    },
-    {
-      id: "technical-2",
-      category: "Technical",
-      question: "Can I access SQUANCH via API?",
-      answer: "Yes! SQUANCH provides a comprehensive Trading Bot API for programmatic access. You can generate API keys with customizable permissions (read/write) from your Settings page. The API provides endpoints for bot status, trade history, and configuration management."
-    },
-    // Control & Withdrawals
-    {
-      id: "control-1",
-      category: "Control",
-      question: "Can I stop the bot at any time?",
-      answer: "Absolutely. You have complete control and can pause, stop, or modify your bot settings at any time through the dashboard. Your funds remain in your exchange account, so you can withdraw them whenever you wish. The bot includes risk management features like stop-loss orders."
-    },
-    {
-      id: "control-2",
-      category: "Control",
-      question: "How quickly can I withdraw profits?",
-      answer: "Since your funds are always in your exchange account, you can withdraw at any time according to your exchange's policies. SQUANCH doesn't hold your funds, so there's no withdrawal process through us—you have direct access to your assets at all times."
-    },
-    // Risk Management
-    {
-      id: "risk-1",
-      category: "Risk",
-      question: "What if the market crashes?",
-      answer: "SQUANCH includes comprehensive risk management features: stop-loss orders, position sizing, and our KOLSCAN anti-rug protocol. The AI can be configured to take defensive positions or pause trading during extreme market volatility. Our reinforcement learning models continuously adapt to changing market conditions."
-    },
-    {
-      id: "risk-2",
-      category: "Risk",
-      question: "What returns can I expect?",
-      answer: "Returns vary based on market conditions, your chosen strategy, and risk settings. Our AI-powered Alpha Placements deliver trade signals with back-tested win rates exceeding 70%. Conservative strategies offer more stable returns, while aggressive strategies aim for higher gains with increased risk. Past performance isn't indicative of future results."
-    }
   ];
 
-  // Get unique categories
   const categories = useMemo(() => {
     const cats = [...new Set(faqs.map(faq => faq.category))];
     return ["All", ...cats];
   }, []);
 
-  // Filter FAQs based on search and category
   const filteredFaqs = useMemo(() => {
     return faqs.filter(faq => {
       const matchesCategory = activeCategory === "All" || faq.category === activeCategory;
@@ -171,7 +130,6 @@ const FAQ = () => {
     });
   }, [searchQuery, activeCategory]);
 
-  // Count per category
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = { All: faqs.length };
     faqs.forEach(faq => {
@@ -181,279 +139,108 @@ const FAQ = () => {
   }, []);
 
   const submitFeedback = async (questionId: string, isHelpful: boolean, comment?: string) => {
-    // Check if already submitted for this question
-    if (submittedFeedback[questionId] !== undefined) {
-      return;
-    }
-
+    if (submittedFeedback[questionId] !== undefined) return;
     setSubmittingFeedback(questionId);
-
     try {
-      const { error } = await supabase
-        .from("faq_feedback")
-        .insert({
-          question_id: questionId,
-          is_helpful: isHelpful,
-          comment: comment || null,
-          user_agent: navigator.userAgent,
-          session_id: getSessionId(),
-        });
-
+      const { error } = await supabase.from("faq_feedback").insert({
+        question_id: questionId, is_helpful: isHelpful, comment: comment || null,
+        user_agent: navigator.userAgent, session_id: getSessionId(),
+      });
       if (error) throw error;
-
       setSubmittedFeedback(prev => ({ ...prev, [questionId]: isHelpful }));
       setShowCommentFor(null);
       setFeedbackComment("");
-      
-      toast({
-        title: "Thanks for your feedback!",
-        description: isHelpful 
-          ? "We're glad this was helpful." 
-          : "We'll work on improving this answer.",
-      });
+      toast({ title: "Thanks for your feedback!", description: isHelpful ? "We're glad this was helpful." : "We'll work on improving this answer." });
     } catch (error) {
       console.error("Error submitting feedback:", error);
-      toast({
-        title: "Couldn't submit feedback",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
+      toast({ title: "Couldn't submit feedback", description: "Please try again later.", variant: "destructive" });
     } finally {
       setSubmittingFeedback(null);
     }
   };
 
-  const handleNegativeFeedback = (questionId: string) => {
-    setShowCommentFor(questionId);
-    setFeedbackComment("");
-  };
-
-  const cancelComment = () => {
-    setShowCommentFor(null);
-    setFeedbackComment("");
-  };
-
   return (
     <div className="min-h-screen bg-black text-foreground">
       <Navigation />
-      
       <div className="container px-4 pt-32 pb-20 relative overflow-hidden">
         <MascotBackground position="right" />
         <MascotBackground variant="watermark" corner="top-left" />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="max-w-4xl mx-auto"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="max-w-4xl mx-auto">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 text-center">
             Frequently Asked <span className="text-primary">Questions</span>
           </h1>
-          
           <p className="text-xl text-gray-300 mb-10 text-center max-w-3xl mx-auto">
-            Everything you need to know about SQUANCH and automated crypto trading
+            Everything you need to know about LootBox gaming and rewards
           </p>
 
-          {/* Search Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="relative mb-6"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="relative mb-6">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <Input
-              type="text"
-              placeholder="Search questions..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-12 py-6 text-lg bg-background/50 border-white/10 rounded-xl"
-            />
+            <Input type="text" placeholder="Search questions..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-12 pr-12 py-6 text-lg bg-background/50 border-white/10 rounded-xl" />
             {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-              >
+              <button onClick={() => setSearchQuery("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
                 <X className="w-5 h-5" />
               </button>
             )}
           </motion.div>
 
-          {/* Category Tabs */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="flex flex-wrap gap-2 mb-8 justify-center"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="flex flex-wrap gap-2 mb-8 justify-center">
             {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                  activeCategory === category
-                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                    : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                {category}
-                <span className={`ml-2 text-xs ${
-                  activeCategory === category ? "opacity-80" : "opacity-50"
-                }`}>
-                  ({categoryCounts[category] || 0})
-                </span>
+              <button key={category} onClick={() => setActiveCategory(category)} className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${activeCategory === category ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25" : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"}`}>
+                {category} <span className={`ml-2 text-xs ${activeCategory === category ? "opacity-80" : "opacity-50"}`}>({categoryCounts[category] || 0})</span>
               </button>
             ))}
           </motion.div>
 
-          {/* Results Count */}
           <AnimatePresence mode="wait">
             {(searchQuery || activeCategory !== "All") && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mb-4 text-center"
-              >
-                <span className="text-gray-400">
-                  Showing {filteredFaqs.length} of {faqs.length} questions
-                  {searchQuery && (
-                    <span> matching "<span className="text-primary">{searchQuery}</span>"</span>
-                  )}
-                </span>
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="mb-4 text-center">
+                <span className="text-gray-400">Showing {filteredFaqs.length} of {faqs.length} questions{searchQuery && (<span> matching "<span className="text-primary">{searchQuery}</span>"</span>)}</span>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* FAQ Accordion */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="glass rounded-2xl p-8 md:p-12"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass rounded-2xl p-8 md:p-12">
             {filteredFaqs.length > 0 ? (
               <Accordion type="single" collapsible className="space-y-4">
                 <AnimatePresence mode="popLayout">
                   {filteredFaqs.map((faq, index) => (
-                    <motion.div
-                      key={faq.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ delay: index * 0.03 }}
-                    >
+                    <motion.div key={faq.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ delay: index * 0.03 }}>
                       <AccordionItem value={faq.id} className="border-white/10">
                         <AccordionTrigger className="text-left text-lg font-semibold hover:text-primary">
                           <div className="flex items-start gap-3">
-                            <span className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary shrink-0 mt-1">
-                              {faq.category}
-                            </span>
+                            <span className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary shrink-0 mt-1">{faq.category}</span>
                             <span>{faq.question}</span>
                           </div>
                         </AccordionTrigger>
                         <AccordionContent className="text-gray-400 text-base pl-16">
                           <p className="mb-4">{faq.answer}</p>
-                          
-                          {/* Feedback Section */}
                           <div className="pt-4 border-t border-white/10">
-                            <AnimatePresence mode="wait">
-                              {submittedFeedback[faq.id] !== undefined ? (
-                                <motion.div
-                                  key="submitted"
-                                  initial={{ opacity: 0, scale: 0.9 }}
-                                  animate={{ opacity: 1, scale: 1 }}
-                                  className="flex items-center gap-2 text-sm"
-                                >
-                                  <Check className="w-4 h-4 text-green-500" />
-                                  <span className="text-green-500">
-                                    Thanks for your feedback!
-                                  </span>
-                                </motion.div>
-                              ) : showCommentFor === faq.id ? (
-                                <motion.div
-                                  key="comment-form"
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  exit={{ opacity: 0, y: -10 }}
-                                  className="space-y-3"
-                                >
-                                  <p className="text-sm text-gray-400">
-                                    What was missing or unclear? (optional)
-                                  </p>
-                                  <Textarea
-                                    placeholder="Help us improve this answer..."
-                                    value={feedbackComment}
-                                    onChange={(e) => setFeedbackComment(e.target.value)}
-                                    className="bg-background/50 border-white/10 resize-none min-h-[80px]"
-                                    maxLength={500}
-                                  />
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs text-gray-500">
-                                      {feedbackComment.length}/500
-                                    </span>
-                                    <div className="flex gap-2">
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={cancelComment}
-                                        disabled={submittingFeedback === faq.id}
-                                      >
-                                        Cancel
-                                      </Button>
-                                      <Button
-                                        size="sm"
-                                        onClick={() => submitFeedback(faq.id, false, feedbackComment)}
-                                        disabled={submittingFeedback === faq.id}
-                                        className="button-gradient"
-                                      >
-                                        {submittingFeedback === faq.id ? (
-                                          <>
-                                            <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                                            Sending...
-                                          </>
-                                        ) : (
-                                          <>
-                                            <Send className="w-4 h-4 mr-1" />
-                                            Submit
-                                          </>
-                                        )}
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </motion.div>
-                              ) : (
-                                <motion.div
-                                  key="feedback-buttons"
-                                  initial={{ opacity: 0 }}
-                                  animate={{ opacity: 1 }}
-                                  exit={{ opacity: 0 }}
-                                  className="flex items-center gap-4"
-                                >
-                                  <span className="text-sm text-gray-500">
-                                    Was this helpful?
-                                  </span>
-                                  <div className="flex gap-2">
-                                    <button
-                                      onClick={() => submitFeedback(faq.id, true)}
-                                      disabled={submittingFeedback === faq.id}
-                                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-green-500/20 hover:text-green-500 transition-all duration-200 text-sm disabled:opacity-50"
-                                    >
-                                      <ThumbsUp className="w-4 h-4" />
-                                      Yes
-                                    </button>
-                                    <button
-                                      onClick={() => handleNegativeFeedback(faq.id)}
-                                      disabled={submittingFeedback === faq.id}
-                                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-500 transition-all duration-200 text-sm disabled:opacity-50"
-                                    >
-                                      <ThumbsDown className="w-4 h-4" />
-                                      No
-                                    </button>
-                                  </div>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
+                            {submittedFeedback[faq.id] !== undefined ? (
+                              <div className="flex items-center gap-2 text-sm text-gray-500">
+                                <Check className="w-4 h-4 text-primary" /> Thanks for your feedback!
+                              </div>
+                            ) : showCommentFor === faq.id ? (
+                              <div className="space-y-3">
+                                <p className="text-sm text-gray-500">How can we improve this answer?</p>
+                                <Textarea value={feedbackComment} onChange={(e) => setFeedbackComment(e.target.value)} placeholder="Optional: tell us how we can improve..." className="bg-background/50 text-sm" rows={3} />
+                                <div className="flex gap-2">
+                                  <Button size="sm" onClick={() => submitFeedback(faq.id, false, feedbackComment)} disabled={submittingFeedback === faq.id} className="button-gradient">
+                                    {submittingFeedback === faq.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Send className="w-3 h-3 mr-1" /> Submit</>}
+                                  </Button>
+                                  <Button size="sm" variant="ghost" onClick={() => { setShowCommentFor(null); setFeedbackComment(""); }}>Cancel</Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-3">
+                                <span className="text-sm text-gray-500">Was this helpful?</span>
+                                <button onClick={() => submitFeedback(faq.id, true)} disabled={submittingFeedback === faq.id} className="flex items-center gap-1 text-sm text-gray-400 hover:text-primary transition-colors">
+                                  {submittingFeedback === faq.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <ThumbsUp className="w-4 h-4" />} Yes
+                                </button>
+                                <button onClick={() => setShowCommentFor(faq.id)} className="flex items-center gap-1 text-sm text-gray-400 hover:text-destructive transition-colors">
+                                  <ThumbsDown className="w-4 h-4" /> No
+                                </button>
+                              </div>
+                            )}
                           </div>
                         </AccordionContent>
                       </AccordionItem>
@@ -462,45 +249,14 @@ const FAQ = () => {
                 </AnimatePresence>
               </Accordion>
             ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center py-12"
-              >
-                <Search className="w-12 h-12 mx-auto mb-4 text-gray-500" />
-                <p className="text-xl text-gray-400 mb-2">No questions found</p>
-                <p className="text-gray-500">
-                  Try adjusting your search or selecting a different category
-                </p>
-                <button
-                  onClick={() => {
-                    setSearchQuery("");
-                    setActiveCategory("All");
-                  }}
-                  className="mt-4 text-primary hover:underline"
-                >
-                  Clear filters
-                </button>
-              </motion.div>
+              <div className="text-center py-12">
+                <p className="text-gray-400 text-lg mb-2">No matching questions found</p>
+                <p className="text-gray-500">Try adjusting your search or category filter</p>
+              </div>
             )}
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="mt-12 text-center"
-          >
-            <p className="text-lg text-gray-300 mb-4">
-              Still have questions?
-            </p>
-            <a href="/contact" className="text-primary hover:underline text-lg font-medium">
-              Contact our support team →
-            </a>
           </motion.div>
         </motion.div>
       </div>
-
       <Footer />
     </div>
   );
