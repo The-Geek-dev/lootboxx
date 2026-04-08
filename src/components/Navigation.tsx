@@ -1,15 +1,30 @@
 import { useState, useEffect } from "react";
-import { Menu } from "lucide-react";
+import { Menu, Shield } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Link, useLocation } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/squanch-new-logo.png";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === "/";
+
+  useEffect(() => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) return;
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session.user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      setIsAdmin(!!data);
+    });
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,6 +85,15 @@ const Navigation = () => {
                 {item.name}
               </Link>
             ))}
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="text-sm text-primary hover:text-primary/80 transition-all duration-300 flex items-center gap-1"
+              >
+                <Shield className="w-3.5 h-3.5" />
+                Admin
+              </Link>
+            )}
             <Link to="/login">
               <Button size="sm" variant="ghost">
                 Login
@@ -101,6 +125,16 @@ const Navigation = () => {
                       {item.name}
                     </Link>
                   ))}
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      className="text-lg text-primary hover:text-primary/80 transition-colors flex items-center gap-2"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Shield className="w-4 h-4" />
+                      Admin Panel
+                    </Link>
+                  )}
                   <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
                     <Button variant="ghost" className="w-full">
                       Login

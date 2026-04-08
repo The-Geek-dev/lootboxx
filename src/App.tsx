@@ -28,6 +28,7 @@ import Privacy from "./pages/Privacy";
 import TermsOfService from "./pages/TermsOfService";
 import Settings from "./pages/Settings";
 import TransactionHistory from "./pages/TransactionHistory";
+import AdminDashboard from "./pages/AdminDashboard";
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
@@ -72,6 +73,7 @@ const AppRoutes = () => {
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/transactions" element={<TransactionHistory />} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </>
   );
