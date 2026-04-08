@@ -80,7 +80,7 @@ const LuckySlots = () => {
     }, 80);
   };
 
-  if (!isAuth) return null;
+  if (!isAuthorized) return null;
 
   return (
     <div className="min-h-screen bg-background">

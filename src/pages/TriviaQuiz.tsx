@@ -86,7 +86,7 @@ const TriviaQuiz = () => {
     }
   };
 
-  if (!isAuth) return null;
+  if (!isAuthorized) return null;
 
   const question = shuffledQuestions[currentQ];
   const totalReward = score * REWARD_PER_CORRECT + (score === shuffledQuestions.length ? BONUS_ALL_CORRECT : 0);

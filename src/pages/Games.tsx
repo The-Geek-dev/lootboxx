@@ -45,8 +45,6 @@ const Games = () => {
   const { isAuthorized } = useDepositGate();
   const [isLoading, setIsLoading] = useState(true);
 
-  if (!isAuthorized) return null;
-
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();

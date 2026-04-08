@@ -27,7 +27,7 @@ const Referrals = () => {
         navigate("/login");
         return;
       }
-      setIsAuth(true);
+      // auth verified by deposit gate
 
       // Get or create referral code
       const { data: existing } = await supabase
@@ -71,7 +71,7 @@ const Referrals = () => {
     }
   };
 
-  if (!isAuth) return null;
+  if (!isAuthorized) return null;
 
   return (
     <div className="min-h-screen bg-background">

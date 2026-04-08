@@ -20,8 +20,6 @@ const Dashboard = () => {
   const [referralCount, setReferralCount] = useState(0);
   const [recentGames, setRecentGames] = useState<any[]>([]);
 
-  if (!isAuthorized) return null;
-
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();

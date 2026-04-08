@@ -82,7 +82,7 @@ const RaffleDraw = () => {
     setIsDrawing(false);
   };
 
-  if (!isAuth) return null;
+  if (!isAuthorized) return null;
 
   return (
     <div className="min-h-screen bg-background">
