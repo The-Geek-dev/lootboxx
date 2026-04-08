@@ -48,13 +48,13 @@ export const useWallet = () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
-    await supabase.from("game_results").insert({
+    await supabase.from("game_results").insert([{
       user_id: session.user.id,
       game_type: gameType,
       bet_amount: betAmount,
       win_amount: winAmount,
-      result,
-    });
+      result: result as any,
+    }]);
 
     // Update wallet totals
     if (winAmount > 0) {
