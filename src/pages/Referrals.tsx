@@ -8,13 +8,14 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Users, Copy, Gift, Share2 } from "lucide-react";
+import { useDepositGate } from "@/hooks/useDepositGate";
 
 const REFERRAL_BONUS = 500;
 
 const Referrals = () => {
   const navigate = useNavigate();
+  const { isAuthorized } = useDepositGate();
   const { toast } = useToast();
-  const [isAuth, setIsAuth] = useState(false);
   const [referralCode, setReferralCode] = useState("");
   const [referrals, setReferrals] = useState<any[]>([]);
   const [totalEarned, setTotalEarned] = useState(0);
@@ -26,7 +27,7 @@ const Referrals = () => {
         navigate("/login");
         return;
       }
-      setIsAuth(true);
+      // auth verified by deposit gate
 
       // Get or create referral code
       const { data: existing } = await supabase
@@ -70,7 +71,7 @@ const Referrals = () => {
     }
   };
 
-  if (!isAuth) return null;
+  if (!isAuthorized) return null;
 
   return (
     <div className="min-h-screen bg-background">

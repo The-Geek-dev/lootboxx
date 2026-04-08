@@ -9,6 +9,7 @@ import { useWallet } from "@/hooks/useWallet";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Ticket, Clock, Trophy } from "lucide-react";
+import { useDepositGate } from "@/hooks/useDepositGate";
 
 const TICKET_PRICE = 500;
 const PRIZE_POOL = 25000;
@@ -16,21 +17,14 @@ const DRAW_INTERVAL_MINUTES = 30;
 
 const RaffleDraw = () => {
   const navigate = useNavigate();
+  const { isAuthorized } = useDepositGate();
   const { balance, updateBalance, recordGameResult } = useWallet();
   const { toast } = useToast();
-  const [isAuth, setIsAuth] = useState(false);
   const [tickets, setTickets] = useState(0);
   const [ticketCount, setTicketCount] = useState(1);
   const [timeLeft, setTimeLeft] = useState("");
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawResult, setDrawResult] = useState<string | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate("/login");
-      else setIsAuth(true);
-    });
-  }, [navigate]);
 
   useEffect(() => {
     const updateTimer = () => {
@@ -46,6 +40,8 @@ const RaffleDraw = () => {
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  if (!isAuthorized) return null;
 
   const buyTickets = async () => {
     const cost = ticketCount * TICKET_PRICE;
@@ -86,7 +82,7 @@ const RaffleDraw = () => {
     setIsDrawing(false);
   };
 
-  if (!isAuth) return null;
+  if (!isAuthorized) return null;
 
   return (
     <div className="min-h-screen bg-background">
