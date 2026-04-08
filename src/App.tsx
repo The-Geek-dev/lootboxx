@@ -29,6 +29,7 @@ import TermsOfService from "./pages/TermsOfService";
 import Settings from "./pages/Settings";
 import TransactionHistory from "./pages/TransactionHistory";
 import AdminDashboard from "./pages/AdminDashboard";
+import Withdraw from "./pages/Withdraw";
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
@@ -74,6 +75,7 @@ const AppRoutes = () => {
         <Route path="/settings" element={<Settings />} />
         <Route path="/transactions" element={<TransactionHistory />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/withdraw" element={<Withdraw />} />
       </Routes>
     </>
   );

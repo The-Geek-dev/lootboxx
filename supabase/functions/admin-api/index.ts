@@ -284,6 +284,119 @@ Deno.serve(async (req) => {
         );
       }
 
+      case "get_withdrawals": {
+        const { data: withdrawals } = await serviceClient
+          .from("withdrawals")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(200);
+
+        const userIds = [...new Set((withdrawals || []).map((w: any) => w.user_id))];
+        const { data: profiles } = await serviceClient
+          .from("profiles")
+          .select("user_id, full_name")
+          .in("user_id", userIds);
+
+        const enriched = (withdrawals || []).map((w: any) => ({
+          ...w,
+          user_name: profiles?.find((p: any) => p.user_id === w.user_id)?.full_name || "Unknown",
+        }));
+
+        return new Response(JSON.stringify({ withdrawals: enriched }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      case "update_withdrawal": {
+        const { withdrawal_id, status: newStatus, admin_note } = params;
+        
+        // Get withdrawal details
+        const { data: withdrawal } = await serviceClient
+          .from("withdrawals")
+          .select("*")
+          .eq("id", withdrawal_id)
+          .single();
+
+        if (!withdrawal) {
+          return new Response(JSON.stringify({ error: "Withdrawal not found" }), {
+            status: 404,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Update withdrawal status
+        await serviceClient
+          .from("withdrawals")
+          .update({ status: newStatus, admin_note: admin_note || null })
+          .eq("id", withdrawal_id);
+
+        // If rejected, refund the balance
+        if (newStatus === "rejected") {
+          const { data: wallet } = await serviceClient
+            .from("user_wallets")
+            .select("id, balance")
+            .eq("user_id", withdrawal.user_id)
+            .single();
+
+          if (wallet) {
+            await serviceClient
+              .from("user_wallets")
+              .update({ balance: Number(wallet.balance) + Number(withdrawal.amount) })
+              .eq("id", wallet.id);
+          }
+        }
+
+        return new Response(
+          JSON.stringify({ success: true, message: `Withdrawal ${newStatus}` }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      case "set_wallet_balance": {
+        const { user_id: targetId, balance: newBalance } = params;
+        
+        await serviceClient
+          .from("user_wallets")
+          .update({ balance: Number(newBalance) })
+          .eq("user_id", targetId);
+
+        return new Response(
+          JSON.stringify({ success: true, message: `Balance set to ₦${newBalance}` }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      case "adjust_wallet": {
+        const { user_id: targetId2, amount: adjustAmount, operation } = params;
+        
+        const { data: wallet } = await serviceClient
+          .from("user_wallets")
+          .select("id, balance")
+          .eq("user_id", targetId2)
+          .single();
+
+        if (!wallet) {
+          return new Response(JSON.stringify({ error: "Wallet not found" }), {
+            status: 404,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const currentBalance = Number(wallet.balance);
+        const adj = Number(adjustAmount);
+        const newBal = operation === "add" ? currentBalance + adj : currentBalance - adj;
+
+        await serviceClient
+          .from("user_wallets")
+          .update({ balance: Math.max(0, newBal) })
+          .eq("id", wallet.id);
+
+        return new Response(
+          JSON.stringify({ success: true, message: `Balance ${operation === "add" ? "increased" : "decreased"} by ₦${adj}. New balance: ₦${Math.max(0, newBal)}` }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400,
