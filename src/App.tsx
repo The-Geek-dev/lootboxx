@@ -17,6 +17,12 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Games from "./pages/Games";
+import SpinWheel from "./pages/SpinWheel";
+import LuckySlots from "./pages/LuckySlots";
+import TriviaQuiz from "./pages/TriviaQuiz";
+import RaffleDraw from "./pages/RaffleDraw";
+import Deposit from "./pages/Deposit";
+import Referrals from "./pages/Referrals";
 import Testimonials from "./pages/Testimonials";
 import Privacy from "./pages/Privacy";
 import TermsOfService from "./pages/TermsOfService";
@@ -55,6 +61,12 @@ const AppRoutes = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/games" element={<Games />} />
+        <Route path="/games/spin-wheel" element={<SpinWheel />} />
+        <Route path="/games/slots" element={<LuckySlots />} />
+        <Route path="/games/trivia" element={<TriviaQuiz />} />
+        <Route path="/games/raffle" element={<RaffleDraw />} />
+        <Route path="/deposit" element={<Deposit />} />
+        <Route path="/referrals" element={<Referrals />} />
         <Route path="/testimonials" element={<Testimonials />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<TermsOfService />} />
