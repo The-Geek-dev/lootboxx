@@ -8,13 +8,14 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Users, Copy, Gift, Share2 } from "lucide-react";
+import { useDepositGate } from "@/hooks/useDepositGate";
 
 const REFERRAL_BONUS = 500;
 
 const Referrals = () => {
   const navigate = useNavigate();
+  const { isAuthorized } = useDepositGate();
   const { toast } = useToast();
-  const [isAuth, setIsAuth] = useState(false);
   const [referralCode, setReferralCode] = useState("");
   const [referrals, setReferrals] = useState<any[]>([]);
   const [totalEarned, setTotalEarned] = useState(0);

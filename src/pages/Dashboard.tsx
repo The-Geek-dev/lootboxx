@@ -7,9 +7,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useWallet } from "@/hooks/useWallet";
+import { useDepositGate } from "@/hooks/useDepositGate";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { isAuthorized } = useDepositGate();
   const [isLoading, setIsLoading] = useState(true);
   const [userName, setUserName] = useState<string>("");
   const { balance } = useWallet();
@@ -17,6 +19,8 @@ const Dashboard = () => {
   const [totalBonuses, setTotalBonuses] = useState(0);
   const [referralCount, setReferralCount] = useState(0);
   const [recentGames, setRecentGames] = useState<any[]>([]);
+
+  if (!isAuthorized) return null;
 
   useEffect(() => {
     const checkAuth = async () => {

@@ -9,6 +9,7 @@ import { useWallet } from "@/hooks/useWallet";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Brain, CheckCircle, XCircle } from "lucide-react";
+import { useDepositGate } from "@/hooks/useDepositGate";
 
 const QUESTIONS = [
   { q: "What is the capital of Nigeria?", options: ["Lagos", "Abuja", "Kano", "Port Harcourt"], answer: 1 },
@@ -29,9 +30,9 @@ const BONUS_ALL_CORRECT = 500;
 
 const TriviaQuiz = () => {
   const navigate = useNavigate();
+  const { isAuthorized } = useDepositGate();
   const { balance, updateBalance, recordGameResult } = useWallet();
   const { toast } = useToast();
-  const [isAuth, setIsAuth] = useState(false);
   const [gameState, setGameState] = useState<"idle" | "playing" | "finished">("idle");
   const [currentQ, setCurrentQ] = useState(0);
   const [score, setScore] = useState(0);
@@ -39,12 +40,7 @@ const TriviaQuiz = () => {
   const [showAnswer, setShowAnswer] = useState(false);
   const [shuffledQuestions, setShuffledQuestions] = useState(QUESTIONS);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate("/login");
-      else setIsAuth(true);
-    });
-  }, [navigate]);
+  if (!isAuthorized) return null;
 
   const startGame = async () => {
     if (balance < ENTRY_FEE) {

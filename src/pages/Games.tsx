@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Ticket, Gift, Brain, Trophy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useDepositGate } from "@/hooks/useDepositGate";
 
 const games = [
   {
@@ -41,7 +42,10 @@ const games = [
 
 const Games = () => {
   const navigate = useNavigate();
+  const { isAuthorized } = useDepositGate();
   const [isLoading, setIsLoading] = useState(true);
+
+  if (!isAuthorized) return null;
 
   useEffect(() => {
     const checkAuth = async () => {

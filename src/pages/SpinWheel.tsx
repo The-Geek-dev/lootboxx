@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { useWallet } from "@/hooks/useWallet";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useDepositGate } from "@/hooks/useDepositGate";
 
 const SEGMENTS = [
   { label: "₦500", value: 500, color: "#8B5CF6" },
@@ -24,20 +25,13 @@ const SPIN_COST = 200;
 
 const SpinWheel = () => {
   const navigate = useNavigate();
+  const { isAuthorized } = useDepositGate();
   const { balance, updateBalance, recordGameResult } = useWallet();
   const { toast } = useToast();
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [result, setResult] = useState<string | null>(null);
-  const [isAuth, setIsAuth] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate("/login");
-      else setIsAuth(true);
-    });
-  }, [navigate]);
 
   useEffect(() => {
     drawWheel();

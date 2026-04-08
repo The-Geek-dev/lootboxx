@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { useWallet } from "@/hooks/useWallet";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useDepositGate } from "@/hooks/useDepositGate";
 
 const SYMBOLS = ["🍒", "🍋", "🔔", "⭐", "💎", "7️⃣"];
 const BET_AMOUNT = 100;
@@ -23,19 +24,12 @@ const PAYOUTS: Record<string, number> = {
 
 const LuckySlots = () => {
   const navigate = useNavigate();
+  const { isAuthorized } = useDepositGate();
   const { balance, updateBalance, recordGameResult } = useWallet();
   const { toast } = useToast();
   const [reels, setReels] = useState(["🍒", "🍋", "🔔"]);
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState<string | null>(null);
-  const [isAuth, setIsAuth] = useState(false);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate("/login");
-      else setIsAuth(true);
-    });
-  }, [navigate]);
 
   const spin = async () => {
     if (isSpinning) return;
