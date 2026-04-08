@@ -525,6 +525,148 @@ const AdminDashboard = () => {
                 </div>
               </Card>
             </TabsContent>
+
+            {/* WITHDRAWALS TAB */}
+            <TabsContent value="withdrawals">
+              <Card className="glass p-4 sm:p-6 overflow-x-auto">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Banknote className="w-5 h-5" /> Withdrawal Requests ({withdrawals.length})
+                </h3>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Bank</TableHead>
+                      <TableHead>Account</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {withdrawals.map((w) => (
+                      <TableRow key={w.id}>
+                        <TableCell className="font-medium">{w.user_name}</TableCell>
+                        <TableCell className="text-primary font-bold">₦{Number(w.amount).toLocaleString()}</TableCell>
+                        <TableCell className="text-xs">{w.bank_name}</TableCell>
+                        <TableCell className="text-xs">
+                          {w.account_number}<br />
+                          <span className="text-muted-foreground">{w.account_name}</span>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={w.status === "approved" ? "default" : w.status === "rejected" ? "destructive" : "secondary"}>
+                            {w.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {new Date(w.created_at).toLocaleDateString("en-NG", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                        </TableCell>
+                        <TableCell>
+                          {w.status === "pending" && (
+                            <div className="flex gap-1 flex-col">
+                              <div className="flex gap-1">
+                                <Button size="sm" onClick={() => handleWithdrawalAction(w.id, "approved")}>
+                                  Approve
+                                </Button>
+                                <Button size="sm" variant="destructive" onClick={() => handleWithdrawalAction(w.id, "rejected")}>
+                                  Reject
+                                </Button>
+                              </div>
+                              <Input
+                                placeholder="Admin note..."
+                                className="text-xs h-7"
+                                value={withdrawalNote}
+                                onChange={(e) => setWithdrawalNote(e.target.value)}
+                              />
+                            </div>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {withdrawals.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                          No withdrawal requests
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </Card>
+            </TabsContent>
+
+            {/* WALLET MANIPULATION TAB */}
+            <TabsContent value="wallet">
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card className="glass p-6">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <Wallet className="w-5 h-5" /> Manipulate User Wallet
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium mb-1 block">Operation</label>
+                      <div className="flex gap-2">
+                        {(["add", "subtract", "set"] as const).map((op) => (
+                          <Button
+                            key={op}
+                            size="sm"
+                            variant={walletOperation === op ? "default" : "outline"}
+                            className={walletOperation === op ? "button-gradient" : ""}
+                            onClick={() => setWalletOperation(op)}
+                          >
+                            {op === "add" ? "Add ₦" : op === "subtract" ? "Subtract ₦" : "Set to ₦"}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-1 block">Amount (₦)</label>
+                      <Input
+                        type="number"
+                        placeholder="Enter amount"
+                        value={walletAmount}
+                        onChange={(e) => setWalletAmount(e.target.value)}
+                      />
+                    </div>
+                    <Button className="button-gradient w-full" onClick={handleWalletAction} disabled={!walletUserId}>
+                      {walletUserId ? "Apply to Selected User" : "Select a user first →"}
+                    </Button>
+                    {walletUserId && (
+                      <p className="text-xs text-muted-foreground">
+                        Selected: {users.find(u => u.id === walletUserId)?.full_name} ({users.find(u => u.id === walletUserId)?.email})
+                      </p>
+                    )}
+                  </div>
+                </Card>
+
+                <Card className="glass p-6">
+                  <h3 className="text-lg font-semibold mb-4">Select User</h3>
+                  <div className="space-y-2 max-h-80 overflow-y-auto">
+                    {users.map((u) => (
+                      <div
+                        key={u.id}
+                        className={`flex items-center justify-between py-2 px-2 rounded cursor-pointer transition-colors ${
+                          walletUserId === u.id ? "bg-primary/10 border border-primary/30" : "border-b border-border/50"
+                        }`}
+                        onClick={() => setWalletUserId(u.id)}
+                      >
+                        <div>
+                          <p className="font-medium text-sm">{u.full_name}</p>
+                          <p className="text-xs text-muted-foreground">{u.email}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-sm text-primary">₦{Number(u.balance).toLocaleString()}</p>
+                          <Badge variant={u.is_activated ? "default" : "secondary"} className="text-xs">
+                            {u.is_activated ? "Active" : "Inactive"}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </div>
+            </TabsContent>
           </Tabs>
         </motion.div>
       </main>
