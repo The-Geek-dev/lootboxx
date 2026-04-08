@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Wallet, Trophy, Gift, Users, Settings, Gamepad2 } from "lucide-react";
+import { Wallet, Trophy, Gift, Users, Settings, Gamepad2, Clock, History } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,21 @@ const Dashboard = () => {
   const [totalBonuses, setTotalBonuses] = useState(0);
   const [referralCount, setReferralCount] = useState(0);
   const [recentGames, setRecentGames] = useState<any[]>([]);
+  const [lastBonusAt, setLastBonusAt] = useState<string | null>(null);
+
+  const nextBonusInfo = useMemo(() => {
+    const now = new Date();
+    // Next Monday 1AM UTC
+    const daysUntilMonday = (8 - now.getUTCDay()) % 7 || 7;
+    const next = new Date(now);
+    next.setUTCDate(now.getUTCDate() + daysUntilMonday);
+    next.setUTCHours(1, 0, 0, 0);
+    if (next <= now) next.setUTCDate(next.getUTCDate() + 7);
+    const diffMs = next.getTime() - now.getTime();
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    return { days, hours, date: next };
+  }, []);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -34,7 +49,7 @@ const Dashboard = () => {
         supabase.from("profiles").select("full_name").eq("user_id", userId).single(),
         supabase.from("game_results").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(5),
         supabase.from("referrals").select("*").eq("referrer_id", userId),
-        supabase.from("user_wallets").select("total_won, total_referral_bonus").eq("user_id", userId).single(),
+        supabase.from("user_wallets").select("total_won, total_referral_bonus, last_weekly_bonus_at").eq("user_id", userId).single(),
       ]);
 
       if (profileRes.data) setUserName(profileRes.data.full_name);
@@ -45,6 +60,7 @@ const Dashboard = () => {
       if (referralsRes.data) setReferralCount(referralsRes.data.filter((r: any) => r.referred_id).length);
       if (walletRes.data) {
         setTotalBonuses(Number(walletRes.data.total_referral_bonus));
+        setLastBonusAt(walletRes.data.last_weekly_bonus_at as string | null);
       }
 
       setIsLoading(false);
@@ -106,6 +122,23 @@ const Dashboard = () => {
               </Button>
             </div>
           </div>
+
+          {/* Weekly Bonus Banner */}
+          <Card className="glass p-4 mb-8 border-primary/30 bg-primary/5">
+            <div className="flex items-center gap-3 flex-wrap">
+              <Clock className="w-6 h-6 text-primary shrink-0" />
+              <div className="flex-1">
+                <p className="font-semibold text-sm sm:text-base">Next Weekly Bonus: <span className="text-primary">₦2,000</span></p>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Arriving in {nextBonusInfo.days}d {nextBonusInfo.hours}h — every Monday!
+                  {lastBonusAt && ` Last received: ${new Date(lastBonusAt).toLocaleDateString("en-NG", { month: "short", day: "numeric" })}`}
+                </p>
+              </div>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/transactions"><History className="w-4 h-4 mr-1" />History</Link>
+              </Button>
+            </div>
+          </Card>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
             {stats.map((stat, index) => (
