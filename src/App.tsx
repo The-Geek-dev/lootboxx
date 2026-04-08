@@ -61,6 +61,12 @@ const AppRoutes = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/games" element={<Games />} />
+        <Route path="/games/spin-wheel" element={<SpinWheel />} />
+        <Route path="/games/slots" element={<LuckySlots />} />
+        <Route path="/games/trivia" element={<TriviaQuiz />} />
+        <Route path="/games/raffle" element={<RaffleDraw />} />
+        <Route path="/deposit" element={<Deposit />} />
+        <Route path="/referrals" element={<Referrals />} />
         <Route path="/testimonials" element={<Testimonials />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<TermsOfService />} />
