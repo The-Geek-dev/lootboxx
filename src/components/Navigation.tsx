@@ -85,6 +85,15 @@ const Navigation = () => {
                 {item.name}
               </Link>
             ))}
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="text-sm text-primary hover:text-primary/80 transition-all duration-300 flex items-center gap-1"
+              >
+                <Shield className="w-3.5 h-3.5" />
+                Admin
+              </Link>
+            )}
             <Link to="/login">
               <Button size="sm" variant="ghost">
                 Login
