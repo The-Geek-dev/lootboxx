@@ -50,6 +50,33 @@ export type Database = {
         }
         Relationships: []
       }
+      deposits: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          payment_reference: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          payment_reference?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          payment_reference?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       faq_feedback: {
         Row: {
           comment: string | null
@@ -77,6 +104,36 @@ export type Database = {
           question_id?: string
           session_id?: string | null
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      game_results: {
+        Row: {
+          bet_amount: number
+          created_at: string
+          game_type: string
+          id: string
+          result: Json
+          user_id: string
+          win_amount: number
+        }
+        Insert: {
+          bet_amount?: number
+          created_at?: string
+          game_type: string
+          id?: string
+          result?: Json
+          user_id: string
+          win_amount?: number
+        }
+        Update: {
+          bet_amount?: number
+          created_at?: string
+          game_type?: string
+          id?: string
+          result?: Json
+          user_id?: string
+          win_amount?: number
         }
         Relationships: []
       }
@@ -131,6 +188,66 @@ export type Database = {
         }
         Relationships: []
       }
+      raffle_entries: {
+        Row: {
+          created_at: string
+          id: string
+          is_winner: boolean
+          prize_amount: number
+          raffle_id: string
+          ticket_count: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_winner?: boolean
+          prize_amount?: number
+          raffle_id: string
+          ticket_count?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_winner?: boolean
+          prize_amount?: number
+          raffle_id?: string
+          ticket_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          bonus_amount: number
+          created_at: string
+          id: string
+          referral_code: string
+          referred_id: string | null
+          referrer_id: string
+          status: string
+        }
+        Insert: {
+          bonus_amount?: number
+          created_at?: string
+          id?: string
+          referral_code: string
+          referred_id?: string | null
+          referrer_id: string
+          status?: string
+        }
+        Update: {
+          bonus_amount?: number
+          created_at?: string
+          id?: string
+          referral_code?: string
+          referred_id?: string | null
+          referrer_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
       signup_tokens: {
         Row: {
           created_at: string
@@ -177,6 +294,39 @@ export type Database = {
           created_at?: string
           id?: string
           is_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_wallets: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          total_deposited: number
+          total_referral_bonus: number
+          total_won: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          total_deposited?: number
+          total_referral_bonus?: number
+          total_won?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          total_deposited?: number
+          total_referral_bonus?: number
+          total_won?: number
           updated_at?: string
           user_id?: string
         }
