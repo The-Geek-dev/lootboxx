@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { useWallet } from "@/hooks/useWallet";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Wallet, CreditCard, CheckCircle } from "lucide-react";
+import { Wallet, CreditCard, CheckCircle, AlertTriangle } from "lucide-react";
 
 const DEPOSIT_OPTIONS = [
   { amount: 1000, label: "₦1,000", bonus: 0 },

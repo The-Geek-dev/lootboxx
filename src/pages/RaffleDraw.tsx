@@ -41,6 +41,8 @@ const RaffleDraw = () => {
     return () => clearInterval(interval);
   }, []);
 
+  if (!isAuthorized) return null;
+
   const buyTickets = async () => {
     const cost = ticketCount * TICKET_PRICE;
     if (balance < cost) {
