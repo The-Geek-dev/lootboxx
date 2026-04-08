@@ -111,7 +111,7 @@ const Login = () => {
       <div className="min-h-screen bg-black text-foreground flex items-center justify-center px-4">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full max-w-md">
           <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-            <img src={squanchLogo} alt="LootBox" className="h-10 w-auto" />
+            <img src={lootboxLogo} alt="LootBox" className="h-10 w-auto" />
             <span className="font-bold text-2xl">LOOTBOX</span>
           </Link>
           <div className="glass rounded-2xl p-8">
@@ -146,7 +146,7 @@ const Login = () => {
     <div className="min-h-screen bg-black text-foreground flex items-center justify-center px-4">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full max-w-md">
         <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <img src={squanchLogo} alt="LootBox" className="h-10 w-auto" />
+          <img src={lootboxLogo} alt="LootBox" className="h-10 w-auto" />
           <span className="font-bold text-2xl">LOOTBOX</span>
         </Link>
         <div className="glass rounded-2xl p-8">
