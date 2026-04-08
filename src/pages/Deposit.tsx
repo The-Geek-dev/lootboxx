@@ -21,6 +21,8 @@ const DEPOSIT_OPTIONS = [
 
 const Deposit = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isGated = (location.state as any)?.gated === true;
   const { balance, updateBalance, fetchBalance } = useWallet();
   const { toast } = useToast();
   const [isAuth, setIsAuth] = useState(false);
@@ -85,6 +87,18 @@ const Deposit = () => {
             Deposit <span className="text-gradient">Funds</span>
           </h1>
           <p className="text-muted-foreground text-center mb-8">Add funds to your wallet and get bonus credits!</p>
+
+          {isGated && (
+            <Card className="p-4 bg-destructive/10 border-destructive/30 mb-6">
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="w-6 h-6 text-destructive shrink-0" />
+                <div>
+                  <p className="font-semibold text-destructive">Minimum Deposit Required</p>
+                  <p className="text-sm text-muted-foreground">You must deposit at least ₦7,000 to access games and other features.</p>
+                </div>
+              </div>
+            </Card>
+          )}
 
           <Card className="p-4 bg-card/50 backdrop-blur-sm mb-6">
             <p className="text-center text-sm text-muted-foreground mb-1">Current Balance</p>
