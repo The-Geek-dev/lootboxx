@@ -23,8 +23,8 @@ const Privacy = () => {
                   </p>
                   <ul className="list-disc pl-6 space-y-2">
                     <li>Account information (email address, username, password)</li>
-                    <li>Trading preferences and settings</li>
-                    <li>Wallet addresses for cryptocurrency transactions</li>
+                    <li>Gaming preferences and settings</li>
+                    <li>Account preferences and settings</li>
                     <li>Communication data when you contact our support team</li>
                   </ul>
                 </div>
@@ -35,7 +35,7 @@ const Privacy = () => {
                 <div className="space-y-4 text-muted-foreground">
                   <p>We use the information we collect to:</p>
                   <ul className="list-disc pl-6 space-y-2">
-                    <li>Provide, maintain, and improve our trading bot services</li>
+                    <li>Provide, maintain, and improve our gaming platform services</li>
                     <li>Process your transactions and manage your account</li>
                     <li>Send you technical notices, updates, and security alerts</li>
                     <li>Respond to your comments and questions</li>
@@ -50,7 +50,7 @@ const Privacy = () => {
                 <p className="text-muted-foreground">
                   We implement industry-standard security measures to protect your personal information. 
                   Your data is encrypted both in transit and at rest. We use secure protocols for all 
-                  cryptocurrency transactions and never store your private keys.
+                  gaming transactions and never store your private keys.
                 </p>
               </section>
 
@@ -75,11 +75,11 @@ const Privacy = () => {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4">5. Cryptocurrency Transactions</h2>
+                <h2 className="text-2xl font-semibold mb-4">5. Gamingcurrency Transactions</h2>
                 <p className="text-muted-foreground">
-                  All cryptocurrency transactions are recorded on their respective blockchains, which are 
+                  All gaming transactions are recorded on their respective blockchains, which are 
                   public ledgers. While we do not control these blockchains, we take measures to protect 
-                  your privacy by not linking your personal information with your wallet addresses unless 
+                  your privacy by not linking your personal information with your payment details unless 
                   necessary for service provision.
                 </p>
               </section>
@@ -130,7 +130,7 @@ const Privacy = () => {
                 <h2 className="text-2xl font-semibold mb-4">10. Contact Us</h2>
                 <p className="text-muted-foreground">
                   If you have any questions about this Privacy Policy, please contact us through our 
-                  Contact page or email us at privacy@squanch.bot.
+                  Contact page or email us at privacy@lootbox.bot.
                 </p>
               </section>
             </div>
