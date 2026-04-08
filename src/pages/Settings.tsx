@@ -77,6 +77,7 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen bg-black text-foreground">
+
       <Navigation />
 
       <div className="container px-4 pt-32 pb-20">
