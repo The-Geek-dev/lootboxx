@@ -27,7 +27,7 @@ import Testimonials from "./pages/Testimonials";
 import Privacy from "./pages/Privacy";
 import TermsOfService from "./pages/TermsOfService";
 import Settings from "./pages/Settings";
-
+import TransactionHistory from "./pages/TransactionHistory";
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
@@ -71,6 +71,7 @@ const AppRoutes = () => {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/transactions" element={<TransactionHistory />} />
       </Routes>
     </>
   );
