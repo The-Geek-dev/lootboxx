@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Loader2, ArrowLeft } from "lucide-react";
-import squanchLogo from "@/assets/squanch-logo.png";
+import lootboxLogo from "@/assets/lootbox-logo.png";
 
 const Login = () => {
   const { toast } = useToast();
