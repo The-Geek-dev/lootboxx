@@ -18,7 +18,7 @@ const TermsOfService = () => {
               <section>
                 <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
                 <p className="text-muted-foreground">
-                  By accessing and using SQUANCH's cryptocurrency trading bot services, you accept and 
+                  By accessing and using LootBox's gaming platform services, you accept and 
                   agree to be bound by these Terms of Service. If you do not agree to these terms, 
                   you may not access or use our services.
                 </p>
@@ -27,7 +27,7 @@ const TermsOfService = () => {
               <section>
                 <h2 className="text-2xl font-semibold mb-4">2. Service Description</h2>
                 <p className="text-muted-foreground">
-                  SQUANCH provides an AI-powered cryptocurrency trading bot that executes automated trades 
+                  LootBox provides an AI-powered gaming platform that executes automated trades 
                   on your behalf. Our service analyzes market conditions and executes trades based on 
                   predefined strategies and your configured settings.
                 </p>
@@ -41,7 +41,7 @@ const TermsOfService = () => {
                     <li>Be at least 18 years old</li>
                     <li>Have the legal capacity to enter into binding contracts</li>
                     <li>Not be prohibited from using our services under applicable laws</li>
-                    <li>Comply with all local laws regarding cryptocurrency trading</li>
+                    <li>Comply with all local laws regarding gaming gaming</li>
                   </ul>
                 </div>
               </section>
@@ -50,7 +50,7 @@ const TermsOfService = () => {
                 <h2 className="text-2xl font-semibold mb-4">4. Account Registration</h2>
                 <div className="space-y-4 text-muted-foreground">
                   <p>
-                    To use SQUANCH, you must register for an account using a valid signup token. 
+                    To use LootBox, you must register for an account using a valid signup token. 
                     You agree to:
                   </p>
                   <ul className="list-disc pl-6 space-y-2">
@@ -64,17 +64,17 @@ const TermsOfService = () => {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4">5. Trading Risks</h2>
+                <h2 className="text-2xl font-semibold mb-4">5. Gaming Risks</h2>
                 <div className="space-y-4 text-muted-foreground">
                   <p className="font-semibold text-foreground">IMPORTANT RISK DISCLOSURE:</p>
                   <p>
-                    Cryptocurrency trading involves substantial risk of loss. You acknowledge and 
+                    Gamingcurrency gaming involves substantial risk of loss. You acknowledge and 
                     agree that:
                   </p>
                   <ul className="list-disc pl-6 space-y-2">
                     <li>Past performance does not guarantee future results</li>
                     <li>You may lose some or all of your invested capital</li>
-                    <li>Cryptocurrency markets are highly volatile and unpredictable</li>
+                    <li>Gamingcurrency markets are highly volatile and unpredictable</li>
                     <li>Our AI bot does not guarantee profits or prevent losses</li>
                     <li>You trade at your own risk and should only invest what you can afford to lose</li>
                   </ul>
@@ -84,8 +84,8 @@ const TermsOfService = () => {
               <section>
                 <h2 className="text-2xl font-semibold mb-4">6. No Financial Advice</h2>
                 <p className="text-muted-foreground">
-                  SQUANCH is a software tool and does not provide financial, investment, or legal advice. 
-                  Our automated trading strategies are based on technical analysis and algorithms, not 
+                  LootBox is a software tool and does not provide financial, investment, or legal advice. 
+                  Our gaming strategies are based on technical analysis and algorithms, not 
                   personalized financial advice. You should consult with qualified professionals before 
                   making investment decisions.
                 </p>
@@ -110,10 +110,10 @@ const TermsOfService = () => {
                 <h2 className="text-2xl font-semibold mb-4">8. Limitation of Liability</h2>
                 <div className="space-y-4 text-muted-foreground">
                   <p>
-                    To the maximum extent permitted by law, SQUANCH shall not be liable for:
+                    To the maximum extent permitted by law, LootBox shall not be liable for:
                   </p>
                   <ul className="list-disc pl-6 space-y-2">
-                    <li>Any trading losses or missed opportunities</li>
+                    <li>Any gaming losses or missed opportunities</li>
                     <li>Service interruptions or technical failures</li>
                     <li>Third-party exchange errors or outages</li>
                     <li>Market volatility or sudden price changes</li>
@@ -149,7 +149,7 @@ const TermsOfService = () => {
               <section>
                 <h2 className="text-2xl font-semibold mb-4">11. Intellectual Property</h2>
                 <p className="text-muted-foreground">
-                  All content, features, and functionality of SQUANCH are owned by us and protected by 
+                  All content, features, and functionality of LootBox are owned by us and protected by 
                   international copyright, trademark, and other intellectual property laws. You may not 
                   reproduce, distribute, or create derivative works without our express written permission.
                 </p>
@@ -195,7 +195,7 @@ const TermsOfService = () => {
                 <h2 className="text-2xl font-semibold mb-4">16. Contact Information</h2>
                 <p className="text-muted-foreground">
                   For questions about these Terms of Service, please contact us through our Contact 
-                  page or email us at legal@squanch.bot.
+                  page or email us at legal@lootbox.bot.
                 </p>
               </section>
             </div>

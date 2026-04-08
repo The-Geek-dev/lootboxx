@@ -1,11 +1,9 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Command, FileText, Rocket } from "lucide-react";
+import { ArrowRight, Gamepad2, Gift, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
 import { FeaturesSection } from "@/components/features/FeaturesSection";
-
 import LogoCarousel from "@/components/LogoCarousel";
-import { CryptoCarousel } from "@/components/CryptoCarousel";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import Footer from "@/components/Footer";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
@@ -34,12 +32,10 @@ const Index = () => {
   const [showBetaDialog, setShowBetaDialog] = useState(false);
   const [animationKey, setAnimationKey] = useState(Date.now());
 
-  // Reset animation key when component mounts to ensure typing effect plays
   useEffect(() => {
     setAnimationKey(Date.now());
   }, []);
 
-  // Show beta popup after 3 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
       const hasSeenBeta = sessionStorage.getItem('hasSeenBetaPopup');
@@ -63,14 +59,6 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleActivateBot = () => {
-    if (isLoggedIn) {
-      navigate("/dashboard");
-    } else {
-      setShowLoginDialog(true);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-black text-foreground">
       <Navigation />
@@ -82,16 +70,9 @@ const Index = () => {
         transition={{ duration: 0.5 }}
         className="relative container px-4 pt-40 pb-20"
       >
-        {/* Hexagon Grid Background */}
         <HexagonGrid />
-        
-        {/* Cyberpunk Particles Background */}
         <CyberpunkParticles />
-        
-        {/* Background */}
-        <div 
-          className="absolute inset-0 -z-10 bg-[#0A0A0A]"
-        />
+        <div className="absolute inset-0 -z-10 bg-[#0A0A0A]" />
         
         <motion.div
           initial={{ opacity: 0 }}
@@ -100,19 +81,19 @@ const Index = () => {
           className="inline-block mb-4 px-4 py-1.5 rounded-full glass"
         >
           <span className="text-sm font-medium">
-            <Command className="w-4 h-4 inline-block mr-2" />
-            AI-powered crypto trading bot
+            <Gamepad2 className="w-4 h-4 inline-block mr-2" />
+            Play games, win real rewards
           </span>
         </motion.div>
         
         <div className="max-w-4xl relative z-10">
           <h1 className="text-5xl md:text-7xl font-normal mb-4 tracking-tight text-left">
             <span className="text-gray-200">
-              <TextGenerateEffect key={`line1-${animationKey}`} words="Your Alpha edge in" />
+              <TextGenerateEffect key={`line1-${animationKey}`} words="Play, Win, and" />
             </span>
             <br />
             <span className="text-white font-medium">
-              <TextGenerateEffect key={`line2-${animationKey}`} words="the crypto battlefield" />
+              <TextGenerateEffect key={`line2-${animationKey}`} words="Earn Amazing Rewards" />
             </span>
           </h1>
           
@@ -122,8 +103,8 @@ const Index = () => {
             transition={{ delay: 0.4 }}
             className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl text-left"
           >
-            Let SQUANCH's intelligent algorithms analyze markets 24/7 and execute profitable trades automatically.{" "}
-            <span className="text-white">Start generating profits today.</span>
+            Join LootBox and play exciting games — raffles, spin-the-wheel, trivia and more.{" "}
+            <span className="text-white">Deposit, play, and win big today.</span>
           </motion.p>
           
           <motion.div
@@ -132,9 +113,9 @@ const Index = () => {
             transition={{ delay: 0.5 }}
             className="flex flex-col sm:flex-row gap-4 items-start"
           >
-            <Link to="/crypto-payment">
+            <Link to="/signup">
               <Button size="lg" className="button-gradient">
-                Start Trading
+                Start Playing
               </Button>
             </Link>
             <Link to="/how-it-works">
@@ -154,7 +135,7 @@ const Index = () => {
           <div className="glass rounded-xl overflow-hidden border border-primary/20 shadow-[0_0_30px_rgba(94,231,223,0.15)]">
             <img
               src={dashboardPreview}
-              alt="SQUANCH Trading Bot Dashboard"
+              alt="LootBox Gaming Platform"
               className="w-full h-auto"
             />
           </div>
@@ -164,54 +145,17 @@ const Index = () => {
       {/* Logo Carousel */}
       <LogoCarousel />
 
-      {/* Crypto Carousel */}
-      <CryptoCarousel />
-
       {/* Features Section */}
       <div id="features" className="bg-black relative overflow-hidden">
         <MascotBackground position="right" />
         <FeaturesSection />
       </div>
 
-
       {/* Testimonials Section */}
       <div className="bg-black relative overflow-hidden">
         <MascotBackground position="left" />
         <TestimonialsSection />
       </div>
-
-      {/* Whitepaper Section */}
-      <section className="container px-4 py-20 bg-black relative overflow-hidden">
-        <MascotBackground variant="watermark" corner="bottom-right" />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="max-w-4xl mx-auto glass rounded-2xl p-8 md:p-12 relative z-10"
-        >
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="flex-shrink-0">
-              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
-                <FileText className="w-10 h-10 text-primary" />
-              </div>
-            </div>
-            <div className="flex-1 text-center md:text-left">
-              <h2 className="text-3xl font-bold mb-3">
-                Read Our White Paper
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                Learn about SQUANCH's AI-powered trading technology, strategic roadmap, and vision for the future of automated cryptocurrency trading.
-              </p>
-              <Link to="/whitepaper">
-                <Button className="button-gradient">
-                  View White Paper
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </motion.div>
-      </section>
 
       {/* CTA Section */}
       <section className="container px-4 py-20 relative bg-black overflow-hidden">
@@ -231,14 +175,14 @@ const Index = () => {
           className="bg-[#0A0A0A]/80 backdrop-blur-lg border border-white/10 rounded-2xl p-8 md:p-12 text-center relative z-10"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to let SQUANCH trade for you?
+            Ready to start winning?
           </h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of traders already earning passive income with SQUANCH's AI-powered trading.
+            Join thousands of players already earning rewards with LootBox's exciting games and bonuses.
           </p>
-          <Link to="/crypto-payment">
+          <Link to="/signup">
             <Button size="lg" className="button-gradient">
-              Start Trading
+              Join LootBox Now
               <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </Link>
@@ -256,7 +200,7 @@ const Index = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Login Required</AlertDialogTitle>
             <AlertDialogDescription>
-              You need to be logged in to activate the trading bot. Please login or create an account to continue.
+              You need to be logged in to play games. Please login or create an account to continue.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -279,7 +223,7 @@ const Index = () => {
             </div>
             <AlertDialogTitle className="text-center text-2xl">Beta Phase</AlertDialogTitle>
             <AlertDialogDescription className="text-center text-base">
-              Welcome! SQUANCH is currently in beta development. We're working hard to bring you the full experience soon. Stay tuned for exciting updates!
+              Welcome! LootBox is currently in beta development. We're working hard to bring you the full gaming experience soon. Stay tuned for exciting updates!
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="justify-center sm:justify-center">

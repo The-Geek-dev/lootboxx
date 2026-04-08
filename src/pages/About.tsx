@@ -1,86 +1,60 @@
 import { motion } from "framer-motion";
-import { Shield, TrendingUp, Users, Award, CheckCircle2, Lock, BarChart3 } from "lucide-react";
+import { Shield, Trophy, Users, Gift, CheckCircle2, Lock, Gamepad2 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import MascotBackground from "@/components/MascotBackground";
 
 const About = () => {
-  const automationBenefits = [
+  const platformBenefits = [
     {
-      icon: "🤖",
-      title: "AI-Powered Algorithms",
-      description: "Our advanced AI analyzes thousands of market signals per second, identifying profitable trading opportunities that humans would miss. The system learns from market patterns and adapts to changing conditions."
+      icon: "🎮",
+      title: "Exciting Games",
+      description: "From raffles to spin-the-wheel to trivia challenges, LootBox offers a variety of games designed to be fun and rewarding. New games are added regularly."
     },
     {
-      icon: "⚡",
-      title: "Lightning-Fast Execution",
-      description: "In crypto markets, milliseconds matter. Our automated system executes trades instantly when conditions are optimal, capturing profits that manual traders can't match."
+      icon: "💰",
+      title: "Real Rewards",
+      description: "Every game gives you a chance to win real rewards. Deposit, play, and withdraw your winnings — it's that simple."
     },
     {
-      icon: "🌍",
-      title: "24/7 Market Coverage",
-      description: "Cryptocurrency markets never sleep, and neither does SQUANCH. Our bots monitor and trade around the clock, ensuring you never miss an opportunity in any time zone."
+      icon: "👥",
+      title: "Referral Bonuses",
+      description: "Invite friends and earn bonus rewards. The more people you bring to LootBox, the more you earn together."
     }
   ];
 
   const securityFeatures = [
     {
       icon: <Lock className="w-8 h-8" />,
-      title: "Bank-Level Encryption",
-      description: "All your data and transactions are protected with AES-256 encryption, the same standard used by financial institutions worldwide.",
-      details: ["Encrypted wallet storage", "Secure API connections", "Two-factor authentication", "Regular security audits"]
+      title: "Secure Deposits",
+      description: "All deposits and transactions are protected with bank-grade encryption and security measures.",
+      details: ["Encrypted transactions", "Secure payment gateway", "Two-factor authentication", "Regular security audits"]
     },
     {
       icon: <Shield className="w-8 h-8" />,
-      title: "Fund Protection",
-      description: "Your cryptocurrency is stored in secure, multi-signature wallets with industry-leading cold storage solutions.",
-      details: ["95% of funds in cold storage", "Insurance coverage", "Segregated user accounts", "Instant withdrawal access"]
+      title: "Fair Gaming",
+      description: "All games use provably fair algorithms ensuring transparent and honest results.",
+      details: ["Verifiable randomness", "Transparent draw results", "Audited game algorithms", "Real-time fairness checks"]
     },
     {
       icon: <Users className="w-8 h-8" />,
-      title: "Regulatory Compliance",
-      description: "We operate in full compliance with cryptocurrency regulations and follow strict KYC/AML procedures.",
-      details: ["Licensed operations", "Regular compliance reviews", "Transparent reporting", "Legal framework adherence"]
+      title: "Community First",
+      description: "We prioritize our community with responsive support and user-driven feature development.",
+      details: ["24/7 customer support", "Active community channels", "User feedback integration", "Regular platform updates"]
     },
     {
-      icon: <BarChart3 className="w-8 h-8" />,
-      title: "Risk Management",
-      description: "Sophisticated risk controls protect your capital from excessive losses during market volatility.",
-      details: ["Automatic stop-losses", "Position size limits", "Diversification strategies", "Volatility adjustments"]
+      icon: <Gamepad2 className="w-8 h-8" />,
+      title: "Responsible Gaming",
+      description: "We promote responsible gaming with tools and limits to keep the experience fun and safe.",
+      details: ["Deposit limits", "Self-exclusion options", "Gaming history tracking", "Age verification"]
     }
   ];
 
-  const performanceMetrics = [
-    {
-      icon: "📈",
-      title: "Average Annual Returns",
-      value: "20-50%"
-    },
-    {
-      icon: "✅",
-      title: "Win Rate",
-      value: "65-70%"
-    },
-    {
-      icon: "📊",
-      title: "Maximum Drawdown",
-      value: "15-20%"
-    },
-    {
-      icon: "⚡",
-      title: "Uptime",
-      value: "99.9%"
-    }
-  ];
-
-  const comparisonData = [
-    { feature: "Trading Hours", manual: "Limited to when you're available", automated: "24/7 non-stop trading" },
-    { feature: "Emotional Control", manual: "Prone to fear and greed", automated: "100% emotion-free decisions" },
-    { feature: "Speed", manual: "Seconds to minutes per trade", automated: "Millisecond execution" },
-    { feature: "Data Analysis", manual: "Limited human capacity", automated: "Processes thousands of data points" },
-    { feature: "Consistency", manual: "Variable performance", automated: "Consistent strategy execution" },
-    { feature: "Time Required", manual: "Hours of daily monitoring", automated: "Set it and forget it" },
-    { feature: "Learning Curve", manual: "Years of experience needed", automated: "No trading knowledge required" }
+  const platformStats = [
+    { icon: "🏆", title: "Total Winners", value: "10,000+" },
+    { icon: "🎮", title: "Games Available", value: "5+" },
+    { icon: "💰", title: "Rewards Paid", value: "₦50M+" },
+    { icon: "⚡", title: "Uptime", value: "99.9%" }
   ];
 
   return (
@@ -96,11 +70,11 @@ const About = () => {
           className="max-w-4xl mx-auto mb-16"
         >
           <h1 className="text-5xl md:text-6xl font-bold mb-6 text-center">
-            Understanding <span className="text-primary">Automated Crypto Trading</span>
+            About <span className="text-primary">LootBox</span>
           </h1>
           
           <p className="text-xl text-gray-300 mb-8 text-center max-w-3xl mx-auto">
-            Discover how SQUANCH uses cutting-edge technology to maximize your cryptocurrency investments while you sleep.
+            Discover the ultimate gaming platform where fun meets rewards. Play games, win prizes, and earn bonuses every day.
           </p>
         </motion.div>
 
@@ -110,19 +84,19 @@ const About = () => {
           transition={{ delay: 0.2, duration: 0.5 }}
           className="glass rounded-2xl p-8 md:p-12 mb-20"
         >
-          <h2 className="text-3xl font-bold mb-6">What is Automated Crypto Trading?</h2>
+          <h2 className="text-3xl font-bold mb-6">What is LootBox?</h2>
           <p className="text-lg text-gray-300 leading-relaxed">
-            Automated trading uses sophisticated algorithms to execute trades on your behalf, 24/7, without human intervention. 
-            Our AI-powered system analyzes market conditions, identifies opportunities, and executes trades with precision—all 
-            while you focus on what matters most to you.
+            LootBox is a gaming rewards platform where players can deposit funds, play exciting games like raffles, spin-the-wheel, 
+            and trivia quizzes, and win real rewards. Our platform combines the thrill of gaming with genuine earning opportunities, 
+            creating an engaging experience for everyone.
           </p>
         </motion.div>
 
         <div className="mb-20 relative">
           <MascotBackground variant="watermark" corner="top-left" />
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Why Choose Automation?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Why Choose LootBox?</h2>
           <div className="grid md:grid-cols-3 gap-8">
-            {automationBenefits.map((benefit, index) => (
+            {platformBenefits.map((benefit, index) => (
               <motion.div
                 key={benefit.title}
                 initial={{ opacity: 0, y: 20 }}
@@ -138,41 +112,11 @@ const About = () => {
           </div>
         </div>
 
-        <div className="mb-20">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">Manual vs. Automated Trading</h2>
-          <p className="text-center text-gray-300 mb-12 max-w-2xl mx-auto">
-            See why automation outperforms manual trading
-          </p>
-          <div className="glass rounded-2xl p-8 overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-primary/20">
-                  <th className="text-left py-4 px-4 font-bold">Feature</th>
-                  <th className="text-left py-4 px-4 font-bold">Manual Trading</th>
-                  <th className="text-left py-4 px-4 font-bold text-primary">SQUANCH Automated Trading</th>
-                </tr>
-              </thead>
-              <tbody>
-                {comparisonData.map((row, index) => (
-                  <tr key={index} className="border-b border-white/5 hover:bg-primary/5 transition-colors">
-                    <td className="py-4 px-4 font-semibold">{row.feature}</td>
-                    <td className="py-4 px-4 text-gray-400">{row.manual}</td>
-                    <td className="py-4 px-4 text-primary flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-                      {row.automated}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
         <div className="mb-20 relative">
           <MascotBackground variant="watermark" corner="bottom-right" />
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">Security & Your Safety</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">Security & Trust</h2>
           <p className="text-center text-gray-300 mb-12 max-w-2xl mx-auto">
-            How we protect your investments
+            How we keep your gaming experience safe
           </p>
           <div className="grid md:grid-cols-2 gap-8">
             {securityFeatures.map((feature, index) => (
@@ -206,15 +150,14 @@ const About = () => {
             transition={{ delay: 0.4 }}
             className="glass rounded-2xl p-8 md:p-12 text-center mb-12"
           >
-            <h2 className="text-3xl font-bold mb-4">Proven Performance Since 2021</h2>
+            <h2 className="text-3xl font-bold mb-4">Platform Stats</h2>
             <p className="text-lg text-gray-300 max-w-3xl mx-auto">
-              SQUANCH has consistently delivered strong returns across different market conditions, from bull runs to bear markets. 
-              Our algorithmic approach adapts to changing conditions while maintaining risk controls.
+              LootBox has been delivering winning moments and real rewards to players across the platform.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-4 gap-6">
-            {performanceMetrics.map((metric, index) => (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {platformStats.map((metric, index) => (
               <motion.div
                 key={metric.title}
                 initial={{ opacity: 0, scale: 0.9 }}

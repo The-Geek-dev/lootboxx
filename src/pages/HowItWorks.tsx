@@ -4,44 +4,45 @@ import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import MascotBackground from "@/components/MascotBackground";
+import { Link } from "react-router-dom";
 
 const HowItWorks = () => {
   const steps = [
     {
       number: "01",
-      title: "Start on Telegram",
-      description: "Connect with our SQUANCH Bot on Telegram. This is where your entire investment journey begins. Our bot guides you through setup and provides 24/7 support.",
-      details: ["Easy-to-follow conversation flow", "Instant notifications and updates", "Manage everything from your phone"]
+      title: "Create Your Account",
+      description: "Sign up for free in seconds. Provide your basic info and verify your email to get started on LootBox.",
+      details: ["Quick registration process", "Email verification", "Instant account activation"]
     },
     {
       number: "02",
-      title: "Create Your Account",
-      description: "Sign up with basic information through the bot. Set a secure password and verify your identity. The entire process takes less than 2 minutes.",
-      details: ["No complicated forms", "Quick identity verification", "Instant account activation"]
+      title: "Deposit Funds",
+      description: "Add funds to your LootBox wallet. We accept multiple payment methods for easy deposits starting from ₦7,000.",
+      details: ["Multiple payment options", "Secure transactions", "Instant balance updates"]
     },
     {
       number: "03",
-      title: "Generate Your Wallet",
-      description: "Receive your secure crypto wallet addresses generated exclusively for you. Support for Bitcoin, Ethereum, USDT, and 10+ other cryptocurrencies.",
-      details: ["Multi-currency support", "Bank-grade encryption", "Your addresses are unique and secure"]
+      title: "Buy Coupons",
+      description: "Use your balance to buy game coupons. Coupons give you access to various games — raffles, spin-the-wheel, trivia and more.",
+      details: ["Choose your favorite games", "Multiple coupon tiers", "Better coupons = bigger rewards"]
     },
     {
       number: "04",
-      title: "Make Your First Deposit",
-      description: "Transfer cryptocurrency to your wallet. Minimum deposit is just $10 to get started. Funds appear in your account instantly—no waiting periods.",
-      details: ["Minimum $10 to start", "Instant fund confirmation", "No hidden fees or charges"]
+      title: "Play & Win",
+      description: "Play exciting games and win real rewards! Every game gives you a chance to multiply your investment.",
+      details: ["Fair and transparent games", "Instant reward distribution", "Multiple games to choose from"]
     },
     {
       number: "05",
-      title: "Choose Your Strategy",
-      description: "Select from multiple automated trading strategies based on your risk tolerance. Conservative, Balanced, or Aggressive—we have options for every investor.",
-      details: ["Professional trading algorithms", "Risk-adjusted strategies", "Change strategies anytime"]
+      title: "Refer Friends",
+      description: "Share your referral code with friends. When they sign up and play, you both earn bonus rewards.",
+      details: ["Unique referral code", "Earn on every referral", "No limit on referrals"]
     },
     {
       number: "06",
-      title: "Let It Grow",
-      description: "Your automated trading system is now live. Watch your portfolio grow 24/7 as our AI executes trades based on real-time market signals. Monitor everything via the bot.",
-      details: ["Live performance tracking", "Real-time profit updates", "Withdraw anytime, no lockups"]
+      title: "Withdraw Winnings",
+      description: "Withdraw your winnings anytime directly to your bank account or wallet. Fast and hassle-free.",
+      details: ["Quick withdrawal processing", "Multiple withdrawal options", "No hidden fees"]
     }
   ];
 
@@ -58,11 +59,11 @@ const HowItWorks = () => {
           className="max-w-4xl mx-auto"
         >
           <h1 className="text-5xl md:text-6xl font-bold mb-6 text-center">
-            Your Journey to <span className="text-primary">Automated Crypto Investing</span>
+            How <span className="text-primary">LootBox</span> Works
           </h1>
           
           <p className="text-xl text-gray-300 mb-16 text-center max-w-3xl mx-auto">
-            Follow our simple 6-step process to start growing your wealth with SQUANCH. From account creation to your first automated trade in minutes.
+            Follow our simple 6-step process to start playing games and winning rewards on LootBox.
           </p>
 
           <div className="space-y-12 mb-20">
@@ -101,13 +102,15 @@ const HowItWorks = () => {
             transition={{ delay: 0.6 }}
             className="glass rounded-2xl p-8 md:p-12 text-center"
           >
-            <h2 className="text-3xl font-bold mb-4">Ready to Begin Your Journey?</h2>
+            <h2 className="text-3xl font-bold mb-4">Ready to Start Winning?</h2>
             <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
-              Start automated trading in under 5 minutes. Join thousands earning passive income with SQUANCH.
+              Create your account in under a minute and start playing exciting games on LootBox today.
             </p>
-            <Button size="lg" className="button-gradient">
-              Activate Your Bot <ArrowRight className="ml-2 w-4 h-4" />
-            </Button>
+            <Link to="/signup">
+              <Button size="lg" className="button-gradient">
+                Create Account <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
           </motion.div>
         </motion.div>
       </div>

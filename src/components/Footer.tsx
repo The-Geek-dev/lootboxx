@@ -14,12 +14,12 @@ const Footer = () => {
               <div className="flex items-center gap-2">
                 <div className="relative w-10 h-10 flex items-center justify-center">
                   <div className="absolute inset-0 rounded-full animate-spin-slow" style={{ padding: '2px', background: 'linear-gradient(135deg, #5ee7df, #8b5cf6, #6366f1)', WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude', borderRadius: '50%' }} />
-                  <img src={logo} alt="SQUANCH Logo" className="w-8 h-8 logo-glow relative z-10" />
+                  <img src={logo} alt="LootBox Logo" className="w-8 h-8 logo-glow relative z-10" />
                 </div>
-                <h3 className="font-medium text-lg text-gradient text-glow">SQUANCH</h3>
+                <h3 className="font-medium text-lg text-gradient text-glow">LOOTBOX</h3>
               </div>
               <p className="text-sm text-muted-foreground">
-                AI-powered crypto trading bot that generates profitable trades automatically.
+                Play exciting games, win bonuses, and earn amazing rewards on the ultimate gaming platform.
               </p>
               <div className="flex space-x-4">
                 <a href="https://x.com/squanchaibot" target="_blank" rel="noopener noreferrer">
@@ -33,7 +33,7 @@ const Footer = () => {
             </div>
 
             <div className="space-y-4">
-              <h4 className="font-medium">Product</h4>
+              <h4 className="font-medium">Platform</h4>
               <ul className="space-y-2">
                 <li>
                   <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
@@ -43,6 +43,11 @@ const Footer = () => {
                 <li>
                   <Link to="/how-it-works" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                     How It Works
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/games" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    Games
                   </Link>
                 </li>
                 <li>
@@ -88,7 +93,7 @@ const Footer = () => {
 
           <div className="mt-8 pt-8 border-t border-white/10">
             <p className="text-sm text-muted-foreground text-center">
-              © {new Date().getFullYear()} Rezaul Arif. All rights reserved.
+              © {new Date().getFullYear()} LootBox. All rights reserved.
             </p>
           </div>
         </div>

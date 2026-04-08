@@ -16,12 +16,12 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import Mining from "./pages/Mining";
-import Whitepaper from "./pages/Whitepaper";
+import Games from "./pages/Games";
 import Testimonials from "./pages/Testimonials";
 import Privacy from "./pages/Privacy";
 import TermsOfService from "./pages/TermsOfService";
 import Settings from "./pages/Settings";
+
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
@@ -30,17 +30,12 @@ const AppRoutes = () => {
   const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   useEffect(() => {
-    // Show loading screen
     setIsLoading(true);
-    
-    // Longer duration for first load, shorter for navigation
     const duration = isFirstLoad ? 2000 : 550;
-    
     const timer = setTimeout(() => {
       setIsLoading(false);
       setIsFirstLoad(false);
     }, duration);
-
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
@@ -59,9 +54,8 @@ const AppRoutes = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/mining" element={<Mining />} />
+        <Route path="/games" element={<Games />} />
         <Route path="/testimonials" element={<Testimonials />} />
-        <Route path="/whitepaper" element={<Whitepaper />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/settings" element={<Settings />} />

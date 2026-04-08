@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { TrendingUp, DollarSign, Activity, Percent, Settings } from "lucide-react";
+import { Wallet, Trophy, Gift, Users, Settings, Gamepad2 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,10 +13,10 @@ const Dashboard = () => {
   const [userName, setUserName] = useState<string>("");
   
   const stats = [
-    { icon: DollarSign, label: "Total Profit", value: "$0.00", change: "0%" },
-    { icon: TrendingUp, label: "Active Trades", value: "0", change: "Ready" },
-    { icon: Activity, label: "Win Rate", value: "0%", change: "0%" },
-    { icon: Percent, label: "Monthly ROI", value: "0%", change: "0%" },
+    { icon: Wallet, label: "Balance", value: "₦0.00", change: "Deposit" },
+    { icon: Trophy, label: "Total Wins", value: "0", change: "Play now" },
+    { icon: Gift, label: "Bonuses Earned", value: "₦0.00", change: "0" },
+    { icon: Users, label: "Referrals", value: "0", change: "Invite" },
   ];
 
   useEffect(() => {
@@ -25,7 +25,6 @@ const Dashboard = () => {
       if (!session) {
         navigate("/login");
       } else {
-        // Fetch user profile
         const { data: profile } = await supabase
           .from("profiles")
           .select("full_name")
@@ -74,15 +73,16 @@ const Dashboard = () => {
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
             <div>
               <h1 className="text-2xl sm:text-4xl font-bold mb-2">
-                Welcome, {userName || "Trader"}!
+                Welcome, {userName || "Player"}!
               </h1>
-              <p className="text-sm sm:text-base text-gray-400">Monitor your SQUANCH bot performance</p>
+              <p className="text-sm sm:text-base text-gray-400">Your LootBox gaming dashboard</p>
             </div>
             <div className="flex gap-2 sm:gap-3">
               <Button className="button-gradient text-xs sm:text-sm" asChild>
-                <a href="https://t.me/SQUANCHTradeBot" target="_blank" rel="noopener noreferrer">
-                  Configure Bot
-                </a>
+                <Link to="/games">
+                  <Gamepad2 className="w-4 h-4 mr-1 sm:mr-2" />
+                  Play Games
+                </Link>
               </Button>
               <Button variant="outline" className="text-xs sm:text-sm" asChild>
                 <Link to="/settings">
@@ -115,46 +115,43 @@ const Dashboard = () => {
 
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             <Card className="glass p-6">
-              <h3 className="text-xl font-semibold mb-4">Recent Trades</h3>
+              <h3 className="text-xl font-semibold mb-4">Recent Games</h3>
               <div className="flex items-center justify-center h-48 text-gray-500">
-                No trades yet. Start your bot to begin trading!
+                No games played yet. Start playing to see your history!
               </div>
             </Card>
 
             <Card className="glass p-6">
-              <h3 className="text-xl font-semibold mb-4">Bot Status</h3>
+              <h3 className="text-xl font-semibold mb-4">Available Games</h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-400">Status</span>
-                  <span className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                    Active
-                  </span>
+                  <span className="text-gray-400">🎰 Spin the Wheel</span>
+                  <span className="text-primary">Play Now →</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-400">Strategy</span>
-                  <span>Aggressive Growth</span>
+                  <span className="text-gray-400">🎟️ Raffle Draw</span>
+                  <span className="text-primary">Enter Now →</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-400">Risk Level</span>
-                  <span className="text-yellow-500">Medium</span>
+                  <span className="text-gray-400">🧠 Trivia Quiz</span>
+                  <span className="text-primary">Play Now →</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-400">Running Since</span>
-                  <span>24 days</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400">Trades Today</span>
-                  <span>0</span>
+                  <span className="text-gray-400">👥 Referral Bonus</span>
+                  <span className="text-primary">Invite →</span>
                 </div>
               </div>
             </Card>
           </div>
 
           <Card className="glass p-6">
-            <h3 className="text-xl font-semibold mb-4">Performance Chart</h3>
-            <div className="h-64 flex items-center justify-center text-gray-500">
-              Chart visualization coming soon
+            <h3 className="text-xl font-semibold mb-4">Deposit & Balance</h3>
+            <div className="h-64 flex flex-col items-center justify-center text-gray-500 gap-4">
+              <p>Deposit funds to start playing games and winning rewards</p>
+              <Button className="button-gradient">
+                <Wallet className="w-4 h-4 mr-2" />
+                Deposit Now
+              </Button>
             </div>
           </Card>
         </motion.div>
