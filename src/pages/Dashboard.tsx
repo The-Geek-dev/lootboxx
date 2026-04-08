@@ -19,6 +19,21 @@ const Dashboard = () => {
   const [totalBonuses, setTotalBonuses] = useState(0);
   const [referralCount, setReferralCount] = useState(0);
   const [recentGames, setRecentGames] = useState<any[]>([]);
+  const [lastBonusAt, setLastBonusAt] = useState<string | null>(null);
+
+  const nextBonusInfo = useMemo(() => {
+    const now = new Date();
+    // Next Monday 1AM UTC
+    const daysUntilMonday = (8 - now.getUTCDay()) % 7 || 7;
+    const next = new Date(now);
+    next.setUTCDate(now.getUTCDate() + daysUntilMonday);
+    next.setUTCHours(1, 0, 0, 0);
+    if (next <= now) next.setUTCDate(next.getUTCDate() + 7);
+    const diffMs = next.getTime() - now.getTime();
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    return { days, hours, date: next };
+  }, []);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -34,7 +49,7 @@ const Dashboard = () => {
         supabase.from("profiles").select("full_name").eq("user_id", userId).single(),
         supabase.from("game_results").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(5),
         supabase.from("referrals").select("*").eq("referrer_id", userId),
-        supabase.from("user_wallets").select("total_won, total_referral_bonus").eq("user_id", userId).single(),
+        supabase.from("user_wallets").select("total_won, total_referral_bonus, last_weekly_bonus_at").eq("user_id", userId).single(),
       ]);
 
       if (profileRes.data) setUserName(profileRes.data.full_name);
@@ -45,6 +60,7 @@ const Dashboard = () => {
       if (referralsRes.data) setReferralCount(referralsRes.data.filter((r: any) => r.referred_id).length);
       if (walletRes.data) {
         setTotalBonuses(Number(walletRes.data.total_referral_bonus));
+        setLastBonusAt(walletRes.data.last_weekly_bonus_at as string | null);
       }
 
       setIsLoading(false);
