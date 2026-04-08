@@ -160,6 +160,50 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleWithdrawalAction = async (withdrawalId: string, status: string) => {
+    try {
+      const res = await adminCall("update_withdrawal", {
+        withdrawal_id: withdrawalId,
+        status,
+        admin_note: withdrawalNote || undefined,
+      });
+      toast({ title: res.message });
+      setWithdrawalNote("");
+      const wRes = await adminCall("get_withdrawals");
+      setWithdrawals(wRes?.withdrawals || []);
+      const uRes = await adminCall("get_users");
+      setUsers(uRes?.users || []);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const handleWalletAction = async () => {
+    const amt = Number(walletAmount);
+    if (!walletUserId || !amt || amt <= 0) {
+      toast({ title: "Select a user and enter amount", variant: "destructive" });
+      return;
+    }
+    try {
+      let res;
+      if (walletOperation === "set") {
+        res = await adminCall("set_wallet_balance", { user_id: walletUserId, balance: amt });
+      } else {
+        res = await adminCall("adjust_wallet", {
+          user_id: walletUserId,
+          amount: amt,
+          operation: walletOperation,
+        });
+      }
+      toast({ title: res.message });
+      setWalletAmount("");
+      const uRes = await adminCall("get_users");
+      setUsers(uRes?.users || []);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
+
   if (!isAdmin || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
