@@ -26,7 +26,6 @@ const RaffleDraw = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawResult, setDrawResult] = useState<string | null>(null);
 
-  if (!isAuthorized) return null;
 
   useEffect(() => {
     const updateTimer = () => {

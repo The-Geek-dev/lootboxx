@@ -40,7 +40,6 @@ const TriviaQuiz = () => {
   const [showAnswer, setShowAnswer] = useState(false);
   const [shuffledQuestions, setShuffledQuestions] = useState(QUESTIONS);
 
-  if (!isAuthorized) return null;
 
   const startGame = async () => {
     if (balance < ENTRY_FEE) {
