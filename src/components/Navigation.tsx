@@ -20,47 +20,22 @@ const Navigation = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToSection = (sectionId: string) => {
-    if (sectionId === 'testimonials') {
-      const testimonialSection = document.querySelector('.animate-marquee');
-      if (testimonialSection) {
-        const yOffset = -100; // Offset to account for the fixed header
-        const y = testimonialSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      }
-    } else if (sectionId === 'cta') {
-      const ctaSection = document.querySelector('.button-gradient');
-      if (ctaSection) {
-        const yOffset = -100;
-        const y = ctaSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      }
-    } else {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  };
-
   type NavItem = {
     name: string;
     href: string;
-    onClick?: () => void;
   };
 
   const homeNavItems: NavItem[] = [
-    { name: "Features", href: "/features" },
+    { name: "Games", href: "/games" },
     { name: "Testimonials", href: "/testimonials" },
-    { name: "Mining", href: "/mining" },
+    { name: "How It Works", href: "/how-it-works" },
   ];
 
   const globalNavItems: NavItem[] = [
     { name: "About", href: "/about" },
-    { name: "Features", href: "/features" },
+    { name: "Games", href: "/games" },
     { name: "How It Works", href: "/how-it-works" },
-    { name: "Mining", href: "/mining" },
-    { name: "Whitepaper", href: "/whitepaper" },
+    { name: "Referrals", href: "/referrals" },
     { name: "FAQ", href: "/faq" },
     { name: "Contact", href: "/contact" },
   ];
@@ -80,35 +55,20 @@ const Navigation = () => {
           <Link to="/" className="flex items-center gap-2">
             <div className="relative w-10 h-10 flex items-center justify-center">
               <div className="absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r from-[#5ee7df] via-[#8b5cf6] to-[#6366f1] animate-spin-slow" style={{ padding: '2px', background: 'linear-gradient(135deg, #5ee7df, #8b5cf6, #6366f1)', WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude', borderRadius: '50%' }} />
-              <img src={logo} alt="SQUANCH Logo" className="w-8 h-8 logo-glow relative z-10" />
+              <img src={logo} alt="LootBox Logo" className="w-8 h-8 logo-glow relative z-10" />
             </div>
-            <span className="font-bold text-base text-gradient text-glow">SQUANCH</span>
+            <span className="font-bold text-base text-gradient text-glow">LOOTBOX</span>
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
             {navItems.map((item) => (
-              item.onClick ? (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    item.onClick();
-                  }}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-all duration-300"
-                >
-                  {item.name}
-                </a>
-              ) : (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-all duration-300"
-                >
-                  {item.name}
-                </Link>
-              )
+              <Link
+                key={item.name}
+                to={item.href}
+                className="text-sm text-muted-foreground hover:text-foreground transition-all duration-300"
+              >
+                {item.name}
+              </Link>
             ))}
             <Link to="/login">
               <Button size="sm" variant="ghost">
@@ -122,7 +82,6 @@ const Navigation = () => {
             </Link>
           </div>
 
-          {/* Mobile Navigation */}
           <div className="md:hidden">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
@@ -133,29 +92,14 @@ const Navigation = () => {
               <SheetContent className="bg-[#1B1B1B]">
                 <div className="flex flex-col gap-4 mt-8">
                   {navItems.map((item) => (
-                    item.onClick ? (
-                      <a
-                        key={item.name}
-                        href={item.href}
-                        className="text-lg text-muted-foreground hover:text-foreground transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setIsMobileMenuOpen(false);
-                          item.onClick();
-                        }}
-                      >
-                        {item.name}
-                      </a>
-                    ) : (
-                      <Link
-                        key={item.name}
-                        to={item.href}
-                        className="text-lg text-muted-foreground hover:text-foreground transition-colors"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        {item.name}
-                      </Link>
-                    )
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className="text-lg text-muted-foreground hover:text-foreground transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
                   ))}
                   <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
                     <Button variant="ghost" className="w-full">

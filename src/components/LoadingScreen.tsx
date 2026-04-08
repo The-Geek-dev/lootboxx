@@ -15,7 +15,6 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
           transition={{ duration: 0.5, ease: "easeInOut" }}
           className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center"
         >
-          {/* Animated mascot */}
           <motion.div
             animate={{
               scale: [1, 1.1, 1],
@@ -35,12 +34,11 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
           >
             <img 
               src={mascotTransparent} 
-              alt="SQUANCH Mascot" 
+              alt="LootBox" 
               className="w-full h-full object-contain"
             />
           </motion.div>
 
-          {/* Loading text */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -48,10 +46,9 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
             className="mt-8 text-center"
           >
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              SQUANCH
+              LOOTBOX
             </h2>
             
-            {/* Loading dots */}
             <div className="flex items-center justify-center gap-2">
               {[0, 1, 2].map((i) => (
                 <motion.div
@@ -72,7 +69,6 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
             </div>
           </motion.div>
 
-          {/* Subtle background particles */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             {[...Array(6)].map((_, i) => (
               <motion.div

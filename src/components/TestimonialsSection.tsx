@@ -7,39 +7,39 @@ import { Card } from "./ui/card";
 const testimonials = [
   {
     name: "Michael Chen",
-    role: "Professional Trader",
+    role: "Daily Player",
     image: "https://avatars.githubusercontent.com/u/1234567?v=4",
-    content: "The real-time market data and advanced trading features have significantly improved my trading performance. The platform's security measures give me peace of mind."
+    content: "LootBox is incredibly fun! I've won multiple raffle prizes and the spin-the-wheel game keeps me coming back every day. The referral bonuses are a great bonus too!"
   },
   {
     name: "Sarah Johnson",
-    role: "Crypto Fund Manager",
+    role: "Top Winner",
     image: "https://avatars.githubusercontent.com/u/2345678?v=4",
-    content: "CryptoTrade's institutional-grade tools have transformed our trading strategy. The API integration and automated features have saved us countless hours."
+    content: "I started with a small deposit and the games are so engaging. The trivia challenges are my favorite — I've earned amazing rewards just by answering questions!"
   },
   {
     name: "David Wilson",
-    role: "Early Crypto Investor",
+    role: "Referred 50+ Friends",
     image: "https://avatars.githubusercontent.com/u/3456789?v=4",
-    content: "The customer support is exceptional, and the platform's intuitive design made getting started with crypto trading seamless. A game-changer for both beginners and pros."
+    content: "The referral program is unbeatable. I've invited my friends and we all earn bonuses together. The platform is smooth and payouts are reliable."
   },
   {
     name: "Emily Zhang",
-    role: "DeFi Developer",
+    role: "Raffle Enthusiast",
     image: "https://avatars.githubusercontent.com/u/4567890?v=4",
-    content: "We've seen remarkable improvements in our trading efficiency since switching to CryptoTrade. The smart order routing and liquidity aggregation are particularly impressive."
+    content: "Won the grand raffle twice! The excitement of waiting for the draw is addictive. LootBox has the most fair and transparent gaming system I've seen."
   },
   {
     name: "James Rodriguez",
-    role: "Crypto Security Expert",
+    role: "Trivia Champion",
     image: "https://avatars.githubusercontent.com/u/5678901?v=4",
-    content: "The security features are robust and the regular updates keep us ahead of emerging threats. It's exactly what the crypto industry needed."
+    content: "As someone who loves trivia, this platform is a dream. The questions are challenging and the rewards are real. Can't recommend it enough!"
   },
   {
     name: "Lisa Thompson",
-    role: "Portfolio Manager",
+    role: "VIP Member",
     image: "https://avatars.githubusercontent.com/u/6789012?v=4",
-    content: "The platform's ability to handle complex trading strategies while maintaining simplicity in its interface is remarkable. It's been invaluable for our portfolio management."
+    content: "The variety of games keeps things fresh. From raffles to spin-the-wheel to trivia — there's always something new to play and win."
   }
 ];
 
@@ -54,9 +54,9 @@ const TestimonialsSection = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center mb-16"
         >
-          <h2 className="text-5xl font-normal mb-4">Trusted by Traders</h2>
+          <h2 className="text-5xl font-normal mb-4">Trusted by Players</h2>
           <p className="text-muted-foreground text-lg">
-            Join thousands of satisfied traders on CryptoTrade
+            Join thousands of happy winners on LootBox
           </p>
         </motion.div>
 
