@@ -304,6 +304,8 @@ export type Database = {
           balance: number
           created_at: string
           id: string
+          is_activated: boolean
+          last_weekly_bonus_at: string | null
           total_deposited: number
           total_referral_bonus: number
           total_won: number
@@ -314,6 +316,8 @@ export type Database = {
           balance?: number
           created_at?: string
           id?: string
+          is_activated?: boolean
+          last_weekly_bonus_at?: string | null
           total_deposited?: number
           total_referral_bonus?: number
           total_won?: number
@@ -324,6 +328,8 @@ export type Database = {
           balance?: number
           created_at?: string
           id?: string
+          is_activated?: boolean
+          last_weekly_bonus_at?: string | null
           total_deposited?: number
           total_referral_bonus?: number
           total_won?: number
