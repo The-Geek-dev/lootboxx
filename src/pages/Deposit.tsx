@@ -147,9 +147,9 @@ const Deposit = () => {
                     }`}
                     onClick={() => setSelectedAmount(option.amount)}
                   >
-                    {option.popular && (
+                    {'activation' in option && option.activation && (
                       <span className="absolute -top-2 right-2 text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
-                        Popular
+                        {isActivated ? "Base" : "Required"}
                       </span>
                     )}
                     <p className="text-xl font-bold">{option.label}</p>
