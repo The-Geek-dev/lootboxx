@@ -27,7 +27,10 @@ import {
   TrendingUp,
   UserCheck,
   Activity,
+  Banknote,
+  Wallet,
 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -41,6 +44,11 @@ const AdminDashboard = () => {
   const [bonusAmount, setBonusAmount] = useState("");
   const [bonusUserId, setBonusUserId] = useState("");
   const [releasing, setReleasing] = useState(false);
+  const [withdrawals, setWithdrawals] = useState<any[]>([]);
+  const [withdrawalNote, setWithdrawalNote] = useState("");
+  const [walletUserId, setWalletUserId] = useState("");
+  const [walletAmount, setWalletAmount] = useState("");
+  const [walletOperation, setWalletOperation] = useState<"add" | "subtract" | "set">("add");
 
   const adminCall = useCallback(async (action: string, params: any = {}) => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -90,17 +98,19 @@ const AdminDashboard = () => {
       setIsAdmin(true);
 
       try {
-        const [statsRes, usersRes, depositsRes, gamesRes] = await Promise.all([
+        const [statsRes, usersRes, depositsRes, gamesRes, withdrawRes] = await Promise.all([
           adminCall("get_stats"),
           adminCall("get_users"),
           adminCall("get_deposits"),
           adminCall("get_game_activity"),
+          adminCall("get_withdrawals"),
         ]);
 
         setStats(statsRes?.stats);
         setUsers(usersRes?.users || []);
         setDeposits(depositsRes?.deposits || []);
         setGameActivity(gamesRes);
+        setWithdrawals(withdrawRes?.withdrawals || []);
       } catch (err: any) {
         toast({ title: "Error loading admin data", description: err.message, variant: "destructive" });
       }
