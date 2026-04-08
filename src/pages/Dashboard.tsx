@@ -123,6 +123,23 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* Weekly Bonus Banner */}
+          <Card className="glass p-4 mb-8 border-primary/30 bg-primary/5">
+            <div className="flex items-center gap-3 flex-wrap">
+              <Clock className="w-6 h-6 text-primary shrink-0" />
+              <div className="flex-1">
+                <p className="font-semibold text-sm sm:text-base">Next Weekly Bonus: <span className="text-primary">₦2,000</span></p>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Arriving in {nextBonusInfo.days}d {nextBonusInfo.hours}h — every Monday!
+                  {lastBonusAt && ` Last received: ${new Date(lastBonusAt).toLocaleDateString("en-NG", { month: "short", day: "numeric" })}`}
+                </p>
+              </div>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/transactions"><History className="w-4 h-4 mr-1" />History</Link>
+              </Button>
+            </div>
+          </Card>
+
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
             {stats.map((stat, index) => (
               <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }}>
