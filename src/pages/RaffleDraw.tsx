@@ -17,7 +17,7 @@ const DRAW_INTERVAL_MINUTES = 30;
 
 const RaffleDraw = () => {
   const navigate = useNavigate();
-  const { isAuthorized } = useDepositGate();
+  const { isAuthorized, isChecking } = useDepositGate();
   const { balance, updateBalance, recordGameResult } = useWallet();
   const { toast } = useToast();
   const [tickets, setTickets] = useState(0);
@@ -41,7 +41,14 @@ const RaffleDraw = () => {
     return () => clearInterval(interval);
   }, []);
 
-  if (!isAuthorized) return null;
+  if (!isAuthorized || isChecking) return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+        <p className="text-muted-foreground">Checking access...</p>
+      </div>
+    </div>
+  );
 
   const buyTickets = async () => {
     const cost = ticketCount * TICKET_PRICE;
@@ -82,7 +89,14 @@ const RaffleDraw = () => {
     setIsDrawing(false);
   };
 
-  if (!isAuthorized) return null;
+  if (!isAuthorized || isChecking) return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+        <p className="text-muted-foreground">Checking access...</p>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background">
