@@ -97,7 +97,7 @@ const Dashboard = () => {
 
   const stats = [
     { icon: Wallet, label: "Balance", value: `₦${balance.toLocaleString()}`, change: "Deposit", link: "/deposit" },
-    { icon: Coins, label: "Points", value: points.toLocaleString(), change: "Earn more", link: "/deposit" },
+    { icon: Coins, label: "Points", value: points.toLocaleString(), change: "Manage", link: "/points" },
     { icon: Trophy, label: "Total Wins", value: String(totalWins), change: "Play now", link: "/games" },
     { icon: Users, label: "Referrals", value: String(referralCount), change: "Invite", link: "/referrals" },
   ];

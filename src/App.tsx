@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import LoadingScreen from "@/components/LoadingScreen";
 import Index from "./pages/Index";
+import Points from "./pages/Points";
 import About from "./pages/About";
 import Features from "./pages/Features";
 import HowItWorks from "./pages/HowItWorks";
@@ -76,6 +77,7 @@ const AppRoutes = () => {
         <Route path="/transactions" element={<TransactionHistory />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/withdraw" element={<Withdraw />} />
+        <Route path="/points" element={<Points />} />
       </Routes>
     </>
   );
