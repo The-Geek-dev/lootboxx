@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useWallet } from "@/hooks/useWallet";
-import { supabase } from "@/integrations/supabase/client";
+import { useXpLives } from "@/hooks/useXpLives";
+import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { Brain, CheckCircle, XCircle } from "lucide-react";
 import { useDepositGate } from "@/hooks/useDepositGate";
+import XpLifeBar from "@/components/XpLifeBar";
 
 const QUESTIONS = [
   { q: "What is the capital of Nigeria?", options: ["Lagos", "Abuja", "Kano", "Port Harcourt"], answer: 1 },
@@ -29,9 +30,10 @@ const REWARD_PER_CORRECT = 50;
 const BONUS_ALL_CORRECT = 500;
 
 const TriviaQuiz = () => {
-  const navigate = useNavigate();
   const { isAuthorized, isChecking } = useDepositGate();
   const { balance, updateBalance, recordGameResult } = useWallet();
+  const { xpLives, consumeLife } = useXpLives();
+  const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
   const [gameState, setGameState] = useState<"idle" | "playing" | "finished">("idle");
   const [currentQ, setCurrentQ] = useState(0);
@@ -39,13 +41,19 @@ const TriviaQuiz = () => {
   const [selected, setSelected] = useState<number | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [shuffledQuestions, setShuffledQuestions] = useState(QUESTIONS);
-
+  const [finalReward, setFinalReward] = useState(0);
 
   const startGame = async () => {
+    if (xpLives <= 0) {
+      toast({ title: "No XP lives left! ⚡", description: "Wait for refill or buy with points.", variant: "destructive" });
+      return;
+    }
     if (balance < ENTRY_FEE) {
       toast({ title: "Insufficient balance", description: `You need ₦${ENTRY_FEE} to play.`, variant: "destructive" });
       return;
     }
+    const lifeConsumed = await consumeLife();
+    if (!lifeConsumed) return;
     await updateBalance(-ENTRY_FEE);
     const shuffled = [...QUESTIONS].sort(() => Math.random() - 0.5).slice(0, 5);
     setShuffledQuestions(shuffled);
@@ -71,15 +79,13 @@ const TriviaQuiz = () => {
       setSelected(null);
       setShowAnswer(false);
     } else {
-      // Game over
-      const correctCount = score + (selected === shuffledQuestions[currentQ].answer ? 1 : 0);
-      // Recalculate since state might not have updated
       const finalScore = selected === shuffledQuestions[currentQ].answer ? score + 1 : score;
-      const reward = finalScore * REWARD_PER_CORRECT + (finalScore === shuffledQuestions.length ? BONUS_ALL_CORRECT : 0);
-      if (reward > 0) {
-        await updateBalance(reward);
-      }
+      let reward = finalScore * REWARD_PER_CORRECT + (finalScore === shuffledQuestions.length ? BONUS_ALL_CORRECT : 0);
+      reward = adjustWinAmount(reward);
+      if (reward > 0 && canFullyWin() && finalScore === shuffledQuestions.length) recordFullWin();
+      if (reward > 0) await updateBalance(reward);
       await recordGameResult("trivia", ENTRY_FEE, reward, { score: finalScore, total: shuffledQuestions.length });
+      setFinalReward(reward);
       setGameState("finished");
       setScore(finalScore);
     }
@@ -95,7 +101,6 @@ const TriviaQuiz = () => {
   );
 
   const question = shuffledQuestions[currentQ];
-  const totalReward = score * REWARD_PER_CORRECT + (score === shuffledQuestions.length ? BONUS_ALL_CORRECT : 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -105,7 +110,9 @@ const TriviaQuiz = () => {
           <h1 className="text-2xl sm:text-4xl font-bold text-center mb-2">
             Trivia <span className="text-gradient">Quiz</span>
           </h1>
-          <p className="text-muted-foreground text-center mb-8">Answer correctly to win rewards!</p>
+          <p className="text-muted-foreground text-center mb-6">Answer correctly to win rewards!</p>
+
+          <div className="mb-4"><XpLifeBar /></div>
 
           <Card className="p-4 bg-card/50 backdrop-blur-sm mb-6">
             <p className="text-center text-sm text-muted-foreground mb-1">Your Balance</p>
@@ -118,8 +125,8 @@ const TriviaQuiz = () => {
               <h2 className="text-xl font-bold mb-2">Ready to test your knowledge?</h2>
               <p className="text-muted-foreground mb-2">5 questions • ₦{REWARD_PER_CORRECT} per correct answer</p>
               <p className="text-muted-foreground mb-6">Get all 5 correct for a ₦{BONUS_ALL_CORRECT} bonus!</p>
-              <Button className="button-gradient" onClick={startGame}>
-                Start Quiz (₦{ENTRY_FEE})
+              <Button className="button-gradient" onClick={startGame} disabled={xpLives <= 0}>
+                {xpLives <= 0 ? "No XP Lives" : `Start Quiz (₦${ENTRY_FEE})`}
               </Button>
             </Card>
           )}
@@ -127,7 +134,7 @@ const TriviaQuiz = () => {
           {gameState === "playing" && (
             <Card className="p-6 bg-card/50">
               <div className="flex justify-between items-center mb-4 text-sm text-muted-foreground">
-                <span>Question {currentQ + 1}/{shuffledQuestions.length}</span>
+                <span>Q {currentQ + 1}/{shuffledQuestions.length}</span>
                 <span>Score: {score}</span>
               </div>
               <h2 className="text-lg font-semibold mb-6">{question.q}</h2>
@@ -136,7 +143,7 @@ const TriviaQuiz = () => {
                   let borderClass = "border-border";
                   if (showAnswer) {
                     if (i === question.answer) borderClass = "border-green-500 bg-green-500/10";
-                    else if (i === selected) borderClass = "border-red-500 bg-red-500/10";
+                    else if (i === selected) borderClass = "border-destructive bg-destructive/10";
                   } else if (i === selected) {
                     borderClass = "border-primary";
                   }
@@ -152,7 +159,7 @@ const TriviaQuiz = () => {
                       </span>
                       <span>{opt}</span>
                       {showAnswer && i === question.answer && <CheckCircle className="w-5 h-5 text-green-500 ml-auto" />}
-                      {showAnswer && i === selected && i !== question.answer && <XCircle className="w-5 h-5 text-red-500 ml-auto" />}
+                      {showAnswer && i === selected && i !== question.answer && <XCircle className="w-5 h-5 text-destructive ml-auto" />}
                     </button>
                   );
                 })}
@@ -169,8 +176,8 @@ const TriviaQuiz = () => {
             <Card className="p-8 text-center bg-card/50">
               <h2 className="text-2xl font-bold mb-2">Quiz Complete!</h2>
               <p className="text-4xl font-bold text-primary my-4">{score}/{shuffledQuestions.length}</p>
-              {totalReward > 0 ? (
-                <p className="text-lg text-green-400 mb-6">🎉 You earned ₦{totalReward.toLocaleString()}!</p>
+              {finalReward > 0 ? (
+                <p className="text-lg text-green-400 mb-6">🎉 You earned ₦{finalReward.toLocaleString()}!</p>
               ) : (
                 <p className="text-lg text-muted-foreground mb-6">Better luck next time!</p>
               )}

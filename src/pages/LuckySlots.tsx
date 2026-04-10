@@ -6,9 +6,12 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useWallet } from "@/hooks/useWallet";
+import { useXpLives } from "@/hooks/useXpLives";
+import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useDepositGate } from "@/hooks/useDepositGate";
+import XpLifeBar from "@/components/XpLifeBar";
 
 const SYMBOLS = ["🍒", "🍋", "🔔", "⭐", "💎", "7️⃣"];
 const BET_AMOUNT = 100;
@@ -26,6 +29,8 @@ const LuckySlots = () => {
   const navigate = useNavigate();
   const { isAuthorized, isChecking } = useDepositGate();
   const { balance, updateBalance, recordGameResult } = useWallet();
+  const { xpLives, consumeLife } = useXpLives();
+  const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
   const [reels, setReels] = useState(["🍒", "🍋", "🔔"]);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -33,8 +38,18 @@ const LuckySlots = () => {
 
   const spin = async () => {
     if (isSpinning) return;
+    if (xpLives <= 0) {
+      toast({ title: "No XP lives left! ⚡", description: "Wait for refill or buy with points.", variant: "destructive" });
+      return;
+    }
     if (balance < BET_AMOUNT) {
       toast({ title: "Insufficient balance", description: `You need ₦${BET_AMOUNT} to play.`, variant: "destructive" });
+      return;
+    }
+
+    const lifeConsumed = await consumeLife();
+    if (!lifeConsumed) {
+      toast({ title: "Could not consume XP life", variant: "destructive" });
       return;
     }
 
@@ -42,7 +57,6 @@ const LuckySlots = () => {
     setResult(null);
     await updateBalance(-BET_AMOUNT);
 
-    // Animate through random symbols
     let count = 0;
     const interval = setInterval(() => {
       setReels([
@@ -53,7 +67,6 @@ const LuckySlots = () => {
       count++;
       if (count > 20) {
         clearInterval(interval);
-        // Final result
         const finalReels = [
           SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
           SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
@@ -62,10 +75,18 @@ const LuckySlots = () => {
         setReels(finalReels);
 
         const combo = finalReels.join("");
-        const payout = PAYOUTS[combo] || 0;
+        let payout = PAYOUTS[combo] || 0;
         const twoMatch = finalReels[0] === finalReels[1] || finalReels[1] === finalReels[2] || finalReels[0] === finalReels[2];
         const smallWin = twoMatch ? 50 : 0;
-        const totalWin = payout || smallWin;
+        let totalWin = payout || smallWin;
+
+        // Apply win restrictions
+        if (totalWin > 0) {
+          totalWin = adjustWinAmount(totalWin);
+          if (payout > 0 && canFullyWin()) {
+            recordFullWin();
+          }
+        }
 
         if (totalWin > 0) {
           updateBalance(totalWin);
@@ -97,21 +118,24 @@ const LuckySlots = () => {
           <h1 className="text-2xl sm:text-4xl font-bold text-center mb-2">
             Lucky <span className="text-gradient">Slots</span>
           </h1>
-          <p className="text-muted-foreground text-center mb-8">Match symbols to win big!</p>
+          <p className="text-muted-foreground text-center mb-6">Match symbols to win big!</p>
 
-          <div className="flex flex-col items-center gap-6">
-            <Card className="p-4 bg-card/50 backdrop-blur-sm">
+          <div className="max-w-md mx-auto flex flex-col items-center gap-4">
+            <div className="w-full">
+              <XpLifeBar />
+            </div>
+
+            <Card className="p-4 bg-card/50 backdrop-blur-sm w-full">
               <p className="text-center text-sm text-muted-foreground mb-1">Your Balance</p>
               <p className="text-center text-2xl font-bold text-primary">₦{balance.toLocaleString()}</p>
             </Card>
 
-            {/* Slot Machine */}
-            <Card className="p-8 bg-card/80 backdrop-blur-sm border-primary/30">
+            <Card className="p-8 bg-card/80 backdrop-blur-sm border-primary/30 w-full">
               <div className="flex gap-4 justify-center mb-6">
                 {reels.map((symbol, i) => (
                   <motion.div
                     key={i}
-                    className="w-24 h-24 bg-background rounded-xl flex items-center justify-center text-5xl border-2 border-primary/20"
+                    className="w-20 h-20 sm:w-24 sm:h-24 bg-background rounded-xl flex items-center justify-center text-4xl sm:text-5xl border-2 border-primary/20"
                     animate={isSpinning ? { y: [0, -10, 0] } : {}}
                     transition={{ repeat: isSpinning ? Infinity : 0, duration: 0.15, delay: i * 0.05 }}
                   >
@@ -120,7 +144,6 @@ const LuckySlots = () => {
                 ))}
               </div>
 
-              {/* Payout Table */}
               <div className="grid grid-cols-2 gap-2 mb-6 text-sm">
                 {Object.entries(PAYOUTS).map(([combo, payout]) => (
                   <div key={combo} className="flex justify-between px-3 py-1 bg-background/50 rounded">
@@ -141,8 +164,8 @@ const LuckySlots = () => {
               </motion.div>
             )}
 
-            <Button className="button-gradient px-8 py-3 text-lg" onClick={spin} disabled={isSpinning}>
-              {isSpinning ? "Spinning..." : `Spin (₦${BET_AMOUNT})`}
+            <Button className="button-gradient px-8 py-3 text-lg w-full" onClick={spin} disabled={isSpinning || xpLives <= 0}>
+              {isSpinning ? "Spinning..." : xpLives <= 0 ? "No XP Lives" : `Spin (₦${BET_AMOUNT})`}
             </Button>
           </div>
         </motion.div>

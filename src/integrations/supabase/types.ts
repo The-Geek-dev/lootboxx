@@ -50,6 +50,33 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_win_tracking: {
+        Row: {
+          created_at: string
+          full_win_count: number
+          id: string
+          user_id: string
+          win_date: string
+          win_window_hour: number
+        }
+        Insert: {
+          created_at?: string
+          full_win_count?: number
+          id?: string
+          user_id: string
+          win_date?: string
+          win_window_hour?: number
+        }
+        Update: {
+          created_at?: string
+          full_win_count?: number
+          id?: string
+          user_id?: string
+          win_date?: string
+          win_window_hour?: number
+        }
+        Relationships: []
+      }
       deposits: {
         Row: {
           amount: number
@@ -134,6 +161,36 @@ export type Database = {
           result?: Json
           user_id?: string
           win_amount?: number
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          title?: string
+          type?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -248,6 +305,33 @@ export type Database = {
         }
         Relationships: []
       }
+      renewal_codes: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string
+          id: string
+          is_used: boolean
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          is_used?: boolean
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_used?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       signup_tokens: {
         Row: {
           created_at: string
@@ -324,11 +408,14 @@ export type Database = {
           id: string
           is_activated: boolean
           last_weekly_bonus_at: string | null
+          points: number
           total_deposited: number
           total_referral_bonus: number
           total_won: number
           updated_at: string
           user_id: string
+          xp_last_refill_at: string
+          xp_lives: number
         }
         Insert: {
           balance?: number
@@ -336,11 +423,14 @@ export type Database = {
           id?: string
           is_activated?: boolean
           last_weekly_bonus_at?: string | null
+          points?: number
           total_deposited?: number
           total_referral_bonus?: number
           total_won?: number
           updated_at?: string
           user_id: string
+          xp_last_refill_at?: string
+          xp_lives?: number
         }
         Update: {
           balance?: number
@@ -348,11 +438,14 @@ export type Database = {
           id?: string
           is_activated?: boolean
           last_weekly_bonus_at?: string | null
+          points?: number
           total_deposited?: number
           total_referral_bonus?: number
           total_won?: number
           updated_at?: string
           user_id?: string
+          xp_last_refill_at?: string
+          xp_lives?: number
         }
         Relationships: []
       }

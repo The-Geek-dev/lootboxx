@@ -11,9 +11,34 @@ import { useToast } from "@/hooks/use-toast";
 import { useWallet } from "@/hooks/useWallet";
 import { useDepositGate } from "@/hooks/useDepositGate";
 import { supabase } from "@/integrations/supabase/client";
-import { Banknote, Clock, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { Banknote, Clock, CheckCircle, XCircle, AlertTriangle, Info } from "lucide-react";
 
 const MIN_WITHDRAWAL = 1000;
+const WITHDRAWAL_FEE_PERCENT = 5; // 5% fee
+
+const isWithdrawalWindow = (): { allowed: boolean; message: string } => {
+  const now = new Date();
+  const day = now.getDay(); // 0=Sun, 6=Sat
+  const hour = now.getHours();
+  
+  if ((day === 6 || day === 0) && hour >= 18 && hour < 19) {
+    return { allowed: true, message: "Withdrawal window is open!" };
+  }
+  
+  // Find next window
+  let nextDay = day;
+  if (day < 6) nextDay = 6;
+  else if (day === 6 && hour >= 19) nextDay = 0;
+  else if (day === 0 && hour >= 19) nextDay = 6;
+  
+  const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const nextDayName = day === 6 && hour < 18 ? "today" : day === 0 && hour < 18 ? "today" : `next ${dayNames[nextDay]}`;
+  
+  return { 
+    allowed: false, 
+    message: `Withdrawals are only available on Saturdays & Sundays, 6:00 PM - 7:00 PM. Next window: ${nextDayName} at 6:00 PM.` 
+  };
+};
 
 const Withdraw = () => {
   const navigate = useNavigate();
@@ -27,6 +52,10 @@ const Withdraw = () => {
   const [submitting, setSubmitting] = useState(false);
   const [withdrawals, setWithdrawals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const withdrawalWindow = isWithdrawalWindow();
+  const fee = Math.ceil(Number(amount || 0) * WITHDRAWAL_FEE_PERCENT / 100);
+  const netAmount = Number(amount || 0) - fee;
 
   useEffect(() => {
     const load = async () => {
@@ -46,6 +75,11 @@ const Withdraw = () => {
   }, [navigate]);
 
   const handleSubmit = async () => {
+    if (!withdrawalWindow.allowed) {
+      toast({ title: "Withdrawal window closed", description: withdrawalWindow.message, variant: "destructive" });
+      return;
+    }
+
     const numAmount = Number(amount);
     if (!numAmount || numAmount < MIN_WITHDRAWAL) {
       toast({ title: "Minimum withdrawal is ₦1,000", variant: "destructive" });
@@ -64,7 +98,7 @@ const Withdraw = () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
-    // Deduct from balance immediately (hold)
+    // Deduct full amount from balance (fee is included)
     const { error: walletError } = await supabase
       .from("user_wallets")
       .update({ balance: balance - numAmount })
@@ -78,28 +112,26 @@ const Withdraw = () => {
 
     const { error } = await supabase.from("withdrawals").insert({
       user_id: session.user.id,
-      amount: numAmount,
+      amount: netAmount, // Net amount after fee
       bank_name: bankName.trim(),
       account_number: accountNumber.trim(),
       account_name: accountName.trim(),
     });
 
     if (error) {
-      // Refund on failure
       await supabase
         .from("user_wallets")
         .update({ balance })
         .eq("user_id", session.user.id);
       toast({ title: "Error submitting withdrawal", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Withdrawal submitted!", description: "Your request is being reviewed." });
+      toast({ title: "Withdrawal submitted!", description: `₦${netAmount.toLocaleString()} will be sent after review. Fee: ₦${fee.toLocaleString()}` });
       setAmount("");
       setBankName("");
       setAccountNumber("");
       setAccountName("");
       fetchBalance();
 
-      // Refresh list
       const { data } = await supabase
         .from("withdrawals")
         .select("*")
@@ -148,6 +180,19 @@ const Withdraw = () => {
           </h1>
           <p className="text-muted-foreground text-center mb-8">Cash out your winnings to your bank account</p>
 
+          {/* Withdrawal Window Notice */}
+          <Card className={`p-4 mb-6 ${withdrawalWindow.allowed ? "bg-green-500/10 border-green-500/30" : "bg-yellow-500/10 border-yellow-500/30"}`}>
+            <div className="flex items-center gap-3">
+              <Info className={`w-5 h-5 shrink-0 ${withdrawalWindow.allowed ? "text-green-500" : "text-yellow-500"}`} />
+              <div>
+                <p className={`font-semibold text-sm ${withdrawalWindow.allowed ? "text-green-500" : "text-yellow-500"}`}>
+                  {withdrawalWindow.allowed ? "✅ Window Open" : "⏰ Window Closed"}
+                </p>
+                <p className="text-xs text-muted-foreground">{withdrawalWindow.message}</p>
+              </div>
+            </div>
+          </Card>
+
           <Card className="p-4 bg-card/50 backdrop-blur-sm mb-6">
             <p className="text-center text-sm text-muted-foreground mb-1">Available Balance</p>
             <p className="text-center text-3xl font-bold text-primary">₦{balance.toLocaleString()}</p>
@@ -165,42 +210,41 @@ const Withdraw = () => {
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                 />
+                {Number(amount) > 0 && (
+                  <div className="mt-2 text-xs space-y-1">
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>Withdrawal fee ({WITHDRAWAL_FEE_PERCENT}%)</span>
+                      <span className="text-destructive">-₦{fee.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between font-semibold">
+                      <span>You'll receive</span>
+                      <span className="text-primary">₦{netAmount.toLocaleString()}</span>
+                    </div>
+                  </div>
+                )}
               </div>
               <div>
                 <label className="text-sm font-medium mb-1 block">Bank Name</label>
-                <Input
-                  placeholder="e.g. GTBank, Access Bank"
-                  value={bankName}
-                  onChange={(e) => setBankName(e.target.value)}
-                />
+                <Input placeholder="e.g. GTBank, Access Bank" value={bankName} onChange={(e) => setBankName(e.target.value)} />
               </div>
               <div>
                 <label className="text-sm font-medium mb-1 block">Account Number</label>
-                <Input
-                  placeholder="10-digit account number"
-                  value={accountNumber}
-                  onChange={(e) => setAccountNumber(e.target.value)}
-                  maxLength={10}
-                />
+                <Input placeholder="10-digit account number" value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} maxLength={10} />
               </div>
               <div>
                 <label className="text-sm font-medium mb-1 block">Account Name</label>
-                <Input
-                  placeholder="Name on bank account"
-                  value={accountName}
-                  onChange={(e) => setAccountName(e.target.value)}
-                />
+                <Input placeholder="Name on bank account" value={accountName} onChange={(e) => setAccountName(e.target.value)} />
               </div>
               <Button
                 className="button-gradient w-full py-6 text-lg"
-                disabled={submitting}
+                disabled={submitting || !withdrawalWindow.allowed}
                 onClick={handleSubmit}
               >
-                {submitting ? "Submitting..." : "Submit Withdrawal Request"}
+                {submitting ? "Submitting..." : !withdrawalWindow.allowed ? "Window Closed" : "Submit Withdrawal Request"}
               </Button>
               <p className="text-xs text-muted-foreground text-center">
                 <AlertTriangle className="w-3 h-3 inline mr-1" />
-                Withdrawals are reviewed and processed within 24-48 hours
+                A {WITHDRAWAL_FEE_PERCENT}% processing fee applies. Withdrawals reviewed within 24-48hrs.
               </p>
             </div>
           </Card>

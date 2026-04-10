@@ -1,24 +1,26 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useWallet } from "@/hooks/useWallet";
-import { supabase } from "@/integrations/supabase/client";
+import { useXpLives } from "@/hooks/useXpLives";
+import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { Ticket, Clock, Trophy } from "lucide-react";
 import { useDepositGate } from "@/hooks/useDepositGate";
+import XpLifeBar from "@/components/XpLifeBar";
 
 const TICKET_PRICE = 500;
 const PRIZE_POOL = 25000;
 const DRAW_INTERVAL_MINUTES = 30;
 
 const RaffleDraw = () => {
-  const navigate = useNavigate();
   const { isAuthorized, isChecking } = useDepositGate();
   const { balance, updateBalance, recordGameResult } = useWallet();
+  const { xpLives, consumeLife } = useXpLives();
+  const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
   const [tickets, setTickets] = useState(0);
   const [ticketCount, setTicketCount] = useState(1);
@@ -51,11 +53,17 @@ const RaffleDraw = () => {
   );
 
   const buyTickets = async () => {
-    const cost = ticketCount * TICKET_PRICE;
-    if (balance < cost) {
-      toast({ title: "Insufficient balance", description: `You need ₦${cost.toLocaleString()} for ${ticketCount} ticket(s).`, variant: "destructive" });
+    if (xpLives <= 0) {
+      toast({ title: "No XP lives left! ⚡", description: "Wait for refill or buy with points.", variant: "destructive" });
       return;
     }
+    const cost = ticketCount * TICKET_PRICE;
+    if (balance < cost) {
+      toast({ title: "Insufficient balance", description: `You need ₦${cost.toLocaleString()}.`, variant: "destructive" });
+      return;
+    }
+    const lifeConsumed = await consumeLife();
+    if (!lifeConsumed) return;
     await updateBalance(-cost);
     setTickets((t) => t + ticketCount);
     toast({ title: "Tickets purchased!", description: `You bought ${ticketCount} raffle ticket(s).` });
@@ -68,16 +76,18 @@ const RaffleDraw = () => {
     }
     setIsDrawing(true);
     setDrawResult(null);
-
-    // Simulate a draw
     await new Promise((r) => setTimeout(r, 3000));
 
-    // 15% win chance per ticket (simplified)
     const winChance = 1 - Math.pow(0.85, tickets);
     const won = Math.random() < winChance;
-    const prize = won ? Math.floor(PRIZE_POOL * (0.3 + Math.random() * 0.7)) : 0;
+    let prize = won ? Math.floor(PRIZE_POOL * (0.3 + Math.random() * 0.7)) : 0;
 
-    if (won) {
+    if (prize > 0) {
+      prize = adjustWinAmount(prize);
+      if (canFullyWin() && won) recordFullWin();
+    }
+
+    if (prize > 0) {
       await updateBalance(prize);
       setDrawResult(`🎉 You won ₦${prize.toLocaleString()} from the raffle!`);
     } else {
@@ -89,7 +99,6 @@ const RaffleDraw = () => {
     setIsDrawing(false);
   };
 
-
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -98,20 +107,21 @@ const RaffleDraw = () => {
           <h1 className="text-2xl sm:text-4xl font-bold text-center mb-2">
             Raffle <span className="text-gradient">Draw</span>
           </h1>
-          <p className="text-muted-foreground text-center mb-8">Buy tickets & win from the prize pool!</p>
+          <p className="text-muted-foreground text-center mb-6">Buy tickets & win from the prize pool!</p>
 
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="mb-4"><XpLifeBar /></div>
+
+          <div className="grid grid-cols-2 gap-3 mb-6">
             <Card className="p-4 bg-card/50 text-center">
               <p className="text-sm text-muted-foreground mb-1">Your Balance</p>
               <p className="text-2xl font-bold text-primary">₦{balance.toLocaleString()}</p>
             </Card>
             <Card className="p-4 bg-card/50 text-center">
               <p className="text-sm text-muted-foreground mb-1">Prize Pool</p>
-              <p className="text-2xl font-bold text-yellow-400">₦{PRIZE_POOL.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-yellow-500">₦{PRIZE_POOL.toLocaleString()}</p>
             </Card>
           </div>
 
-          {/* Timer */}
           <Card className="p-6 bg-card/50 mb-6 text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Clock className="w-5 h-5 text-primary" />
@@ -120,7 +130,6 @@ const RaffleDraw = () => {
             <p className="text-4xl font-mono font-bold text-primary">{timeLeft}</p>
           </Card>
 
-          {/* Ticket Purchase */}
           <Card className="p-6 bg-card/50 mb-6">
             <div className="flex items-center gap-2 mb-4">
               <Ticket className="w-5 h-5 text-primary" />
@@ -131,16 +140,15 @@ const RaffleDraw = () => {
               <Button variant="outline" size="sm" onClick={() => setTicketCount(Math.max(1, ticketCount - 1))}>-</Button>
               <span className="text-xl font-bold w-12 text-center">{ticketCount}</span>
               <Button variant="outline" size="sm" onClick={() => setTicketCount(ticketCount + 1)}>+</Button>
-              <span className="text-muted-foreground ml-auto">Total: ₦{(ticketCount * TICKET_PRICE).toLocaleString()}</span>
+              <span className="text-muted-foreground ml-auto text-sm">₦{(ticketCount * TICKET_PRICE).toLocaleString()}</span>
             </div>
-            <Button className="button-gradient w-full" onClick={buyTickets}>
-              Buy {ticketCount} Ticket{ticketCount > 1 ? "s" : ""}
+            <Button className="button-gradient w-full" onClick={buyTickets} disabled={xpLives <= 0}>
+              {xpLives <= 0 ? "No XP Lives" : `Buy ${ticketCount} Ticket${ticketCount > 1 ? "s" : ""}`}
             </Button>
           </Card>
 
-          {/* Draw Button */}
           <Button
-            className="w-full py-6 text-lg bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+            className="w-full py-6 text-lg button-gradient"
             onClick={simulateDraw}
             disabled={isDrawing || tickets === 0}
           >
