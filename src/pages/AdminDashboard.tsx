@@ -29,6 +29,8 @@ import {
   Activity,
   Banknote,
   Wallet,
+  Coins,
+  RefreshCw,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -49,6 +51,10 @@ const AdminDashboard = () => {
   const [walletUserId, setWalletUserId] = useState("");
   const [walletAmount, setWalletAmount] = useState("");
   const [walletOperation, setWalletOperation] = useState<"add" | "subtract" | "set">("add");
+  const [pointsUserId, setPointsUserId] = useState("");
+  const [pointsAmount, setPointsAmount] = useState("");
+  const [pointsOperation, setPointsOperation] = useState<"add" | "subtract">("add");
+  const [generatingCodes, setGeneratingCodes] = useState(false);
 
   const adminCall = useCallback(async (action: string, params: any = {}) => {
     const { data: { session } } = await supabase.auth.getSession();
