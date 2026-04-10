@@ -17,7 +17,7 @@ const Points = () => {
   const { toast } = useToast();
   const { isAuthorized, isChecking } = useDepositGate();
   const { points, loading, convertToCash, minConvertPoints, pointsToCashRate } = usePoints();
-  const { lives, maxLives, buyRefill } = useXpLives();
+  const { xpLives: lives, maxLives, buyRefill } = useXpLives();
   const [converting, setConverting] = useState(false);
   const [buyingRefill, setBuyingRefill] = useState(false);
 
