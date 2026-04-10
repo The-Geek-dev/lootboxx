@@ -397,6 +397,64 @@ Deno.serve(async (req) => {
         );
       }
 
+      case "generate_renewal_codes": {
+        // Generate weekly renewal codes for all activated users
+        const { data: wallets } = await serviceClient
+          .from("user_wallets")
+          .select("user_id")
+          .eq("is_activated", true);
+
+        let generated = 0;
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 7);
+
+        for (const w of wallets || []) {
+          const code = `RNW-${w.user_id.slice(0, 4).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+          await serviceClient.from("renewal_codes").insert({
+            user_id: w.user_id,
+            code,
+            expires_at: expiresAt.toISOString(),
+          });
+          generated++;
+        }
+
+        return new Response(
+          JSON.stringify({ success: true, message: `Generated renewal codes for ${generated} users` }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      case "adjust_points": {
+        const { user_id: targetId3, points: pointsAmount, operation: pointsOp } = params;
+        
+        const { data: wallet } = await serviceClient
+          .from("user_wallets")
+          .select("id, points")
+          .eq("user_id", targetId3)
+          .single();
+
+        if (!wallet) {
+          return new Response(JSON.stringify({ error: "Wallet not found" }), {
+            status: 404,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const currentPoints = Number(wallet.points);
+        const pts = Number(pointsAmount);
+        const newPts = pointsOp === "add" ? currentPoints + pts : Math.max(0, currentPoints - pts);
+
+        await serviceClient
+          .from("user_wallets")
+          .update({ points: newPts })
+          .eq("id", wallet.id);
+
+        return new Response(
+          JSON.stringify({ success: true, message: `Points ${pointsOp === "add" ? "added" : "removed"}. New: ${newPts}` }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400,
