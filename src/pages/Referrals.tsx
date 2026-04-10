@@ -5,31 +5,37 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Copy, Gift, Share2 } from "lucide-react";
+import { usePoints } from "@/hooks/usePoints";
+import { Users, Copy, Gift, Share2, Star, Coins } from "lucide-react";
 import { useDepositGate } from "@/hooks/useDepositGate";
 
-const REFERRAL_BONUS = 500;
+const REFERRAL_BONUS_CASH = 500;
+const REFERRAL_BONUS_POINTS = 200;
+const MILESTONE_REFERRALS = 5;
+const MILESTONE_CASH_BONUS = 5000;
+const MILESTONE_POINTS_BONUS = 3000;
 
 const Referrals = () => {
   const navigate = useNavigate();
   const { isAuthorized, isChecking } = useDepositGate();
   const { toast } = useToast();
+  const { points, addPoints } = usePoints();
   const [referralCode, setReferralCode] = useState("");
   const [referrals, setReferrals] = useState<any[]>([]);
   const [totalEarned, setTotalEarned] = useState(0);
+  const [totalPointsEarned, setTotalPointsEarned] = useState(0);
+
+  const activeReferrals = referrals.filter((r) => r.referred_id);
+  const milestonesReached = Math.floor(activeReferrals.length / MILESTONE_REFERRALS);
 
   useEffect(() => {
     const init = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/login");
-        return;
-      }
-      // auth verified by deposit gate
+      if (!session) { navigate("/login"); return; }
 
-      // Get or create referral code
       const { data: existing } = await supabase
         .from("referrals")
         .select("*")
@@ -39,8 +45,8 @@ const Referrals = () => {
         setReferralCode(existing[0].referral_code);
         setReferrals(existing);
         setTotalEarned(existing.reduce((sum: number, r: any) => sum + Number(r.bonus_amount), 0));
+        setTotalPointsEarned(existing.filter((r: any) => r.referred_id).length * REFERRAL_BONUS_POINTS);
       } else {
-        // Generate code
         const code = `LOOT-${session.user.id.slice(0, 6).toUpperCase()}`;
         await supabase.from("referrals").insert({
           referrer_id: session.user.id,
@@ -63,7 +69,7 @@ const Referrals = () => {
     if (navigator.share) {
       navigator.share({
         title: "Join LootBox!",
-        text: `Use my referral code ${referralCode} to join LootBox and get a ₦${REFERRAL_BONUS} bonus!`,
+        text: `Use my referral code ${referralCode} to join LootBox and get a ₦${REFERRAL_BONUS_CASH} bonus + ${REFERRAL_BONUS_POINTS} points!`,
         url: window.location.origin,
       });
     } else {
@@ -90,20 +96,47 @@ const Referrals = () => {
             Referral <span className="text-gradient">Program</span>
           </h1>
           <p className="text-muted-foreground text-center mb-8">
-            Invite friends and earn ₦{REFERRAL_BONUS} for each signup!
+            Invite friends and earn cash + points!
           </p>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-2 gap-3 mb-6">
             <Card className="p-4 bg-card/50 text-center">
               <p className="text-sm text-muted-foreground mb-1">Total Referrals</p>
-              <p className="text-2xl font-bold text-primary">{referrals.filter((r) => r.referred_id).length}</p>
+              <p className="text-2xl font-bold text-primary">{activeReferrals.length}</p>
             </Card>
             <Card className="p-4 bg-card/50 text-center">
-              <p className="text-sm text-muted-foreground mb-1">Total Earned</p>
+              <p className="text-sm text-muted-foreground mb-1">Cash Earned</p>
               <p className="text-2xl font-bold text-green-400">₦{totalEarned.toLocaleString()}</p>
             </Card>
+            <Card className="p-4 bg-card/50 text-center">
+              <Coins className="w-4 h-4 mx-auto mb-1 text-yellow-500" />
+              <p className="text-sm text-muted-foreground mb-1">Points Earned</p>
+              <p className="text-2xl font-bold text-yellow-500">{totalPointsEarned.toLocaleString()}</p>
+            </Card>
+            <Card className="p-4 bg-card/50 text-center">
+              <Star className="w-4 h-4 mx-auto mb-1 text-primary" />
+              <p className="text-sm text-muted-foreground mb-1">Milestones</p>
+              <p className="text-2xl font-bold text-primary">{milestonesReached}</p>
+            </Card>
           </div>
+
+          {/* Milestone Progress */}
+          <Card className="p-4 bg-primary/5 border-primary/20 mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <p className="font-semibold text-sm">🏆 Milestone Bonus</p>
+              <Badge variant="secondary">{activeReferrals.length % MILESTONE_REFERRALS}/{MILESTONE_REFERRALS}</Badge>
+            </div>
+            <div className="h-2 bg-background rounded-full overflow-hidden mb-2">
+              <div
+                className="h-full bg-primary rounded-full transition-all"
+                style={{ width: `${(activeReferrals.length % MILESTONE_REFERRALS) / MILESTONE_REFERRALS * 100}%` }}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Every {MILESTONE_REFERRALS} referrals = ₦{MILESTONE_CASH_BONUS.toLocaleString()} cash + {MILESTONE_POINTS_BONUS.toLocaleString()} bonus points!
+            </p>
+          </Card>
 
           {/* Referral Code */}
           <Card className="p-6 bg-card/50 mb-6">
@@ -131,14 +164,15 @@ const Referrals = () => {
             <div className="space-y-4">
               {[
                 { step: "1", text: "Share your unique referral code with friends" },
-                { step: "2", text: "Your friend signs up using your code" },
-                { step: "3", text: `You both earn ₦${REFERRAL_BONUS} bonus credit!` },
+                { step: "2", text: "Your friend signs up and activates their account" },
+                { step: "3", text: `You both earn ₦${REFERRAL_BONUS_CASH} + ${REFERRAL_BONUS_POINTS} points!` },
+                { step: "4", text: `Every ${MILESTONE_REFERRALS} referrals = ₦${MILESTONE_CASH_BONUS.toLocaleString()} + ${MILESTONE_POINTS_BONUS.toLocaleString()} pts bonus!` },
               ].map((item) => (
                 <div key={item.step} className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold flex-shrink-0">
                     {item.step}
                   </div>
-                  <p className="text-muted-foreground">{item.text}</p>
+                  <p className="text-sm text-muted-foreground">{item.text}</p>
                 </div>
               ))}
             </div>
