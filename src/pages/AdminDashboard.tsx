@@ -210,6 +210,38 @@ const AdminDashboard = () => {
     }
   };
 
+  const handlePointsAction = async () => {
+    const pts = Number(pointsAmount);
+    if (!pointsUserId || !pts || pts <= 0) {
+      toast({ title: "Select a user and enter points amount", variant: "destructive" });
+      return;
+    }
+    try {
+      const res = await adminCall("adjust_points", {
+        user_id: pointsUserId,
+        points: pts,
+        operation: pointsOperation,
+      });
+      toast({ title: res.message });
+      setPointsAmount("");
+      const uRes = await adminCall("get_users");
+      setUsers(uRes?.users || []);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const handleGenerateRenewalCodes = async () => {
+    setGeneratingCodes(true);
+    try {
+      const res = await adminCall("generate_renewal_codes");
+      toast({ title: res.message });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+    setGeneratingCodes(false);
+  };
+
   if (!isAdmin || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
