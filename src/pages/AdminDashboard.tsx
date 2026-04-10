@@ -706,6 +706,106 @@ const AdminDashboard = () => {
                 </Card>
               </div>
             </TabsContent>
+            {/* POINTS & RENEWAL TAB */}
+            <TabsContent value="points">
+              <div className="grid md:grid-cols-2 gap-6 mb-6">
+                {/* Adjust Points */}
+                <Card className="glass p-6">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <Coins className="w-5 h-5" /> Adjust User Points
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium mb-1 block">Operation</label>
+                      <div className="flex gap-2">
+                        {(["add", "subtract"] as const).map((op) => (
+                          <Button
+                            key={op}
+                            size="sm"
+                            variant={pointsOperation === op ? "default" : "outline"}
+                            className={pointsOperation === op ? "button-gradient" : ""}
+                            onClick={() => setPointsOperation(op)}
+                          >
+                            {op === "add" ? "Add Points" : "Remove Points"}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-1 block">Points Amount</label>
+                      <Input
+                        type="number"
+                        placeholder="e.g. 5000"
+                        value={pointsAmount}
+                        onChange={(e) => setPointsAmount(e.target.value)}
+                      />
+                    </div>
+                    <Button className="button-gradient w-full" onClick={handlePointsAction} disabled={!pointsUserId}>
+                      {pointsUserId ? "Apply to Selected User" : "Select a user first →"}
+                    </Button>
+                    {pointsUserId && (
+                      <p className="text-xs text-muted-foreground">
+                        Selected: {users.find(u => u.id === pointsUserId)?.full_name} ({users.find(u => u.id === pointsUserId)?.email})
+                      </p>
+                    )}
+                  </div>
+                </Card>
+
+                {/* Generate Renewal Codes */}
+                <Card className="glass p-6">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <RefreshCw className="w-5 h-5" /> Weekly Renewal Codes
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Generate unique renewal codes for all activated users. Each code is valid for 7 days and costs ₦2,000 to redeem.
+                  </p>
+                  <Button
+                    className="button-gradient w-full"
+                    disabled={generatingCodes}
+                    onClick={handleGenerateRenewalCodes}
+                  >
+                    {generatingCodes ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        Generate Codes for All Activated Users
+                      </>
+                    )}
+                  </Button>
+                </Card>
+              </div>
+
+              {/* User selector for points */}
+              <Card className="glass p-6">
+                <h3 className="text-lg font-semibold mb-4">Select User for Points Adjustment</h3>
+                <div className="space-y-2 max-h-80 overflow-y-auto">
+                  {users.map((u) => (
+                    <div
+                      key={u.id}
+                      className={`flex items-center justify-between py-2 px-2 rounded cursor-pointer transition-colors ${
+                        pointsUserId === u.id ? "bg-primary/10 border border-primary/30" : "border-b border-border/50"
+                      }`}
+                      onClick={() => setPointsUserId(u.id)}
+                    >
+                      <div>
+                        <p className="font-medium text-sm">{u.full_name}</p>
+                        <p className="text-xs text-muted-foreground">{u.email}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-sm text-primary">₦{Number(u.balance).toLocaleString()}</p>
+                        <Badge variant={u.is_activated ? "default" : "secondary"} className="text-xs">
+                          {u.is_activated ? "Active" : "Inactive"}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </TabsContent>
           </Tabs>
         </motion.div>
       </main>
