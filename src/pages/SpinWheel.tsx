@@ -6,12 +6,14 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useWallet } from "@/hooks/useWallet";
+import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useDepositGate } from "@/hooks/useDepositGate";
 import XpLifeBar from "@/components/XpLifeBar";
+import { Coins } from "lucide-react";
 
 const SEGMENTS = [
   { label: "₦500", value: 500, color: "#8B5CF6" },
@@ -24,12 +26,13 @@ const SEGMENTS = [
   { label: "₦5,000", value: 5000, color: "#EF4444" },
 ];
 
-const SPIN_COST = 200;
+const SPIN_COST = 20; // points
 
 const SpinWheel = () => {
   const navigate = useNavigate();
   const { isAuthorized, isChecking } = useDepositGate();
-  const { balance, updateBalance, recordGameResult } = useWallet();
+  const { updateBalance, recordGameResult } = useWallet();
+  const { points, spendPoints, fetchPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
@@ -85,8 +88,8 @@ const SpinWheel = () => {
       toast({ title: "No XP lives left! ⚡", description: "Wait for refill or buy with points.", variant: "destructive" });
       return;
     }
-    if (balance < SPIN_COST) {
-      toast({ title: "Insufficient balance", description: `You need ₦${SPIN_COST} to spin.`, variant: "destructive" });
+    if (points < SPIN_COST) {
+      toast({ title: "Insufficient points", description: `You need ${SPIN_COST} points to spin.`, variant: "destructive" });
       return;
     }
 
@@ -95,7 +98,7 @@ const SpinWheel = () => {
 
     setIsSpinning(true);
     setResult(null);
-    await updateBalance(-SPIN_COST);
+    await spendPoints(SPIN_COST);
 
     const winIndex = Math.floor(Math.random() * SEGMENTS.length);
     const segAngle = 360 / SEGMENTS.length;
@@ -134,14 +137,14 @@ const SpinWheel = () => {
           <h1 className="text-2xl sm:text-4xl font-bold text-center mb-2">
             Spin the <span className="text-gradient">Wheel</span>
           </h1>
-          <p className="text-muted-foreground text-center mb-6">Cost: ₦{SPIN_COST} per spin</p>
+          <p className="text-muted-foreground text-center mb-6">Cost: {SPIN_COST} points per spin</p>
 
           <div className="flex flex-col items-center gap-4 max-w-md mx-auto">
             <div className="w-full"><XpLifeBar /></div>
 
             <Card className="p-4 bg-card/50 backdrop-blur-sm w-full">
-              <p className="text-center text-sm text-muted-foreground mb-1">Your Balance</p>
-              <p className="text-center text-2xl font-bold text-primary">₦{balance.toLocaleString()}</p>
+              <p className="text-center text-sm text-muted-foreground mb-1 flex items-center justify-center gap-1"><Coins className="w-4 h-4" /> Your Points</p>
+              <p className="text-center text-2xl font-bold text-primary">{points.toLocaleString()} pts</p>
             </Card>
 
             <div className="relative">
@@ -160,7 +163,7 @@ const SpinWheel = () => {
             )}
 
             <Button className="button-gradient px-8 py-3 text-lg w-full" onClick={spin} disabled={isSpinning || xpLives <= 0}>
-              {isSpinning ? "Spinning..." : xpLives <= 0 ? "No XP Lives" : `Spin (₦${SPIN_COST})`}
+              {isSpinning ? "Spinning..." : xpLives <= 0 ? "No XP Lives" : `Spin (${SPIN_COST} pts)`}
             </Button>
           </div>
         </motion.div>

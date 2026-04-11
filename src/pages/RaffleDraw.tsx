@@ -5,20 +5,22 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useWallet } from "@/hooks/useWallet";
+import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
-import { Ticket, Clock, Trophy } from "lucide-react";
+import { Ticket, Clock, Trophy, Coins } from "lucide-react";
 import { useDepositGate } from "@/hooks/useDepositGate";
 import XpLifeBar from "@/components/XpLifeBar";
 
-const TICKET_PRICE = 500;
+const TICKET_COST = 50; // points per ticket
 const PRIZE_POOL = 25000;
 const DRAW_INTERVAL_MINUTES = 30;
 
 const RaffleDraw = () => {
   const { isAuthorized, isChecking } = useDepositGate();
-  const { balance, updateBalance, recordGameResult } = useWallet();
+  const { updateBalance, recordGameResult } = useWallet();
+  const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
@@ -57,16 +59,16 @@ const RaffleDraw = () => {
       toast({ title: "No XP lives left! ⚡", description: "Wait for refill or buy with points.", variant: "destructive" });
       return;
     }
-    const cost = ticketCount * TICKET_PRICE;
-    if (balance < cost) {
-      toast({ title: "Insufficient balance", description: `You need ₦${cost.toLocaleString()}.`, variant: "destructive" });
+    const cost = ticketCount * TICKET_COST;
+    if (points < cost) {
+      toast({ title: "Insufficient points", description: `You need ${cost.toLocaleString()} points.`, variant: "destructive" });
       return;
     }
     const lifeConsumed = await consumeLife();
     if (!lifeConsumed) return;
-    await updateBalance(-cost);
+    await spendPoints(cost);
     setTickets((t) => t + ticketCount);
-    toast({ title: "Tickets purchased!", description: `You bought ${ticketCount} raffle ticket(s).` });
+    toast({ title: "Tickets purchased!", description: `You bought ${ticketCount} raffle ticket(s) for ${cost} points.` });
   };
 
   const simulateDraw = async () => {
@@ -94,7 +96,7 @@ const RaffleDraw = () => {
       setDrawResult("Not this time. Try again in the next draw!");
     }
 
-    await recordGameResult("raffle", tickets * TICKET_PRICE, prize, { tickets, won, prize });
+    await recordGameResult("raffle", tickets * TICKET_COST, prize, { tickets, won, prize });
     setTickets(0);
     setIsDrawing(false);
   };
@@ -113,8 +115,8 @@ const RaffleDraw = () => {
 
           <div className="grid grid-cols-2 gap-3 mb-6">
             <Card className="p-4 bg-card/50 text-center">
-              <p className="text-sm text-muted-foreground mb-1">Your Balance</p>
-              <p className="text-2xl font-bold text-primary">₦{balance.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground mb-1 flex items-center justify-center gap-1"><Coins className="w-4 h-4" /> Your Points</p>
+              <p className="text-2xl font-bold text-primary">{points.toLocaleString()} pts</p>
             </Card>
             <Card className="p-4 bg-card/50 text-center">
               <p className="text-sm text-muted-foreground mb-1">Prize Pool</p>
@@ -135,12 +137,12 @@ const RaffleDraw = () => {
               <Ticket className="w-5 h-5 text-primary" />
               <h3 className="font-semibold">Buy Tickets</h3>
             </div>
-            <p className="text-sm text-muted-foreground mb-4">₦{TICKET_PRICE} per ticket • You have {tickets} ticket(s)</p>
+            <p className="text-sm text-muted-foreground mb-4">{TICKET_COST} pts per ticket • You have {tickets} ticket(s)</p>
             <div className="flex items-center gap-4 mb-4">
               <Button variant="outline" size="sm" onClick={() => setTicketCount(Math.max(1, ticketCount - 1))}>-</Button>
               <span className="text-xl font-bold w-12 text-center">{ticketCount}</span>
               <Button variant="outline" size="sm" onClick={() => setTicketCount(ticketCount + 1)}>+</Button>
-              <span className="text-muted-foreground ml-auto text-sm">₦{(ticketCount * TICKET_PRICE).toLocaleString()}</span>
+              <span className="text-muted-foreground ml-auto text-sm">{(ticketCount * TICKET_COST).toLocaleString()} pts</span>
             </div>
             <Button className="button-gradient w-full" onClick={buyTickets} disabled={xpLives <= 0}>
               {xpLives <= 0 ? "No XP Lives" : `Buy ${ticketCount} Ticket${ticketCount > 1 ? "s" : ""}`}

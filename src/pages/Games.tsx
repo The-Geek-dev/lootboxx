@@ -28,7 +28,14 @@ const GameCard = ({ game, size = "normal" }: { game: GameItem; size?: "normal" |
       <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
         <span className={`${size === "large" ? "text-4xl sm:text-5xl" : "text-3xl sm:text-4xl"} mb-1`}>{game.emoji}</span>
         <p className="text-foreground font-semibold text-xs sm:text-sm text-center leading-tight px-1">{game.name}</p>
-        {!game.isPlayable && (
+        {game.isVip && (
+          <div className="absolute top-1.5 left-1.5">
+            <Badge className="text-[9px] px-1 py-0 bg-yellow-500/90 text-yellow-950 border-0 font-bold">
+              👑 VIP
+            </Badge>
+          </div>
+        )}
+        {!game.isPlayable && !game.isVip && (
           <div className="absolute top-2 right-2">
             <Lock className="w-3 h-3 text-foreground/70" />
           </div>
@@ -38,6 +45,7 @@ const GameCard = ({ game, size = "normal" }: { game: GameItem; size?: "normal" |
             LIVE
           </Badge>
         )}
+        <span className="text-[9px] text-foreground/70 mt-0.5">{game.pointCost} pts</span>
       </div>
       <div className="absolute inset-0 bg-background/0 group-hover:bg-background/10 transition-colors" />
     </div>

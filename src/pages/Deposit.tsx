@@ -13,17 +13,17 @@ import { useToast } from "@/hooks/use-toast";
 import { Wallet, CreditCard, CheckCircle, AlertTriangle, Coins, ArrowRightLeft, TrendingUp } from "lucide-react";
 
 const ACTIVATION_AMOUNT = 7000;
-const ACTIVATION_POINTS = 10000; // 7k deposit = 10,000 points
+const ACTIVATION_POINTS = 1000; // 7k deposit = 1,000 points
 const RENEWAL_AMOUNT = 2000;
-const RENEWAL_POINTS = 3000; // 2k renewal = 3,000 points
+const RENEWAL_POINTS = 300; // 2k renewal = 300 points
 
 const DEPOSIT_OPTIONS = [
   { amount: 7000, label: "₦7,000", bonus: 0, pointsReward: ACTIVATION_POINTS, activation: true, description: "Activation Coupon" },
   { amount: 2000, label: "₦2,000", bonus: 0, pointsReward: RENEWAL_POINTS, renewal: true, description: "Weekly Renewal" },
-  { amount: 10000, label: "₦10,000", bonus: 1500, pointsReward: 5000, description: "Starter Pack" },
-  { amount: 15000, label: "₦15,000", bonus: 3000, pointsReward: 8000, description: "Pro Pack" },
-  { amount: 20000, label: "₦20,000", bonus: 5000, pointsReward: 12000, description: "Premium Pack" },
-  { amount: 50000, label: "₦50,000", bonus: 15000, pointsReward: 35000, description: "VIP Pack" },
+  { amount: 10000, label: "₦10,000", bonus: 1500, pointsReward: 500, description: "Starter Pack" },
+  { amount: 15000, label: "₦15,000", bonus: 3000, pointsReward: 800, description: "Pro Pack" },
+  { amount: 20000, label: "₦20,000", bonus: 5000, pointsReward: 1200, description: "Premium Pack" },
+  { amount: 50000, label: "₦50,000", bonus: 15000, pointsReward: 3500, description: "VIP Pack" },
 ];
 
 const Deposit = () => {

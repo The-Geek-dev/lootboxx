@@ -1,20 +1,20 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useWallet } from "@/hooks/useWallet";
+import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useDepositGate } from "@/hooks/useDepositGate";
 import XpLifeBar from "@/components/XpLifeBar";
+import { Coins } from "lucide-react";
 
 const SYMBOLS = ["🍒", "🍋", "🔔", "⭐", "💎", "7️⃣"];
-const BET_AMOUNT = 100;
+const BET_COST = 20; // points
 
 const PAYOUTS: Record<string, number> = {
   "💎💎💎": 5000,
@@ -26,9 +26,9 @@ const PAYOUTS: Record<string, number> = {
 };
 
 const LuckySlots = () => {
-  const navigate = useNavigate();
   const { isAuthorized, isChecking } = useDepositGate();
-  const { balance, updateBalance, recordGameResult } = useWallet();
+  const { updateBalance, recordGameResult } = useWallet();
+  const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
@@ -42,8 +42,8 @@ const LuckySlots = () => {
       toast({ title: "No XP lives left! ⚡", description: "Wait for refill or buy with points.", variant: "destructive" });
       return;
     }
-    if (balance < BET_AMOUNT) {
-      toast({ title: "Insufficient balance", description: `You need ₦${BET_AMOUNT} to play.`, variant: "destructive" });
+    if (points < BET_COST) {
+      toast({ title: "Insufficient points", description: `You need ${BET_COST} points to play.`, variant: "destructive" });
       return;
     }
 
@@ -55,7 +55,7 @@ const LuckySlots = () => {
 
     setIsSpinning(true);
     setResult(null);
-    await updateBalance(-BET_AMOUNT);
+    await spendPoints(BET_COST);
 
     let count = 0;
     const interval = setInterval(() => {
@@ -80,7 +80,6 @@ const LuckySlots = () => {
         const smallWin = twoMatch ? 50 : 0;
         let totalWin = payout || smallWin;
 
-        // Apply win restrictions
         if (totalWin > 0) {
           totalWin = adjustWinAmount(totalWin);
           if (payout > 0 && canFullyWin()) {
@@ -95,7 +94,7 @@ const LuckySlots = () => {
           setResult("No match. Try again!");
         }
 
-        recordGameResult("slots", BET_AMOUNT, totalWin, { reels: finalReels, combo });
+        recordGameResult("slots", BET_COST, totalWin, { reels: finalReels, combo });
         setIsSpinning(false);
       }
     }, 80);
@@ -121,13 +120,11 @@ const LuckySlots = () => {
           <p className="text-muted-foreground text-center mb-6">Match symbols to win big!</p>
 
           <div className="max-w-md mx-auto flex flex-col items-center gap-4">
-            <div className="w-full">
-              <XpLifeBar />
-            </div>
+            <div className="w-full"><XpLifeBar /></div>
 
             <Card className="p-4 bg-card/50 backdrop-blur-sm w-full">
-              <p className="text-center text-sm text-muted-foreground mb-1">Your Balance</p>
-              <p className="text-center text-2xl font-bold text-primary">₦{balance.toLocaleString()}</p>
+              <p className="text-center text-sm text-muted-foreground mb-1 flex items-center justify-center gap-1"><Coins className="w-4 h-4" /> Your Points</p>
+              <p className="text-center text-2xl font-bold text-primary">{points.toLocaleString()} pts</p>
             </Card>
 
             <Card className="p-8 bg-card/80 backdrop-blur-sm border-primary/30 w-full">
@@ -165,7 +162,7 @@ const LuckySlots = () => {
             )}
 
             <Button className="button-gradient px-8 py-3 text-lg w-full" onClick={spin} disabled={isSpinning || xpLives <= 0}>
-              {isSpinning ? "Spinning..." : xpLives <= 0 ? "No XP Lives" : `Spin (₦${BET_AMOUNT})`}
+              {isSpinning ? "Spinning..." : xpLives <= 0 ? "No XP Lives" : `Spin (${BET_COST} pts)`}
             </Button>
           </div>
         </motion.div>

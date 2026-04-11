@@ -5,10 +5,11 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useWallet } from "@/hooks/useWallet";
+import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
-import { Brain, CheckCircle, XCircle } from "lucide-react";
+import { Brain, CheckCircle, XCircle, Coins } from "lucide-react";
 import { useDepositGate } from "@/hooks/useDepositGate";
 import XpLifeBar from "@/components/XpLifeBar";
 
@@ -25,13 +26,14 @@ const QUESTIONS = [
   { q: "What is the fastest land animal?", options: ["Lion", "Cheetah", "Horse", "Leopard"], answer: 1 },
 ];
 
-const ENTRY_FEE = 150;
+const ENTRY_FEE = 20; // points
 const REWARD_PER_CORRECT = 50;
 const BONUS_ALL_CORRECT = 500;
 
 const TriviaQuiz = () => {
   const { isAuthorized, isChecking } = useDepositGate();
-  const { balance, updateBalance, recordGameResult } = useWallet();
+  const { updateBalance, recordGameResult } = useWallet();
+  const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
@@ -48,13 +50,13 @@ const TriviaQuiz = () => {
       toast({ title: "No XP lives left! ⚡", description: "Wait for refill or buy with points.", variant: "destructive" });
       return;
     }
-    if (balance < ENTRY_FEE) {
-      toast({ title: "Insufficient balance", description: `You need ₦${ENTRY_FEE} to play.`, variant: "destructive" });
+    if (points < ENTRY_FEE) {
+      toast({ title: "Insufficient points", description: `You need ${ENTRY_FEE} points to play.`, variant: "destructive" });
       return;
     }
     const lifeConsumed = await consumeLife();
     if (!lifeConsumed) return;
-    await updateBalance(-ENTRY_FEE);
+    await spendPoints(ENTRY_FEE);
     const shuffled = [...QUESTIONS].sort(() => Math.random() - 0.5).slice(0, 5);
     setShuffledQuestions(shuffled);
     setGameState("playing");
@@ -115,8 +117,8 @@ const TriviaQuiz = () => {
           <div className="mb-4"><XpLifeBar /></div>
 
           <Card className="p-4 bg-card/50 backdrop-blur-sm mb-6">
-            <p className="text-center text-sm text-muted-foreground mb-1">Your Balance</p>
-            <p className="text-center text-2xl font-bold text-primary">₦{balance.toLocaleString()}</p>
+            <p className="text-center text-sm text-muted-foreground mb-1 flex items-center justify-center gap-1"><Coins className="w-4 h-4" /> Your Points</p>
+            <p className="text-center text-2xl font-bold text-primary">{points.toLocaleString()} pts</p>
           </Card>
 
           {gameState === "idle" && (
@@ -126,7 +128,7 @@ const TriviaQuiz = () => {
               <p className="text-muted-foreground mb-2">5 questions • ₦{REWARD_PER_CORRECT} per correct answer</p>
               <p className="text-muted-foreground mb-6">Get all 5 correct for a ₦{BONUS_ALL_CORRECT} bonus!</p>
               <Button className="button-gradient" onClick={startGame} disabled={xpLives <= 0}>
-                {xpLives <= 0 ? "No XP Lives" : `Start Quiz (₦${ENTRY_FEE})`}
+                {xpLives <= 0 ? "No XP Lives" : `Start Quiz (${ENTRY_FEE} pts)`}
               </Button>
             </Card>
           )}
