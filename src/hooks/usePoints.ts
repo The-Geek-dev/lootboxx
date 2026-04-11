@@ -41,6 +41,25 @@ export const usePoints = () => {
     return false;
   };
 
+  const spendPoints = async (amount: number): Promise<boolean> => {
+    if (points < amount) return false;
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return false;
+
+    const newPoints = points - amount;
+    const { error } = await supabase
+      .from("user_wallets")
+      .update({ points: newPoints })
+      .eq("user_id", session.user.id);
+
+    if (!error) {
+      setPoints(newPoints);
+      return true;
+    }
+    return false;
+  };
+
   const convertToCash = async (): Promise<{ success: boolean; cashAmount: number }> => {
     if (points < MIN_CONVERT_POINTS) return { success: false, cashAmount: 0 };
 
@@ -52,7 +71,6 @@ export const usePoints = () => {
     const cashAmount = pointsToConvert / POINTS_TO_CASH_RATE;
     const remainingPoints = points - pointsToConvert;
 
-    // Get current balance
     const { data: wallet } = await supabase
       .from("user_wallets")
       .select("balance")
@@ -80,6 +98,7 @@ export const usePoints = () => {
     points,
     loading,
     addPoints,
+    spendPoints,
     convertToCash,
     fetchPoints,
     minConvertPoints: MIN_CONVERT_POINTS,
