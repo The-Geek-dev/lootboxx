@@ -115,7 +115,7 @@ const CrashEngine = ({ gameId, name, emoji, pointCost }: Props) => {
           💰 Cash Out (₦{Math.floor(pointCost * multiplier * 2).toLocaleString()})
         </Button>
       ) : (
-        <Button className="button-gradient w-full py-3 text-lg" onClick={start} disabled={state === "rising" as boolean || xpLives <= 0}>
+        <Button className="button-gradient w-full py-3 text-lg" onClick={start} disabled={xpLives <= 0}>
           {xpLives <= 0 ? "No XP Lives" : `Start (${pointCost} pts)`}
         </Button>
       )}
