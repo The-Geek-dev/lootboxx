@@ -171,7 +171,7 @@ const CardsEngine = ({ gameId, name, emoji, pointCost, theme }: Props) => {
         <div className="grid grid-cols-2 gap-3">
           <Button className="py-6 text-lg bg-green-600 hover:bg-green-700 text-white" onClick={() => guess("hi")} disabled={!!nextCard}>{label1}</Button>
           <Button className="py-6 text-lg bg-red-600 hover:bg-red-700 text-white" onClick={() => guess("lo")} disabled={!!nextCard}>{label2}</Button>
-          {streak > 0 && <Button variant="outline" className="col-span-2" onClick={cashOut}>\u{1F4B0} Cash Out (\u20A6{(streak * 100).toLocaleString()})</Button>}
+          {streak > 0 && <Button variant="outline" className="col-span-2" onClick={cashOut}>{"💰"} Cash Out ({"₦"}{(streak * 100).toLocaleString()})</Button>}
         </div>
       ) : (
         <Button className="button-gradient w-full py-3 text-lg" onClick={startGame} disabled={xpLives <= 0}>

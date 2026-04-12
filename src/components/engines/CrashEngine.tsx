@@ -157,7 +157,7 @@ const CrashEngine = ({ gameId, name, emoji, pointCost, theme, visuals }: Props) 
 
       {state === "rising" ? (
         <Button className="w-full py-6 text-lg bg-green-600 hover:bg-green-700 text-white" onClick={cashOut}>
-          \u{1F4B0} Cash Out (\u20A6{Math.floor(pointCost * multiplier * 2).toLocaleString()})
+          {"💰"} Cash Out ({"₦"}{Math.floor(pointCost * multiplier * 2).toLocaleString()})
         </Button>
       ) : (
         <Button className="button-gradient w-full py-3 text-lg" onClick={start} disabled={xpLives <= 0}>
