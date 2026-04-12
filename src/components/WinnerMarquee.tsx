@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import confetti from "canvas-confetti";
 
 const FIRST_NAMES = [
   "Chidi", "Amara", "Tunde", "Ngozi", "Emeka", "Fatima", "Yusuf", "Blessing",
@@ -12,36 +13,142 @@ const GAMES = [
   "✈️ Aviator", "🃏 Blackjack", "🎲 Dice Roll", "💎 Diamond Rush",
 ];
 
-const AMOUNTS = [500, 1000, 2000, 3000, 5000, 7500, 10000, 15000, 20000, 50000];
+const WIN_AMOUNTS = [500, 1000, 2000, 3000, 5000, 7500, 10000, 15000, 20000, 50000];
+const BIG_WIN_THRESHOLD = 5000;
 
-function generateWin() {
+const CITIES = ["Lagos", "Abuja", "Port Harcourt", "Ibadan", "Kano", "Enugu", "Benin", "Warri"];
+
+type MarqueeEvent = { text: string; icon: string; isBigWin: boolean };
+
+function randomName() {
   const name = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
-  const game = GAMES[Math.floor(Math.random() * GAMES.length)];
-  const amount = AMOUNTS[Math.floor(Math.random() * AMOUNTS.length)];
   const initial = String.fromCharCode(65 + Math.floor(Math.random() * 26));
-  return `${name} ${initial}. won ₦${amount.toLocaleString()} on ${game}`;
+  return `${name} ${initial}.`;
+}
+
+function generateEvent(): MarqueeEvent {
+  const roll = Math.random();
+
+  if (roll < 0.5) {
+    // Win event
+    const game = GAMES[Math.floor(Math.random() * GAMES.length)];
+    const amount = WIN_AMOUNTS[Math.floor(Math.random() * WIN_AMOUNTS.length)];
+    return {
+      text: `${randomName()} won ₦${amount.toLocaleString()} on ${game}`,
+      icon: amount >= BIG_WIN_THRESHOLD ? "💰" : "🏆",
+      isBigWin: amount >= BIG_WIN_THRESHOLD,
+    };
+  } else if (roll < 0.7) {
+    // Sign in event
+    const city = CITIES[Math.floor(Math.random() * CITIES.length)];
+    return {
+      text: `${randomName()} just signed in from ${city}`,
+      icon: "👋",
+      isBigWin: false,
+    };
+  } else if (roll < 0.82) {
+    // Deposit event
+    const amounts = [5000, 7000, 10000, 15000, 20000];
+    const amt = amounts[Math.floor(Math.random() * amounts.length)];
+    return {
+      text: `${randomName()} deposited ₦${amt.toLocaleString()}`,
+      icon: "💳",
+      isBigWin: false,
+    };
+  } else if (roll < 0.92) {
+    // Referral event
+    return {
+      text: `${randomName()} just referred a friend and earned 200 pts`,
+      icon: "🤝",
+      isBigWin: false,
+    };
+  } else {
+    // Withdrawal event
+    const amounts = [2000, 5000, 10000, 20000, 50000];
+    const amt = amounts[Math.floor(Math.random() * amounts.length)];
+    return {
+      text: `${randomName()} withdrew ₦${amt.toLocaleString()}`,
+      icon: "🎉",
+      isBigWin: amt >= 20000,
+    };
+  }
+}
+
+// Simple cash register / coin sound via Web Audio API
+function playWinSound() {
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = "sine";
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+
+    // Quick ascending arpeggio
+    const notes = [523.25, 659.25, 783.99, 1046.5]; // C5 E5 G5 C6
+    const step = 0.08;
+    notes.forEach((freq, i) => {
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + i * step);
+    });
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + notes.length * step + 0.2);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + notes.length * step + 0.3);
+  } catch {
+    // Audio not available
+  }
+}
+
+function fireBigWinConfetti() {
+  confetti({
+    particleCount: 80,
+    spread: 70,
+    origin: { y: 0, x: 0.5 },
+    colors: ["#8B5CF6", "#F59E0B", "#10B981", "#EC4899", "#3B82F6"],
+    gravity: 1.2,
+    ticks: 120,
+  });
 }
 
 const WinnerMarquee = () => {
-  const [wins, setWins] = useState<string[]>(() =>
-    Array.from({ length: 8 }, generateWin)
+  const [events, setEvents] = useState<MarqueeEvent[]>(() =>
+    Array.from({ length: 8 }, generateEvent)
   );
+  const hasInteracted = useRef(false);
 
+  // Track user interaction for audio autoplay policy
   useEffect(() => {
-    const interval = setInterval(() => {
-      setWins((prev) => [...prev.slice(1), generateWin()]);
-    }, 4000);
-    return () => clearInterval(interval);
+    const handler = () => { hasInteracted.current = true; };
+    window.addEventListener("click", handler, { once: true });
+    window.addEventListener("touchstart", handler, { once: true });
+    return () => {
+      window.removeEventListener("click", handler);
+      window.removeEventListener("touchstart", handler);
+    };
   }, []);
 
-  const text = wins.join("  •  ");
+  const addEvent = useCallback(() => {
+    const ev = generateEvent();
+    setEvents((prev) => [...prev.slice(1), ev]);
+    if (ev.isBigWin) {
+      fireBigWinConfetti();
+      if (hasInteracted.current) playWinSound();
+    }
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(addEvent, 4000);
+    return () => clearInterval(interval);
+  }, [addEvent]);
+
+  const marqueeContent = events.map((e) => `${e.icon} ${e.text}`).join("  •  ");
 
   return (
     <>
       <div className="fixed top-0 left-0 right-0 z-[60] bg-primary/90 backdrop-blur-sm text-primary-foreground text-[11px] py-1 overflow-hidden">
         <div className="animate-marquee whitespace-nowrap inline-block">
-          <span className="mx-4">🏆 {text}  •  </span>
-          <span className="mx-4">🏆 {text}  •  </span>
+          <span className="mx-4">{marqueeContent}  •  </span>
+          <span className="mx-4">{marqueeContent}  •  </span>
         </div>
       </div>
       <div className="h-6" />
