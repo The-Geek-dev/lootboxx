@@ -272,7 +272,7 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <AppSidebar />
-      <main className="pl-16 container px-4 pt-32 pb-16">
+      <main className="md:pl-16 container px-4 pt-32 pb-16">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center gap-3 mb-8">
             <Shield className="w-8 h-8 text-primary" />

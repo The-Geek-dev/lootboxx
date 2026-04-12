@@ -115,7 +115,7 @@ const Dashboard = () => {
       <Navigation />
       <AppSidebar />
       
-      <div className="pl-16 container px-4 pt-32 pb-20">
+      <div className="md:pl-16 container px-4 pt-32 pb-20">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
             <div>

@@ -62,7 +62,7 @@ const About = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Navigation />
       <AppSidebar />
-      <div className="pl-16 container px-4 pt-32 pb-20 relative overflow-hidden">
+      <div className="md:pl-16 container px-4 pt-32 pb-20 relative overflow-hidden">
         <MascotBackground position="right" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}

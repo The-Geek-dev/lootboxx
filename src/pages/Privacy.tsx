@@ -8,7 +8,7 @@ const Privacy = () => {
     <div className="min-h-screen flex flex-col">
       <Navigation />
       <AppSidebar />
-      <main className="pl-16 flex-grow relative overflow-hidden">
+      <main className="md:pl-16 flex-grow relative overflow-hidden">
         <MascotBackground position="right" />
         <MascotBackground variant="watermark" corner="bottom-left" />
         <div className="container mx-auto px-4 py-20 relative z-10">
