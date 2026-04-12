@@ -18,7 +18,7 @@ interface Props {
   teams?: [{ icon: string; label: string }, { icon: string; label: string }];
 }
 
-const SportsEngine = ({ gameId, name, emoji, pointCost, theme, teams }: Props) => {
+const SportsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'from-purple-900 to-black', accentColor: 'text-purple-400', description: '', variant: 'classic' }, teams }: Props) => {
   const { updateBalance, recordGameResult } = useWallet();
   const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();

@@ -21,7 +21,7 @@ interface Props {
 
 const DICE_FACES = ["\u2680", "\u2681", "\u2682", "\u2683", "\u2684", "\u2685"];
 
-const DiceEngine = ({ gameId, name, emoji, pointCost, theme, diceCount = 2, targetRange = [5, 6, 7, 8, 9] }: Props) => {
+const DiceEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'from-purple-900 to-black', accentColor: 'text-purple-400', description: '', variant: 'classic' }, diceCount = 2, targetRange = [5, 6, 7, 8, 9] }: Props) => {
   const { updateBalance, recordGameResult } = useWallet();
   const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();

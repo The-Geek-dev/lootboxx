@@ -37,7 +37,7 @@ const getGridConfig = (variant?: string): { size: number; icons: string[]; time:
   }
 };
 
-const ArcadeEngine = ({ gameId, name, emoji, pointCost, theme }: Props) => {
+const ArcadeEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'from-purple-900 to-black', accentColor: 'text-purple-400', description: '', variant: 'classic' } }: Props) => {
   const { updateBalance, recordGameResult } = useWallet();
   const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
