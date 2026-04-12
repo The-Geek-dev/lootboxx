@@ -26,10 +26,19 @@ const GameCard = ({ game, size = "normal" }: { game: GameItem; size?: "normal" |
 
   const content = (
     <div className={`relative rounded-xl overflow-hidden cursor-pointer group transition-transform hover:scale-105 ${size === "large" ? "h-36 sm:h-44" : "h-28 sm:h-32"}`}>
-      <div className={`absolute inset-0 bg-gradient-to-br ${game.color} opacity-90`} />
-      <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
-        <span className={`${size === "large" ? "text-4xl sm:text-5xl" : "text-3xl sm:text-4xl"} mb-1`}>{game.emoji}</span>
-        <p className="text-foreground font-semibold text-xs sm:text-sm text-center leading-tight px-1">{game.name}</p>
+      {gameImages[game.id] ? (
+        <img
+          src={gameImages[game.id]}
+          alt={game.name}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      ) : (
+        <div className={`absolute inset-0 bg-gradient-to-br ${game.color} opacity-90`} />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+      <div className="absolute inset-0 flex flex-col items-end justify-end p-2">
+        <p className="text-foreground font-bold text-xs sm:text-sm text-center leading-tight px-1 w-full drop-shadow-lg">{game.name}</p>
         {game.isVip && (
           <div className="absolute top-1.5 left-1.5">
             <Badge className="text-[9px] px-1 py-0 bg-yellow-500/90 text-yellow-950 border-0 font-bold">
@@ -43,7 +52,7 @@ const GameCard = ({ game, size = "normal" }: { game: GameItem; size?: "normal" |
           </div>
         )}
         {game.isPlayable && (
-          <Badge variant="secondary" className="mt-1 text-[10px] px-1.5 py-0 bg-primary/30 text-primary border-0">
+          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-primary/30 text-primary border-0 mt-0.5">
             LIVE
           </Badge>
         )}
