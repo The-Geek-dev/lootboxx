@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-const MAX_LIVES = 8;
+const MAX_LIVES = 10;
 const REFILL_INTERVAL_MS = 4 * 60 * 60 * 1000; // 4 hours
 const XP_REFILL_COST_POINTS = 500; // cost in points to buy a full refill
 
