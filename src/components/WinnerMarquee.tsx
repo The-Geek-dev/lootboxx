@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
+import { Volume2, VolumeX } from "lucide-react";
 import confetti from "canvas-confetti";
 
 const FIRST_NAMES = [
@@ -114,9 +115,19 @@ const WinnerMarquee = () => {
   const [events, setEvents] = useState<MarqueeEvent[]>(() =>
     Array.from({ length: 8 }, generateEvent)
   );
+  const [muted, setMuted] = useState(() => {
+    try { return localStorage.getItem("lootbox_muted") === "true"; } catch { return false; }
+  });
   const hasInteracted = useRef(false);
 
-  // Track user interaction for audio autoplay policy
+  const toggleMute = () => {
+    setMuted((prev) => {
+      const next = !prev;
+      try { localStorage.setItem("lootbox_muted", String(next)); } catch {}
+      return next;
+    });
+  };
+
   useEffect(() => {
     const handler = () => { hasInteracted.current = true; };
     window.addEventListener("click", handler, { once: true });
@@ -132,9 +143,9 @@ const WinnerMarquee = () => {
     setEvents((prev) => [...prev.slice(1), ev]);
     if (ev.isBigWin) {
       fireBigWinConfetti();
-      if (hasInteracted.current) playWinSound();
+      if (hasInteracted.current && !muted) playWinSound();
     }
-  }, []);
+  }, [muted]);
 
   useEffect(() => {
     const interval = setInterval(addEvent, 4000);
@@ -145,11 +156,18 @@ const WinnerMarquee = () => {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-[60] bg-primary/90 backdrop-blur-sm text-primary-foreground text-[11px] py-1 overflow-hidden">
-        <div className="animate-marquee whitespace-nowrap inline-block">
+      <div className="fixed top-0 left-0 right-0 z-[60] bg-primary/90 backdrop-blur-sm text-primary-foreground text-[11px] py-1 overflow-hidden flex items-center">
+        <div className="animate-marquee whitespace-nowrap inline-block flex-1">
           <span className="mx-4">{marqueeContent}  •  </span>
           <span className="mx-4">{marqueeContent}  •  </span>
         </div>
+        <button
+          onClick={toggleMute}
+          className="shrink-0 mr-2 p-0.5 rounded hover:bg-white/10 transition-colors"
+          title={muted ? "Unmute sounds" : "Mute sounds"}
+        >
+          {muted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+        </button>
       </div>
       <div className="h-6" />
     </>
