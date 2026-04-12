@@ -15,12 +15,14 @@ interface Props {
   emoji: string;
   pointCost: number;
   symbols?: string[];
-  theme: GameTheme;
+  theme?: GameTheme;
 }
 
 const DEFAULT_SYMBOLS = ["\u{1F352}", "\u{1F34B}", "\u{1F514}", "\u2B50", "\u{1F48E}", "7\uFE0F\u20E3"];
 
-const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS, theme }: Props) => {
+const DEFAULT_THEME: GameTheme = { bgGradient: 'from-purple-900 to-black', accentColor: 'purple', description: 'Spin to win!', variant: 'classic' };
+
+const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS, theme = DEFAULT_THEME }: Props) => {
   const { updateBalance, recordGameResult } = useWallet();
   const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();

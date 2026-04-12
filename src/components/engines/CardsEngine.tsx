@@ -14,7 +14,7 @@ interface Props {
   name: string;
   emoji: string;
   pointCost: number;
-  theme: GameTheme;
+  theme?: GameTheme;
 }
 
 const CARDS = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
@@ -50,7 +50,7 @@ const getActionLabels = (variant?: string): [string, string] => {
   }
 };
 
-const CardsEngine = ({ gameId, name, emoji, pointCost, theme }: Props) => {
+const CardsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'from-purple-900 to-black', accentColor: 'text-purple-400', description: '', variant: 'classic' } }: Props) => {
   const { updateBalance, recordGameResult } = useWallet();
   const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();

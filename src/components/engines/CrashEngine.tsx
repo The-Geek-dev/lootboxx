@@ -14,11 +14,11 @@ interface Props {
   name: string;
   emoji: string;
   pointCost: number;
-  theme: GameTheme;
+  theme?: GameTheme;
   visuals?: { icon: string; trailEmoji: string; crashEmoji: string };
 }
 
-const CrashEngine = ({ gameId, name, emoji, pointCost, theme, visuals }: Props) => {
+const CrashEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'from-purple-900 to-black', accentColor: 'text-purple-400', description: '', variant: 'classic' }, visuals }: Props) => {
   const { updateBalance, recordGameResult } = useWallet();
   const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
