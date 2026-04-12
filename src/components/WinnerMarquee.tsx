@@ -118,6 +118,7 @@ const WinnerMarquee = () => {
   const [muted, setMuted] = useState(() => {
     try { return localStorage.getItem("lootbox_muted") === "true"; } catch { return false; }
   });
+  const [flash, setFlash] = useState(false);
   const hasInteracted = useRef(false);
 
   const toggleMute = () => {
@@ -144,6 +145,8 @@ const WinnerMarquee = () => {
     if (ev.isBigWin) {
       fireBigWinConfetti();
       if (hasInteracted.current && !muted) playWinSound();
+      setFlash(true);
+      setTimeout(() => setFlash(false), 1200);
     }
   }, [muted]);
 
@@ -156,7 +159,13 @@ const WinnerMarquee = () => {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-[60] bg-primary/90 backdrop-blur-sm text-primary-foreground text-[11px] py-1 overflow-hidden flex items-center">
+      <div
+        className={`fixed top-0 left-0 right-0 z-[60] backdrop-blur-sm text-primary-foreground text-[11px] py-1 overflow-hidden flex items-center transition-all duration-300 ${
+          flash
+            ? "bg-yellow-500/90 shadow-[0_0_20px_rgba(234,179,8,0.6)] text-black font-bold"
+            : "bg-primary/90"
+        }`}
+      >
         <div className="animate-marquee whitespace-nowrap inline-block flex-1">
           <span className="mx-4">{marqueeContent}  •  </span>
           <span className="mx-4">{marqueeContent}  •  </span>
