@@ -37,12 +37,15 @@ const WinnerMarquee = () => {
   const text = wins.join("  •  ");
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[60] bg-primary/90 backdrop-blur-sm text-primary-foreground text-xs py-1.5 overflow-hidden">
-      <div className="animate-marquee whitespace-nowrap inline-block">
-        <span className="mx-4">🏆 {text}  •  </span>
-        <span className="mx-4">🏆 {text}  •  </span>
+    <>
+      <div className="fixed top-0 left-0 right-0 z-[60] bg-primary/90 backdrop-blur-sm text-primary-foreground text-[11px] py-1 overflow-hidden">
+        <div className="animate-marquee whitespace-nowrap inline-block">
+          <span className="mx-4">🏆 {text}  •  </span>
+          <span className="mx-4">🏆 {text}  •  </span>
+        </div>
       </div>
-    </div>
+      <div className="h-6" />
+    </>
   );
 };
 
