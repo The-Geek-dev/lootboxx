@@ -65,7 +65,7 @@ const AppSidebar = () => {
       <Button
         variant="ghost"
         size="icon"
-        className="fixed top-[30px] left-2 z-50 md:hidden h-9 w-9 bg-card/80 backdrop-blur-sm border border-border/50"
+        className="fixed top-20 left-2 z-50 md:hidden h-9 w-9 bg-card/80 backdrop-blur-sm border border-border/50 rounded-full shadow-lg"
         onClick={() => setOpen(!open)}
       >
         {open ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
