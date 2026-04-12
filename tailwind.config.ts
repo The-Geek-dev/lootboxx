@@ -68,7 +68,7 @@ export default {
         }
       },
       animation: {
-        marquee: 'marquee 40s linear infinite',
+        marquee: 'marquee 20s linear infinite',
         'spin-slow': 'spin-slow 4s linear infinite'
       }
     },
