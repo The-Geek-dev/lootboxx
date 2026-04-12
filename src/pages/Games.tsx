@@ -135,7 +135,7 @@ const Games = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <AppSidebar />
-      <main className="pl-16 container px-3 pt-24 pb-16">
+      <main className="md:pl-16 container px-3 pt-24 pb-16">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-4">
           <h1 className="text-xl sm:text-3xl font-bold text-center mb-1">

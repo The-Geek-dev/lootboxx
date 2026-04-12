@@ -19,7 +19,7 @@ const GamePageLayout = ({ children }: GamePageLayoutProps) => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <AppSidebar />
-      <div className="pl-16 min-h-screen flex flex-col">
+      <div className="md:pl-16 min-h-screen flex flex-col">
         <main className="container px-4 pt-32 pb-16 flex-1">
           <div className="max-w-2xl mx-auto">
             {/* Balance & Points Bar */}

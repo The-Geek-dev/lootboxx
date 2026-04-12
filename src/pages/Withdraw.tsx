@@ -174,7 +174,7 @@ const Withdraw = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <AppSidebar />
-      <main className="pl-16 container px-4 pt-32 pb-16 max-w-2xl mx-auto">
+      <main className="md:pl-16 container px-4 pt-32 pb-16 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <h1 className="text-2xl sm:text-4xl font-bold text-center mb-2">
             <Banknote className="w-8 h-8 inline-block mr-2 text-primary" />

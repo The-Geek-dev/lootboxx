@@ -122,7 +122,7 @@ const Testimonials = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <AppSidebar />
-      <main className="pl-16 pt-32 pb-20">
+      <main className="md:pl-16 pt-32 pb-20">
         <div className="container px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -4,18 +4,17 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard,
   Gamepad2,
-  Wallet,
   Coins,
   Users,
   Settings,
   History,
   HelpCircle,
   LogOut,
-  ChevronLeft,
-  ChevronRight,
   Shield,
   ArrowDownToLine,
   ArrowUpFromLine,
+  Menu,
+  X,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
@@ -34,7 +33,7 @@ const navItems = [
 
 const AppSidebar = () => {
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
+  const [open, setOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -50,85 +49,113 @@ const AppSidebar = () => {
     });
   }, []);
 
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     window.location.href = "/login";
   };
 
   return (
-    <aside
-      className={cn(
-        "fixed left-0 top-0 h-full z-40 bg-card/95 backdrop-blur-xl border-r border-border/50 flex flex-col transition-all duration-300",
-        collapsed ? "w-16" : "w-56"
-      )}
-    >
-      {/* Logo */}
-      <div className="h-16 flex items-center justify-between px-3 border-b border-border/50">
-        {!collapsed && (
-          <Link to="/" className="font-bold text-gradient text-sm">LOOTBOX</Link>
-        )}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 shrink-0"
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-        </Button>
-      </div>
+    <>
+      {/* Mobile toggle button - fixed */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="fixed top-20 left-2 z-50 md:hidden h-9 w-9 bg-card/80 backdrop-blur-sm border border-border/50 rounded-full shadow-lg"
+        onClick={() => setOpen(!open)}
+      >
+        {open ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+      </Button>
 
-      {/* Nav Items */}
-      <nav className="flex-1 py-3 overflow-y-auto">
-        <div className="space-y-1 px-2">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
-                  isActive
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}
-                title={collapsed ? item.label : undefined}
-              >
-                <item.icon className="w-4 h-4 shrink-0" />
-                {!collapsed && <span>{item.label}</span>}
-              </Link>
-            );
-          })}
-          {isAdmin && (
-            <Link
-              to="/admin"
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
-                location.pathname === "/admin"
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-              title={collapsed ? "Admin" : undefined}
-            >
-              <Shield className="w-4 h-4 shrink-0" />
-              {!collapsed && <span>Admin</span>}
-            </Link>
+      {/* Overlay for mobile */}
+      {open && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - hidden on mobile unless open, always icon-strip on desktop */}
+      <aside
+        className={cn(
+          "fixed left-0 top-0 h-full z-40 bg-card/95 backdrop-blur-xl border-r border-border/50 flex flex-col transition-all duration-300",
+          // Desktop: always show as icon strip (w-16)
+          "hidden md:flex w-16",
+          // Mobile: full width drawer when open
+          open && "!flex w-56"
+        )}
+      >
+        {/* Logo area */}
+        <div className="h-16 flex items-center justify-center px-3 border-b border-border/50">
+          {open ? (
+            <Link to="/" className="font-bold text-gradient text-sm">LOOTBOX</Link>
+          ) : (
+            <Link to="/" className="font-bold text-gradient text-xs">LB</Link>
           )}
         </div>
-      </nav>
 
-      {/* Logout */}
-      <div className="p-2 border-t border-border/50">
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-destructive hover:bg-destructive/10 w-full transition-all"
-          title={collapsed ? "Logout" : undefined}
-        >
-          <LogOut className="w-4 h-4 shrink-0" />
-          {!collapsed && <span>Logout</span>}
-        </button>
-      </div>
-    </aside>
+        {/* Nav Items */}
+        <nav className="flex-1 py-3 overflow-y-auto">
+          <div className="space-y-1 px-2">
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
+                    isActive
+                      ? "bg-primary/10 text-primary font-medium"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                    !open && "justify-center px-0"
+                  )}
+                  title={!open ? item.label : undefined}
+                >
+                  <item.icon className="w-4 h-4 shrink-0" />
+                  {open && <span>{item.label}</span>}
+                </Link>
+              );
+            })}
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
+                  location.pathname === "/admin"
+                    ? "bg-primary/10 text-primary font-medium"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  !open && "justify-center px-0"
+                )}
+                title={!open ? "Admin" : undefined}
+              >
+                <Shield className="w-4 h-4 shrink-0" />
+                {open && <span>Admin</span>}
+              </Link>
+            )}
+          </div>
+        </nav>
+
+        {/* Logout */}
+        <div className="p-2 border-t border-border/50">
+          <button
+            onClick={handleLogout}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-destructive hover:bg-destructive/10 w-full transition-all",
+              !open && "justify-center px-0"
+            )}
+            title={!open ? "Logout" : undefined}
+          >
+            <LogOut className="w-4 h-4 shrink-0" />
+            {open && <span>Logout</span>}
+          </button>
+        </div>
+      </aside>
+    </>
   );
 };
 
