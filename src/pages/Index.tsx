@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Gamepad2, Gift, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
+import AppSidebar from "@/components/AppSidebar";
 import { FeaturesSection } from "@/components/features/FeaturesSection";
 import LogoCarousel from "@/components/LogoCarousel";
 import TestimonialsSection from "@/components/TestimonialsSection";
@@ -60,8 +61,9 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-foreground">
+    <div className="min-h-screen bg-background text-foreground">
       <Navigation />
+      <AppSidebar />
       
       {/* Hero Section */}
       <motion.section 

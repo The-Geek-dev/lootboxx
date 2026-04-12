@@ -5,6 +5,7 @@ import { Settings as SettingsIcon, User, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Navigation from "@/components/Navigation";
+import AppSidebar from "@/components/AppSidebar";
 import TwoFactorSetup from "@/components/TwoFactorSetup";
 import ApiKeyManager from "@/components/ApiKeyManager";
 import { supabase } from "@/integrations/supabase/client";
@@ -76,11 +77,12 @@ const Settings = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-foreground">
+    <div className="min-h-screen bg-background text-foreground">
 
       <Navigation />
+      <AppSidebar />
 
-      <div className="container px-4 pt-32 pb-20">
+      <div className="pl-16 container px-4 pt-32 pb-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
