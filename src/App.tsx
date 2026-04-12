@@ -32,6 +32,7 @@ import Settings from "./pages/Settings";
 import TransactionHistory from "./pages/TransactionHistory";
 import AdminDashboard from "./pages/AdminDashboard";
 import Withdraw from "./pages/Withdraw";
+import Leaderboard from "./pages/Leaderboard";
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
@@ -79,6 +80,7 @@ const AppRoutes = () => {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/withdraw" element={<Withdraw />} />
         <Route path="/points" element={<Points />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
       </Routes>
     </>
   );
