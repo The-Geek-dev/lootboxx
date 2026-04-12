@@ -12,6 +12,7 @@ import { Search, ChevronLeft, ChevronRight, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDepositGate } from "@/hooks/useDepositGate";
 import { allGames, categories, getGamesByCategory, type GameCategory, type GameItem } from "@/config/gamesData";
+import { gameImages } from "@/config/gameImages";
 import { useToast } from "@/hooks/use-toast";
 
 const GameCard = ({ game, size = "normal" }: { game: GameItem; size?: "normal" | "large" | "numbered"; index?: number }) => {
