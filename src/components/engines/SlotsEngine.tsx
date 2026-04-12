@@ -15,7 +15,7 @@ interface Props {
   emoji: string;
   pointCost: number;
   symbols?: string[];
-  theme: GameTheme;
+  theme?: GameTheme;
 }
 
 const DEFAULT_SYMBOLS = ["\u{1F352}", "\u{1F34B}", "\u{1F514}", "\u2B50", "\u{1F48E}", "7\uFE0F\u20E3"];
