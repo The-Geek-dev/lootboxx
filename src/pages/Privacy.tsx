@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
 import MascotBackground from "@/components/MascotBackground";
 
@@ -6,7 +7,8 @@ const Privacy = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
-      <main className="flex-grow relative overflow-hidden">
+      <AppSidebar />
+      <main className="pl-16 flex-grow relative overflow-hidden">
         <MascotBackground position="right" />
         <MascotBackground variant="watermark" corner="bottom-left" />
         <div className="container mx-auto px-4 py-20 relative z-10">

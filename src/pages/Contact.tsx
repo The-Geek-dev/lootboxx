@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Navigation from "@/components/Navigation";
+import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
 import MascotBackground from "@/components/MascotBackground";
 import { useToast } from "@/hooks/use-toast";
@@ -17,9 +18,10 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-foreground">
+    <div className="min-h-screen bg-background text-foreground">
       <Navigation />
-      <div className="container px-4 pt-32 pb-20 relative overflow-hidden">
+      <AppSidebar />
+      <div className="pl-16 container px-4 pt-32 pb-20 relative overflow-hidden">
         <MascotBackground position="left" />
         <MascotBackground variant="watermark" corner="bottom-right" />
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="max-w-4xl mx-auto">
