@@ -33,6 +33,7 @@ import TransactionHistory from "./pages/TransactionHistory";
 import AdminDashboard from "./pages/AdminDashboard";
 import Withdraw from "./pages/Withdraw";
 import Leaderboard from "./pages/Leaderboard";
+import DynamicGame from "./pages/DynamicGame";
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
@@ -70,6 +71,7 @@ const AppRoutes = () => {
         <Route path="/games/slots" element={<LuckySlots />} />
         <Route path="/games/trivia" element={<TriviaQuiz />} />
         <Route path="/games/raffle" element={<RaffleDraw />} />
+        <Route path="/games/play/:gameId" element={<DynamicGame />} />
         <Route path="/deposit" element={<Deposit />} />
         <Route path="/referrals" element={<Referrals />} />
         <Route path="/testimonials" element={<Testimonials />} />
