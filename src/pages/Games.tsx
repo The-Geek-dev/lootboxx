@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
+import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -133,7 +134,8 @@ const Games = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <main className="container px-3 pt-24 pb-16">
+      <AppSidebar />
+      <main className="pl-16 container px-3 pt-24 pb-16">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-4">
           <h1 className="text-xl sm:text-3xl font-bold text-center mb-1">

@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, ThumbsUp, ThumbsDown, Check, Send, Loader2 } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
 import MascotBackground from "@/components/MascotBackground";
 import { Input } from "@/components/ui/input";
@@ -160,9 +161,10 @@ const FAQ = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-foreground">
+    <div className="min-h-screen bg-background text-foreground">
       <Navigation />
-      <div className="container px-4 pt-32 pb-20 relative overflow-hidden">
+      <AppSidebar />
+      <div className="pl-16 container px-4 pt-32 pb-20 relative overflow-hidden">
         <MascotBackground position="right" />
         <MascotBackground variant="watermark" corner="top-left" />
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="max-w-4xl mx-auto">

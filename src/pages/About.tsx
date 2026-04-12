@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Shield, Trophy, Users, Gift, CheckCircle2, Lock, Gamepad2 } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
 import MascotBackground from "@/components/MascotBackground";
 
@@ -58,10 +59,10 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-foreground">
+    <div className="min-h-screen bg-background text-foreground">
       <Navigation />
-      
-      <div className="container px-4 pt-32 pb-20 relative overflow-hidden">
+      <AppSidebar />
+      <div className="pl-16 container px-4 pt-32 pb-20 relative overflow-hidden">
         <MascotBackground position="right" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
+import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -119,7 +120,8 @@ const TransactionHistory = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <main className="container px-4 pt-32 pb-16 max-w-2xl mx-auto">
+      <AppSidebar />
+      <main className="pl-16 container px-4 pt-32 pb-16 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <h1 className="text-2xl sm:text-4xl font-bold text-center mb-2">
             Transaction <span className="text-gradient">History</span>

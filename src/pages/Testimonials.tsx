@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -118,10 +119,10 @@ const testimonials = [
 
 const Testimonials = () => {
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-background">
       <Navigation />
-      
-      <main className="pt-32 pb-20">
+      <AppSidebar />
+      <main className="pl-16 pt-32 pb-20">
         <div className="container px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
