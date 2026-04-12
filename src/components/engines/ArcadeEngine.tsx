@@ -14,7 +14,7 @@ interface Props {
   name: string;
   emoji: string;
   pointCost: number;
-  theme: GameTheme;
+  theme?: GameTheme;
 }
 
 const getGridConfig = (variant?: string): { size: number; icons: string[]; time: number; cols: string } => {

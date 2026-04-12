@@ -14,7 +14,7 @@ interface Props {
   name: string;
   emoji: string;
   pointCost: number;
-  theme: GameTheme;
+  theme?: GameTheme;
 }
 
 const getLotteryConfig = (gameId: string): { maxPicks: number; totalNumbers: number; drawnCount: number } => {

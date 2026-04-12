@@ -14,7 +14,7 @@ interface Props {
   name: string;
   emoji: string;
   pointCost: number;
-  theme: GameTheme;
+  theme?: GameTheme;
   teams?: [{ icon: string; label: string }, { icon: string; label: string }];
 }
 
