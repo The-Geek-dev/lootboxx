@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Wallet, Trophy, Gift, Users, Settings, Gamepad2, Clock, History, Coins, Bell, Zap, TrendingUp } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import AppSidebar from "@/components/AppSidebar";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -112,8 +113,9 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navigation />
+      <AppSidebar />
       
-      <div className="container px-4 pt-32 pb-20">
+      <div className="pl-16 container px-4 pt-32 pb-20">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
             <div>

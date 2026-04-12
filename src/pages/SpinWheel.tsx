@@ -1,10 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { useWallet } from "@/hooks/useWallet";
 import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
@@ -12,8 +8,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useDepositGate } from "@/hooks/useDepositGate";
-import XpLifeBar from "@/components/XpLifeBar";
-import { Coins } from "lucide-react";
+import GamePageLayout from "@/components/GamePageLayout";
 
 const SEGMENTS = [
   { label: "₦500", value: 500, color: "#8B5CF6" },
@@ -26,13 +21,12 @@ const SEGMENTS = [
   { label: "₦5,000", value: 5000, color: "#EF4444" },
 ];
 
-const SPIN_COST = 20; // points
+const SPIN_COST = 20;
 
 const SpinWheel = () => {
-  const navigate = useNavigate();
   const { isAuthorized, isChecking } = useDepositGate();
   const { updateBalance, recordGameResult } = useWallet();
-  const { points, spendPoints, fetchPoints } = usePoints();
+  const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
@@ -92,21 +86,17 @@ const SpinWheel = () => {
       toast({ title: "Insufficient points", description: `You need ${SPIN_COST} points to spin.`, variant: "destructive" });
       return;
     }
-
     const lifeConsumed = await consumeLife();
     if (!lifeConsumed) return;
-
     setIsSpinning(true);
     setResult(null);
     await spendPoints(SPIN_COST);
-
     const winIndex = Math.floor(Math.random() * SEGMENTS.length);
     const segAngle = 360 / SEGMENTS.length;
     const targetAngle = 360 - (winIndex * segAngle + segAngle / 2);
     const spins = 5 + Math.random() * 3;
     const finalRotation = rotation + spins * 360 + targetAngle;
     setRotation(finalRotation);
-
     setTimeout(async () => {
       let prize = SEGMENTS[winIndex].value;
       if (prize > 0) {
@@ -130,46 +120,35 @@ const SpinWheel = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <main className="container px-4 pt-32 pb-16">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-2xl sm:text-4xl font-bold text-center mb-2">
-            Spin the <span className="text-gradient">Wheel</span>
-          </h1>
-          <p className="text-muted-foreground text-center mb-6">Cost: {SPIN_COST} points per spin</p>
+    <GamePageLayout>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <h1 className="text-2xl sm:text-4xl font-bold text-center mb-2">
+          Spin the <span className="text-gradient">Wheel</span>
+        </h1>
+        <p className="text-muted-foreground text-center mb-6">Cost: {SPIN_COST} points per spin</p>
 
-          <div className="flex flex-col items-center gap-4 max-w-md mx-auto">
-            <div className="w-full"><XpLifeBar /></div>
-
-            <Card className="p-4 bg-card/50 backdrop-blur-sm w-full">
-              <p className="text-center text-sm text-muted-foreground mb-1 flex items-center justify-center gap-1"><Coins className="w-4 h-4" /> Your Points</p>
-              <p className="text-center text-2xl font-bold text-primary">{points.toLocaleString()} pts</p>
-            </Card>
-
-            <div className="relative">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 z-10">
-                <div className="w-0 h-0 border-l-[12px] border-r-[12px] border-t-[24px] border-l-transparent border-r-transparent border-t-primary" />
-              </div>
-              <motion.div animate={{ rotate: rotation }} transition={{ duration: 4, ease: [0.17, 0.67, 0.12, 0.99] }}>
-                <canvas ref={canvasRef} width={300} height={300} className="rounded-full" />
-              </motion.div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 z-10">
+              <div className="w-0 h-0 border-l-[12px] border-r-[12px] border-t-[24px] border-l-transparent border-r-transparent border-t-primary" />
             </div>
-
-            {result && (
-              <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="text-xl font-bold text-center">
-                {result}
-              </motion.div>
-            )}
-
-            <Button className="button-gradient px-8 py-3 text-lg w-full" onClick={spin} disabled={isSpinning || xpLives <= 0}>
-              {isSpinning ? "Spinning..." : xpLives <= 0 ? "No XP Lives" : `Spin (${SPIN_COST} pts)`}
-            </Button>
+            <motion.div animate={{ rotate: rotation }} transition={{ duration: 4, ease: [0.17, 0.67, 0.12, 0.99] }}>
+              <canvas ref={canvasRef} width={300} height={300} className="rounded-full" />
+            </motion.div>
           </div>
-        </motion.div>
-      </main>
-      <Footer />
-    </div>
+
+          {result && (
+            <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="text-xl font-bold text-center">
+              {result}
+            </motion.div>
+          )}
+
+          <Button className="button-gradient px-8 py-3 text-lg w-full max-w-md" onClick={spin} disabled={isSpinning || xpLives <= 0}>
+            {isSpinning ? "Spinning..." : xpLives <= 0 ? "No XP Lives" : `Spin (${SPIN_COST} pts)`}
+          </Button>
+        </div>
+      </motion.div>
+    </GamePageLayout>
   );
 };
 
