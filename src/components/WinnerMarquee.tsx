@@ -7,8 +7,17 @@ const FIRST_NAMES = [
   "Femi", "Joy", "Ahmed", "Bola", "Sani", "Ify", "Tobi", "Kemi",
   "Tayo", "Amina", "Eze", "Bukola", "Chinedu", "Hauwa", "Ifeanyi", "Jumoke",
   "Kabiru", "Lola", "Nnamdi", "Oluwaseun", "Rasheed", "Stella", "Usman", "Vivian",
-  "Wale", "Xander", "Yakubu", "Zara", "Adebayo", "Biola", "Chukwuma", "Doyin",
-  "Ese", "Folake", "Gbenga", "Hafsat", "Ikenna", "Janet",
+  "Wale", "Yakubu", "Zara", "Adebayo", "Biola", "Chukwuma", "Doyin",
+  "Ese", "Folake", "Gbenga", "Hafsat", "Ikenna", "Janet", "Adaeze", "Babatunde",
+  "Chiamaka", "Damilola", "Ebuka", "Folashade", "Gideon", "Hadiza", "Isioma",
+  "Jide", "Kehinde", "Lawal", "Modupe", "Nkechi", "Olumide", "Patience",
+  "Quadri", "Ronke", "Sulaimon", "Temitope", "Ugochi", "Victor", "Wasiu",
+  "Yetunde", "Zikora", "Abimbola", "Bolaji", "Chibuzor", "Deborah", "Elijah",
+  "Favour", "Goodness", "Haruna", "Ifeoma", "Joseph", "Kelechi", "Lekan",
+  "Mercy", "Nonso", "Ogechi", "Peter", "Ruth", "Samuel", "Taiwo",
+  "Uchenna", "Victoria", "Wisdom", "Yinka", "Adaobi", "Bamidele",
+  "Chidinma", "Dare", "Esther", "Festus", "Gloria", "Hassan", "Ify",
+  "Jameelah", "Kingsley", "Lateefah", "Moses", "Nnenna", "Olayinka", "Precious",
 ];
 
 const CITIES = ["Lagos", "Abuja", "Port Harcourt", "Ibadan", "Kano", "Enugu", "Benin", "Warri", "Calabar", "Abeokuta", "Jos", "Owerri", "Kaduna", "Uyo", "Asaba"];
