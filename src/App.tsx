@@ -97,6 +97,7 @@ const App = () => {
         <div className="min-h-screen bg-background">
           <AgeVerification />
           <WinnerMarquee />
+          <LaunchCountdown />
           <Toaster />
           <Sonner />
           <BrowserRouter>
