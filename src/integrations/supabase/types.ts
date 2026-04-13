@@ -452,6 +452,33 @@ export type Database = {
         }
         Relationships: []
       }
+      waitlist: {
+        Row: {
+          city: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          referral_code: string | null
+        }
+        Insert: {
+          city?: string
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          referral_code?: string | null
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          referral_code?: string | null
+        }
+        Relationships: []
+      }
       withdrawals: {
         Row: {
           account_name: string

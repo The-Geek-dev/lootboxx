@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Gamepad2, Gift, Rocket } from "lucide-react";
+import WaitlistForm from "@/components/WaitlistForm";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
 import AppSidebar from "@/components/AppSidebar";
@@ -174,20 +175,9 @@ const Index = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-[#0A0A0A]/80 backdrop-blur-lg border border-white/10 rounded-2xl p-8 md:p-12 text-center relative z-10"
+          className="bg-[#0A0A0A]/80 backdrop-blur-lg border border-white/10 rounded-2xl p-8 md:p-12 relative z-10"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to start winning?
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of players already earning rewards with LootBoxx's exciting games and bonuses.
-          </p>
-          <Link to="/signup">
-            <Button size="lg" className="button-gradient">
-              Join LootBoxx Now
-              <ArrowRight className="ml-2 w-4 h-4" />
-            </Button>
-          </Link>
+          <WaitlistForm />
         </motion.div>
       </section>
 
