@@ -1,5 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
 
 const FIRST_NAMES = [
   "Chidi", "Amara", "Tunde", "Ngozi", "Emeka", "Fatima", "Yusuf", "Blessing",
@@ -77,24 +76,11 @@ const WinnerMarquee = () => {
 
   return (
     <>
-      <div
-        className={`fixed top-0 left-0 right-0 z-[60] backdrop-blur-sm text-primary-foreground text-[11px] py-1 overflow-hidden flex items-center transition-all duration-300 ${
-          flash
-            ? "bg-yellow-500/90 shadow-[0_0_20px_rgba(234,179,8,0.6)] text-black font-bold"
-            : "bg-primary/90"
-        }`}
-      >
+      <div className="fixed top-0 left-0 right-0 z-[60] backdrop-blur-sm text-primary-foreground text-[11px] py-1 overflow-hidden flex items-center bg-primary/90">
         <div className="animate-marquee whitespace-nowrap inline-block flex-1">
           <span className="mx-4">{marqueeContent}  •  </span>
           <span className="mx-4">{marqueeContent}  •  </span>
         </div>
-        <button
-          onClick={toggleMute}
-          className="shrink-0 mr-2 p-0.5 rounded hover:bg-white/10 transition-colors"
-          title={muted ? "Unmute sounds" : "Mute sounds"}
-        >
-          {muted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-        </button>
       </div>
       <div className="h-6" />
     </>
