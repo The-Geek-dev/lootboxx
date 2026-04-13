@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import LoadingScreen from "@/components/LoadingScreen";
 import WinnerMarquee from "@/components/WinnerMarquee";
+import LaunchCountdown from "@/components/LaunchCountdown";
 import AgeVerification from "@/components/AgeVerification";
 import Index from "./pages/Index";
 import Points from "./pages/Points";
@@ -96,6 +97,7 @@ const App = () => {
         <div className="min-h-screen bg-background">
           <AgeVerification />
           <WinnerMarquee />
+          <LaunchCountdown />
           <Toaster />
           <Sonner />
           <BrowserRouter>
