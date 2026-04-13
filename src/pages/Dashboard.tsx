@@ -26,20 +26,19 @@ const Dashboard = () => {
   const [recentGames, setRecentGames] = useState<any[]>([]);
   const [lastBonusAt, setLastBonusAt] = useState<string | null>(null);
   const [points, setPoints] = useState(0);
+  const [couponExpiresAt, setCouponExpiresAt] = useState<string | null>(null);
   const [showNotifications, setShowNotifications] = useState(false);
 
-  const nextBonusInfo = useMemo(() => {
+  const couponInfo = useMemo(() => {
+    if (!couponExpiresAt) return { days: 0, hours: 0, expired: true };
+    const exp = new Date(couponExpiresAt);
     const now = new Date();
-    const daysUntilMonday = (8 - now.getUTCDay()) % 7 || 7;
-    const next = new Date(now);
-    next.setUTCDate(now.getUTCDate() + daysUntilMonday);
-    next.setUTCHours(1, 0, 0, 0);
-    if (next <= now) next.setUTCDate(next.getUTCDate() + 7);
-    const diffMs = next.getTime() - now.getTime();
+    if (exp <= now) return { days: 0, hours: 0, expired: true };
+    const diffMs = exp.getTime() - now.getTime();
     const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    return { days, hours, date: next };
-  }, []);
+    return { days, hours, expired: false };
+  }, [couponExpiresAt]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -60,7 +59,7 @@ const Dashboard = () => {
         supabase.from("profiles").select("full_name").eq("user_id", userId).single(),
         supabase.from("game_results").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(5),
         supabase.from("referrals").select("*").eq("referrer_id", userId),
-        supabase.from("user_wallets").select("total_won, total_referral_bonus, last_weekly_bonus_at, points").eq("user_id", userId).single(),
+        supabase.from("user_wallets").select("total_won, total_referral_bonus, last_weekly_bonus_at, points, coupon_expires_at").eq("user_id", userId).single(),
       ]);
 
       if (profileRes.data) setUserName(profileRes.data.full_name);
@@ -73,6 +72,7 @@ const Dashboard = () => {
         setTotalBonuses(Number(walletRes.data.total_referral_bonus));
         setLastBonusAt(walletRes.data.last_weekly_bonus_at as string | null);
         setPoints(Number(walletRes.data.points));
+        setCouponExpiresAt((walletRes.data as any).coupon_expires_at ?? null);
       }
 
       setIsLoading(false);
@@ -173,15 +173,21 @@ const Dashboard = () => {
           </div>
 
           {/* Coupon Expiry Banner */}
-          <Card className="glass p-4 mb-6 border-primary/30 bg-primary/5">
+          <Card className={`glass p-4 mb-6 ${couponInfo.expired ? "border-destructive/30 bg-destructive/5" : "border-primary/30 bg-primary/5"}`}>
             <div className="flex items-center gap-3 flex-wrap">
-              <Clock className="w-6 h-6 text-primary shrink-0" />
+              <Clock className={`w-6 h-6 ${couponInfo.expired ? "text-destructive" : "text-primary"} shrink-0`} />
               <div className="flex-1">
-                <p className="font-semibold text-sm">Coupon Expiry: <span className="text-primary">{nextBonusInfo.days}d {nextBonusInfo.hours}h remaining</span></p>
-                <p className="text-xs text-muted-foreground">
-                  Renew for ₦1,500/week to keep playing
-                  {lastBonusAt && ` • Last renewed: ${new Date(lastBonusAt).toLocaleDateString("en-NG", { month: "short", day: "numeric" })}`}
-                </p>
+                {couponInfo.expired ? (
+                  <>
+                    <p className="font-semibold text-sm text-destructive">Coupon Expired!</p>
+                    <p className="text-xs text-muted-foreground">Renew for ₦2,000/week to keep playing</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="font-semibold text-sm">Coupon: <span className="text-primary">{couponInfo.days}d {couponInfo.hours}h remaining</span></p>
+                    <p className="text-xs text-muted-foreground">Renew for ₦2,000/week to extend access</p>
+                  </>
+                )}
               </div>
               <Button variant="outline" size="sm" asChild>
                 <Link to="/deposit">Renew Coupon</Link>

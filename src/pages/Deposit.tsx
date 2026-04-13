@@ -11,7 +11,7 @@ import { useWallet } from "@/hooks/useWallet";
 import { usePoints } from "@/hooks/usePoints";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Wallet, CreditCard, CheckCircle, AlertTriangle, Coins, ArrowRightLeft, TrendingUp } from "lucide-react";
+import { Wallet, CreditCard, CheckCircle, AlertTriangle, Coins, ArrowRightLeft, TrendingUp, Clock } from "lucide-react";
 
 const ACTIVATION_AMOUNT = 7000;
 const ACTIVATION_POINTS = 1000; // 7k deposit = 1,000 points
@@ -31,6 +31,7 @@ const Deposit = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isGated = (location.state as any)?.gated === true;
+  const isExpired = (location.state as any)?.expired === true;
   const { balance, updateBalance, fetchBalance } = useWallet();
   const { points, addPoints, convertToCash, minConvertPoints, pointsToCashRate, fetchPoints } = usePoints();
   const { toast } = useToast();
@@ -39,6 +40,7 @@ const Deposit = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
   const [isActivated, setIsActivated] = useState<boolean | null>(null);
+  const [couponExpiresAt, setCouponExpiresAt] = useState<string | null>(null);
   const [renewalCode, setRenewalCode] = useState("");
   const [renewalInput, setRenewalInput] = useState("");
   const [showConvert, setShowConvert] = useState(false);
@@ -52,11 +54,12 @@ const Deposit = () => {
 
       const { data } = await supabase
         .from("user_wallets")
-        .select("is_activated, total_deposited, total_won, points")
+        .select("is_activated, total_deposited, total_won, points, coupon_expires_at")
         .eq("user_id", session.user.id)
         .single();
       
       setIsActivated(data?.is_activated ?? false);
+      setCouponExpiresAt((data as any)?.coupon_expires_at ?? null);
       setTotalDeposited(Number(data?.total_deposited ?? 0));
       setTotalWon(Number(data?.total_won ?? 0));
 
@@ -97,10 +100,22 @@ const Deposit = () => {
     await updateBalance(totalCredit);
 
     const updates: any = { total_deposited: totalDeposited + option.amount };
+    
     if (!isActivated && option.amount >= ACTIVATION_AMOUNT) {
       updates.is_activated = true;
+      updates.coupon_expires_at = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
       setIsActivated(true);
+      setCouponExpiresAt(updates.coupon_expires_at);
     }
+    
+    // Renewal extends coupon by 7 days
+    if ((option as any).renewal) {
+      const currentExpiry = couponExpiresAt ? new Date(couponExpiresAt) : new Date();
+      const base = currentExpiry > new Date() ? currentExpiry : new Date();
+      updates.coupon_expires_at = new Date(base.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
+      setCouponExpiresAt(updates.coupon_expires_at);
+    }
+    
     await supabase
       .from("user_wallets")
       .update(updates)
@@ -169,14 +184,50 @@ const Deposit = () => {
             {isActivated ? "Top up your wallet and earn points!" : "Make your initial ₦7,000 deposit to unlock all games!"}
           </p>
 
-          {isGated && !isActivated && (
+          {isGated && !isActivated && !isExpired && (
             <Card className="p-4 bg-destructive/10 border-destructive/30 mb-6">
               <div className="flex items-center gap-3">
                 <AlertTriangle className="w-6 h-6 text-destructive shrink-0" />
                 <div>
                   <p className="font-semibold text-destructive">Activation Deposit Required</p>
-                  <p className="text-sm text-muted-foreground">Deposit ₦7,000 to activate your account and earn 10,000 points!</p>
+                  <p className="text-sm text-muted-foreground">Deposit ₦7,000 to activate your account and earn 1,000 points!</p>
                 </div>
+              </div>
+            </Card>
+          )}
+
+          {isExpired && (
+            <Card className="p-4 bg-yellow-500/10 border-yellow-500/30 mb-6">
+              <div className="flex items-center gap-3">
+                <Clock className="w-6 h-6 text-yellow-500 shrink-0" />
+                <div>
+                  <p className="font-semibold text-yellow-500">Coupon Expired!</p>
+                  <p className="text-sm text-muted-foreground">Your weekly coupon has expired. Pay ₦2,000 renewal to continue playing games.</p>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Coupon Status */}
+          {isActivated && couponExpiresAt && (
+            <Card className="p-4 bg-primary/5 border-primary/20 mb-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Clock className="w-5 h-5 text-primary" />
+                  <div>
+                    <p className="font-semibold text-sm">Coupon Status</p>
+                    {(() => {
+                      const exp = new Date(couponExpiresAt);
+                      const now = new Date();
+                      if (exp <= now) return <p className="text-xs text-destructive font-bold">Expired</p>;
+                      const diffMs = exp.getTime() - now.getTime();
+                      const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                      const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                      return <p className="text-xs text-muted-foreground">Expires in <span className="text-primary font-bold">{days}d {hours}h</span></p>;
+                    })()}
+                  </div>
+                </div>
+                <Button size="sm" variant="outline" onClick={() => setSelectedAmount(2000)}>Renew</Button>
               </div>
             </Card>
           )}

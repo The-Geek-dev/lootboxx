@@ -404,6 +404,7 @@ export type Database = {
       user_wallets: {
         Row: {
           balance: number
+          coupon_expires_at: string | null
           created_at: string
           id: string
           is_activated: boolean
@@ -419,6 +420,7 @@ export type Database = {
         }
         Insert: {
           balance?: number
+          coupon_expires_at?: string | null
           created_at?: string
           id?: string
           is_activated?: boolean
@@ -434,6 +436,7 @@ export type Database = {
         }
         Update: {
           balance?: number
+          coupon_expires_at?: string | null
           created_at?: string
           id?: string
           is_activated?: boolean
