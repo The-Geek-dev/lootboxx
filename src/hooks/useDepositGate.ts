@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
-const MIN_DEPOSIT = 7000;
-
+// Deposit gate is disabled during pre-launch. All authenticated users are authorized.
 export const useDepositGate = () => {
   const navigate = useNavigate();
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -16,38 +15,7 @@ export const useDepositGate = () => {
         navigate("/login");
         return;
       }
-
-      // Check if user is admin — admins bypass deposit gate
-      const { data: roleData } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", session.user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-
-      if (roleData) {
-        setIsAuthorized(true);
-        setIsChecking(false);
-        return;
-      }
-
-      const { data } = await supabase
-        .from("user_wallets")
-        .select("is_activated, coupon_expires_at")
-        .eq("user_id", session.user.id)
-        .single();
-
-      if (!data || !data.is_activated) {
-        navigate("/deposit", { state: { gated: true } });
-        return;
-      }
-
-      // Check if coupon has expired
-      if (data.coupon_expires_at && new Date(data.coupon_expires_at) < new Date()) {
-        navigate("/deposit", { state: { gated: true, expired: true } });
-        return;
-      }
-
+      // Pre-launch: skip deposit gate, allow all authenticated users
       setIsAuthorized(true);
       setIsChecking(false);
     };
