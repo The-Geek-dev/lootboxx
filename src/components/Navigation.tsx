@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import logo from "@/assets/lootboxx-logo.png";
+import logo from "@/assets/lootbox-logo.png";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);

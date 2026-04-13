@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import lootboxxLogo from "@/assets/lootboxx-logo.png";
+import lootboxxLogo from "@/assets/lootbox-logo.png";
 
 const Signup = () => {
   const { toast } = useToast();

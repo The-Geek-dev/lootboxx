@@ -1,6 +1,6 @@
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
-import logo from "@/assets/lootboxx-logo.png";
+import logo from "@/assets/lootbox-logo.png";
 import MascotBackground from "./MascotBackground";
 
 const Footer = () => {

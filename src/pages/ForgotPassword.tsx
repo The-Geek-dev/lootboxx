@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import lootboxxLogo from "@/assets/lootboxx-logo.png";
+import lootboxxLogo from "@/assets/lootbox-logo.png";
 import { ArrowLeft } from "lucide-react";
 
 const ForgotPassword = () => {
