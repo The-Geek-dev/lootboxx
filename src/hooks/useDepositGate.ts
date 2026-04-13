@@ -33,12 +33,18 @@ export const useDepositGate = () => {
 
       const { data } = await supabase
         .from("user_wallets")
-        .select("is_activated")
+        .select("is_activated, coupon_expires_at")
         .eq("user_id", session.user.id)
         .single();
 
       if (!data || !data.is_activated) {
         navigate("/deposit", { state: { gated: true } });
+        return;
+      }
+
+      // Check if coupon has expired
+      if (data.coupon_expires_at && new Date(data.coupon_expires_at) < new Date()) {
+        navigate("/deposit", { state: { gated: true, expired: true } });
         return;
       }
 
