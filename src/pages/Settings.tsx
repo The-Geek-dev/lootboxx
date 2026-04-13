@@ -95,9 +95,12 @@ const Settings = () => {
     setDarkMode(isDark);
     try {
       localStorage.setItem("lootbox_theme", isDark ? "dark" : "light");
-      document.documentElement.classList.toggle("dark", isDark);
-      document.documentElement.classList.toggle("light", !isDark);
     } catch {}
+    if (isDark) {
+      document.documentElement.classList.remove("light");
+    } else {
+      document.documentElement.classList.add("light");
+    }
   };
 
   const handleLogout = async () => {
