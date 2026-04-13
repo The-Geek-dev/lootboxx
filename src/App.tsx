@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import LoadingScreen from "@/components/LoadingScreen";
 import WinnerMarquee from "@/components/WinnerMarquee";
+import AgeVerification from "@/components/AgeVerification";
 import Index from "./pages/Index";
 import Points from "./pages/Points";
 import About from "./pages/About";
@@ -93,6 +94,7 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <div className="min-h-screen bg-background">
+          <AgeVerification />
           <WinnerMarquee />
           <Toaster />
           <Sonner />

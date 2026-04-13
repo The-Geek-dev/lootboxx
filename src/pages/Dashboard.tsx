@@ -172,19 +172,19 @@ const Dashboard = () => {
             <XpLifeBar />
           </div>
 
-          {/* Weekly Bonus Banner */}
+          {/* Coupon Expiry Banner */}
           <Card className="glass p-4 mb-6 border-primary/30 bg-primary/5">
             <div className="flex items-center gap-3 flex-wrap">
               <Clock className="w-6 h-6 text-primary shrink-0" />
               <div className="flex-1">
-                <p className="font-semibold text-sm">Next Weekly Bonus: <span className="text-primary">₦2,000</span></p>
+                <p className="font-semibold text-sm">Coupon Expiry: <span className="text-primary">{nextBonusInfo.days}d {nextBonusInfo.hours}h remaining</span></p>
                 <p className="text-xs text-muted-foreground">
-                  In {nextBonusInfo.days}d {nextBonusInfo.hours}h
-                  {lastBonusAt && ` • Last: ${new Date(lastBonusAt).toLocaleDateString("en-NG", { month: "short", day: "numeric" })}`}
+                  Renew for ₦1,500/week to keep playing
+                  {lastBonusAt && ` • Last renewed: ${new Date(lastBonusAt).toLocaleDateString("en-NG", { month: "short", day: "numeric" })}`}
                 </p>
               </div>
               <Button variant="outline" size="sm" asChild>
-                <Link to="/transactions"><History className="w-4 h-4 mr-1" />History</Link>
+                <Link to="/deposit">Renew Coupon</Link>
               </Button>
             </div>
           </Card>
