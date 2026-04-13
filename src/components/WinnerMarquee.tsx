@@ -116,7 +116,7 @@ const WinnerMarquee = () => {
     Array.from({ length: 8 }, generateEvent)
   );
   const [muted, setMuted] = useState(() => {
-    try { return localStorage.getItem("lootbox_muted") === "true"; } catch { return false; }
+    try { return localStorage.getItem("lootboxx_muted") === "true"; } catch { return false; }
   });
   const [flash, setFlash] = useState(false);
   const hasInteracted = useRef(false);
@@ -124,7 +124,7 @@ const WinnerMarquee = () => {
   const toggleMute = () => {
     setMuted((prev) => {
       const next = !prev;
-      try { localStorage.setItem("lootbox_muted", String(next)); } catch {}
+      try { localStorage.setItem("lootboxx_muted", String(next)); } catch {}
       return next;
     });
   };

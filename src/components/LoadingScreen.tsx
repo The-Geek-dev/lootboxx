@@ -34,7 +34,7 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
           >
             <img 
               src={mascotTransparent} 
-              alt="LootBox" 
+              alt="LootBoxx" 
               className="w-full h-full object-contain"
             />
           </motion.div>
@@ -46,7 +46,7 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
             className="mt-8 text-center"
           >
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              LOOTBOX
+              LOOTBOXX
             </h2>
             
             <div className="flex items-center justify-center gap-2">

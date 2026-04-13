@@ -149,7 +149,7 @@ const Games = () => {
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-4">
           <h1 className="text-xl sm:text-3xl font-bold text-center mb-1">
-            LootBox <span className="text-gradient">Games</span>
+            LootBoxx <span className="text-gradient">Games</span>
           </h1>
           <p className="text-muted-foreground text-center text-xs sm:text-sm mb-4">
             {allGames.length} games available • {allGames.filter(g => g.isPlayable).length} live now

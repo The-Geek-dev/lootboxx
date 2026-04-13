@@ -94,7 +94,7 @@ const AppSidebar = () => {
         {/* Logo area */}
         <div className="h-16 flex items-center justify-center px-3 border-b border-border/50">
           {open ? (
-            <Link to="/" className="font-bold text-gradient text-sm">LOOTBOX</Link>
+            <Link to="/" className="font-bold text-gradient text-sm">LOOTBOXX</Link>
           ) : (
             <Link to="/" className="font-bold text-gradient text-xs">LB</Link>
           )}

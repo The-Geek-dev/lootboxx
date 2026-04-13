@@ -26,10 +26,10 @@ const Settings = () => {
 
   // Preferences
   const [marqueMuted, setMarqueeMuted] = useState(() => {
-    try { return localStorage.getItem("lootbox_muted") === "true"; } catch { return false; }
+    try { return localStorage.getItem("lootboxx_muted") === "true"; } catch { return false; }
   });
   const [darkMode, setDarkMode] = useState(() => {
-    try { return localStorage.getItem("lootbox_theme") !== "light"; } catch { return true; }
+    try { return localStorage.getItem("lootboxx_theme") !== "light"; } catch { return true; }
   });
 
   useEffect(() => {
@@ -88,13 +88,13 @@ const Settings = () => {
 
   const toggleMarquee = (val: boolean) => {
     setMarqueeMuted(val);
-    try { localStorage.setItem("lootbox_muted", String(val)); } catch {}
+    try { localStorage.setItem("lootboxx_muted", String(val)); } catch {}
   };
 
   const toggleTheme = (isDark: boolean) => {
     setDarkMode(isDark);
     try {
-      localStorage.setItem("lootbox_theme", isDark ? "dark" : "light");
+      localStorage.setItem("lootboxx_theme", isDark ? "dark" : "light");
     } catch {}
     if (isDark) {
       document.documentElement.classList.remove("light");

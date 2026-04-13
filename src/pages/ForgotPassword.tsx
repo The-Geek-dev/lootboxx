@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import lootboxLogo from "@/assets/lootbox-logo.png";
+import lootboxxLogo from "@/assets/lootbox-logo.png";
 import { ArrowLeft } from "lucide-react";
 
 const ForgotPassword = () => {
@@ -56,8 +56,8 @@ const ForgotPassword = () => {
         className="w-full max-w-md"
       >
         <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <img src={lootboxLogo} alt="LootBox" className="h-10 w-auto" />
-          <span className="font-bold text-2xl">LOOTBOX</span>
+          <img src={lootboxxLogo} alt="LootBoxx" className="h-10 w-auto" />
+          <span className="font-bold text-2xl">LOOTBOXX</span>
         </Link>
 
         <div className="glass rounded-2xl p-8">

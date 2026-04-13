@@ -39,14 +39,14 @@ const FAQ = () => {
     {
       id: "general-1",
       category: "General",
-      question: "What is LootBox?",
-      answer: "LootBox is a gaming rewards platform where you can play exciting games like raffles, spin-the-wheel, trivia quizzes, and more to win real rewards. Deposit funds, buy coupons, and start playing!"
+      question: "What is LootBoxx?",
+      answer: "LootBoxx is a gaming rewards platform where you can play exciting games like raffles, spin-the-wheel, trivia quizzes, and more to win real rewards. Deposit funds, buy coupons, and start playing!"
     },
     {
       id: "general-2",
       category: "General",
-      question: "Is LootBox safe and legitimate?",
-      answer: "Yes! LootBox uses bank-grade encryption, provably fair gaming algorithms, and secure payment processing. All games are transparent and results are verifiable."
+      question: "Is LootBoxx safe and legitimate?",
+      answer: "Yes! LootBoxx uses bank-grade encryption, provably fair gaming algorithms, and secure payment processing. All games are transparent and results are verifiable."
     },
     {
       id: "deposit-1",
@@ -64,7 +64,7 @@ const FAQ = () => {
       id: "games-1",
       category: "Games",
       question: "What games are available?",
-      answer: "LootBox offers Raffle Draws, Spin-the-Wheel, Trivia Quizzes, and Lucky Slots. We're constantly adding new games to keep things exciting!"
+      answer: "LootBoxx offers Raffle Draws, Spin-the-Wheel, Trivia Quizzes, and Lucky Slots. We're constantly adding new games to keep things exciting!"
     },
     {
       id: "games-2",
@@ -172,7 +172,7 @@ const FAQ = () => {
             Frequently Asked <span className="text-primary">Questions</span>
           </h1>
           <p className="text-xl text-gray-300 mb-10 text-center max-w-3xl mx-auto">
-            Everything you need to know about LootBox gaming and rewards
+            Everything you need to know about LootBoxx gaming and rewards
           </p>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="relative mb-6">

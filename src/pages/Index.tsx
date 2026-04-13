@@ -105,7 +105,7 @@ const Index = () => {
             transition={{ delay: 0.4 }}
             className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl text-left"
           >
-            Join LootBox and play exciting games — raffles, spin-the-wheel, trivia and more.{" "}
+            Join LootBoxx and play exciting games — raffles, spin-the-wheel, trivia and more.{" "}
             <span className="text-white">Deposit, play, and win big today.</span>
           </motion.p>
           
@@ -137,7 +137,7 @@ const Index = () => {
           <div className="glass rounded-xl overflow-hidden border border-primary/20 shadow-[0_0_30px_rgba(94,231,223,0.15)]">
             <img
               src={dashboardPreview}
-              alt="LootBox Gaming Platform"
+              alt="LootBoxx Gaming Platform"
               className="w-full h-auto"
             />
           </div>
@@ -180,11 +180,11 @@ const Index = () => {
             Ready to start winning?
           </h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of players already earning rewards with LootBox's exciting games and bonuses.
+            Join thousands of players already earning rewards with LootBoxx's exciting games and bonuses.
           </p>
           <Link to="/signup">
             <Button size="lg" className="button-gradient">
-              Join LootBox Now
+              Join LootBoxx Now
               <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </Link>
@@ -225,7 +225,7 @@ const Index = () => {
             </div>
             <AlertDialogTitle className="text-center text-2xl">Beta Phase</AlertDialogTitle>
             <AlertDialogDescription className="text-center text-base">
-              Welcome! LootBox is currently in beta development. We're working hard to bring you the full gaming experience soon. Stay tuned for exciting updates!
+              Welcome! LootBoxx is currently in beta development. We're working hard to bring you the full gaming experience soon. Stay tuned for exciting updates!
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="justify-center sm:justify-center">

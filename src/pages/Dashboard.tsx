@@ -120,7 +120,7 @@ const Dashboard = () => {
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
             <div>
               <h1 className="text-2xl sm:text-4xl font-bold mb-2">Welcome, {userName || "Player"}!</h1>
-              <p className="text-sm sm:text-base text-muted-foreground">Your LootBox gaming dashboard</p>
+              <p className="text-sm sm:text-base text-muted-foreground">Your LootBoxx gaming dashboard</p>
             </div>
             <div className="flex gap-2 sm:gap-3">
               <Button variant="outline" size="sm" className="relative" onClick={() => setShowNotifications(!showNotifications)}>

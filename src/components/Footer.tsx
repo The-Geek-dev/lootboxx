@@ -14,15 +14,15 @@ const Footer = () => {
               <div className="flex items-center gap-2">
                 <div className="relative w-10 h-10 flex items-center justify-center">
                   <div className="absolute inset-0 rounded-full animate-spin-slow" style={{ padding: '2px', background: 'linear-gradient(135deg, #5ee7df, #8b5cf6, #6366f1)', WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude', borderRadius: '50%' }} />
-                  <img src={logo} alt="LootBox Logo" className="w-8 h-8 logo-glow relative z-10" />
+                  <img src={logo} alt="LootBoxx Logo" className="w-8 h-8 logo-glow relative z-10" />
                 </div>
-                <h3 className="font-medium text-lg text-gradient text-glow">LOOTBOX</h3>
+                <h3 className="font-medium text-lg text-gradient text-glow">LOOTBOXX</h3>
               </div>
               <p className="text-sm text-muted-foreground">
                 Play exciting games, win bonuses, and earn amazing rewards on the ultimate gaming platform.
               </p>
               <div className="flex space-x-4">
-                <a href="https://x.com/lootbox" target="_blank" rel="noopener noreferrer">
+                <a href="https://x.com/lootboxx" target="_blank" rel="noopener noreferrer">
                   <Button variant="ghost" size="icon">
                     <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
                       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -93,7 +93,7 @@ const Footer = () => {
 
           <div className="mt-8 pt-8 border-t border-white/10">
             <p className="text-sm text-muted-foreground text-center">
-              © {new Date().getFullYear()} LootBox. All rights reserved.
+              © {new Date().getFullYear()} LootBoxx. All rights reserved.
             </p>
           </div>
         </div>
