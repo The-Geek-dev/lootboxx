@@ -69,8 +69,8 @@ const Referrals = () => {
   const shareCode = () => {
     if (navigator.share) {
       navigator.share({
-        title: "Join LootBox!",
-        text: `Use my referral code ${referralCode} to join LootBox and get a ₦${REFERRAL_BONUS_CASH} bonus + ${REFERRAL_BONUS_POINTS} points!`,
+        title: "Join LootBoxx!",
+        text: `Use my referral code ${referralCode} to join LootBoxx and get a ₦${REFERRAL_BONUS_CASH} bonus + ${REFERRAL_BONUS_POINTS} points!`,
         url: window.location.origin,
       });
     } else {

@@ -9,7 +9,7 @@ const testimonials = [
     name: "Michael Chen",
     role: "Daily Player",
     image: "https://avatars.githubusercontent.com/u/1234567?v=4",
-    content: "LootBox is incredibly fun! I've won multiple raffle prizes and the spin-the-wheel game keeps me coming back every day. The referral bonuses are a great bonus too!"
+    content: "LootBoxx is incredibly fun! I've won multiple raffle prizes and the spin-the-wheel game keeps me coming back every day. The referral bonuses are a great bonus too!"
   },
   {
     name: "Sarah Johnson",
@@ -27,7 +27,7 @@ const testimonials = [
     name: "Emily Zhang",
     role: "Raffle Enthusiast",
     image: "https://avatars.githubusercontent.com/u/4567890?v=4",
-    content: "Won the grand raffle twice! The excitement of waiting for the draw is addictive. LootBox has the most fair and transparent gaming system I've seen."
+    content: "Won the grand raffle twice! The excitement of waiting for the draw is addictive. LootBoxx has the most fair and transparent gaming system I've seen."
   },
   {
     name: "James Rodriguez",
@@ -56,7 +56,7 @@ const TestimonialsSection = () => {
         >
           <h2 className="text-5xl font-normal mb-4">Trusted by Players</h2>
           <p className="text-muted-foreground text-lg">
-            Join thousands of happy winners on LootBox
+            Join thousands of happy winners on LootBoxx
           </p>
         </motion.div>
 

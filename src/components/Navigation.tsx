@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import logo from "@/assets/lootbox-logo.png";
+import logo from "@/assets/lootboxx-logo.png";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -70,9 +70,9 @@ const Navigation = () => {
           <Link to="/" className="flex items-center gap-2">
             <div className="relative w-10 h-10 flex items-center justify-center">
               <div className="absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r from-[#5ee7df] via-[#8b5cf6] to-[#6366f1] animate-spin-slow" style={{ padding: '2px', background: 'linear-gradient(135deg, #5ee7df, #8b5cf6, #6366f1)', WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude', borderRadius: '50%' }} />
-              <img src={logo} alt="LootBox Logo" className="w-8 h-8 logo-glow relative z-10" />
+              <img src={logo} alt="LootBoxx Logo" className="w-8 h-8 logo-glow relative z-10" />
             </div>
-            <span className="font-bold text-base text-gradient text-glow">LOOTBOX</span>
+            <span className="font-bold text-base text-gradient text-glow">LOOTBOXX</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-6">

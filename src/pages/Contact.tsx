@@ -29,14 +29,14 @@ const Contact = () => {
             Get in <span className="text-primary">Touch</span>
           </h1>
           <p className="text-xl text-gray-300 mb-16 text-center max-w-3xl mx-auto">
-            Have questions about LootBox? We're here to help you get started with gaming and winning.
+            Have questions about LootBoxx? We're here to help you get started with gaming and winning.
           </p>
           <div className="grid md:grid-cols-2 gap-8 mb-12">
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="glass glass-hover rounded-xl p-6">
               <Mail className="w-10 h-10 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-2">Email Us</h3>
               <p className="text-gray-400 mb-4">Get in touch via email for detailed inquiries</p>
-              <a href="mailto:support@lootbox.app" className="text-primary hover:underline">support@lootbox.app</a>
+              <a href="mailto:support@lootboxx.app" className="text-primary hover:underline">support@lootboxx.app</a>
             </motion.div>
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} className="glass glass-hover rounded-xl p-6">
               <MessageSquare className="w-10 h-10 text-primary mb-4" />

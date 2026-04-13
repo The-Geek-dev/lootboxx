@@ -60,7 +60,7 @@ const Features = () => {
             Platform <span className="text-primary">Features</span>
           </h1>
           <p className="text-xl text-gray-300 text-center max-w-3xl mx-auto">
-            Discover everything LootBox offers — exciting games, real rewards, and a trusted gaming experience.
+            Discover everything LootBoxx offers — exciting games, real rewards, and a trusted gaming experience.
           </p>
         </motion.div>
         <div className="space-y-20">

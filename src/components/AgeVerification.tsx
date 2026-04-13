@@ -8,7 +8,7 @@ const AgeVerification = () => {
 
   useEffect(() => {
     try {
-      const verified = localStorage.getItem("lootbox_age_verified");
+      const verified = localStorage.getItem("lootboxx_age_verified");
       if (!verified) setShow(true);
     } catch {
       setShow(true);
@@ -16,7 +16,7 @@ const AgeVerification = () => {
   }, []);
 
   const confirm = () => {
-    try { localStorage.setItem("lootbox_age_verified", "true"); } catch {}
+    try { localStorage.setItem("lootboxx_age_verified", "true"); } catch {}
     setShow(false);
   };
 

@@ -10,7 +10,7 @@ const About = () => {
     {
       icon: "🎮",
       title: "Exciting Games",
-      description: "From raffles to spin-the-wheel to trivia challenges, LootBox offers a variety of games designed to be fun and rewarding. New games are added regularly."
+      description: "From raffles to spin-the-wheel to trivia challenges, LootBoxx offers a variety of games designed to be fun and rewarding. New games are added regularly."
     },
     {
       icon: "💰",
@@ -20,7 +20,7 @@ const About = () => {
     {
       icon: "👥",
       title: "Referral Bonuses",
-      description: "Invite friends and earn bonus rewards. The more people you bring to LootBox, the more you earn together."
+      description: "Invite friends and earn bonus rewards. The more people you bring to LootBoxx, the more you earn together."
     }
   ];
 
@@ -71,7 +71,7 @@ const About = () => {
           className="max-w-4xl mx-auto mb-16"
         >
           <h1 className="text-5xl md:text-6xl font-bold mb-6 text-center">
-            About <span className="text-primary">LootBox</span>
+            About <span className="text-primary">LootBoxx</span>
           </h1>
           
           <p className="text-xl text-gray-300 mb-8 text-center max-w-3xl mx-auto">
@@ -85,9 +85,9 @@ const About = () => {
           transition={{ delay: 0.2, duration: 0.5 }}
           className="glass rounded-2xl p-8 md:p-12 mb-20"
         >
-          <h2 className="text-3xl font-bold mb-6">What is LootBox?</h2>
+          <h2 className="text-3xl font-bold mb-6">What is LootBoxx?</h2>
           <p className="text-lg text-gray-300 leading-relaxed">
-            LootBox is a gaming rewards platform where players can deposit funds, play exciting games like raffles, spin-the-wheel, 
+            LootBoxx is a gaming rewards platform where players can deposit funds, play exciting games like raffles, spin-the-wheel, 
             and trivia quizzes, and win real rewards. Our platform combines the thrill of gaming with genuine earning opportunities, 
             creating an engaging experience for everyone.
           </p>
@@ -95,7 +95,7 @@ const About = () => {
 
         <div className="mb-20 relative">
           <MascotBackground variant="watermark" corner="top-left" />
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Why Choose LootBox?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Why Choose LootBoxx?</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {platformBenefits.map((benefit, index) => (
               <motion.div
@@ -153,7 +153,7 @@ const About = () => {
           >
             <h2 className="text-3xl font-bold mb-4">Platform Stats</h2>
             <p className="text-lg text-gray-300 max-w-3xl mx-auto">
-              LootBox has been delivering winning moments and real rewards to players across the platform.
+              LootBoxx has been delivering winning moments and real rewards to players across the platform.
             </p>
           </motion.div>
 

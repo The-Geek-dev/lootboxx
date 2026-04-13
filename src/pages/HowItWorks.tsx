@@ -12,13 +12,13 @@ const HowItWorks = () => {
     {
       number: "01",
       title: "Create Your Account",
-      description: "Sign up for free in seconds. Provide your basic info and verify your email to get started on LootBox.",
+      description: "Sign up for free in seconds. Provide your basic info and verify your email to get started on LootBoxx.",
       details: ["Quick registration process", "Email verification", "Instant account activation"]
     },
     {
       number: "02",
       title: "Deposit Funds",
-      description: "Add funds to your LootBox wallet. We accept multiple payment methods for easy deposits starting from ₦7,000.",
+      description: "Add funds to your LootBoxx wallet. We accept multiple payment methods for easy deposits starting from ₦7,000.",
       details: ["Multiple payment options", "Secure transactions", "Instant balance updates"]
     },
     {
@@ -60,11 +60,11 @@ const HowItWorks = () => {
           className="max-w-4xl mx-auto"
         >
           <h1 className="text-5xl md:text-6xl font-bold mb-6 text-center">
-            How <span className="text-primary">LootBox</span> Works
+            How <span className="text-primary">LootBoxx</span> Works
           </h1>
           
           <p className="text-xl text-gray-300 mb-16 text-center max-w-3xl mx-auto">
-            Follow our simple 6-step process to start playing games and winning rewards on LootBox.
+            Follow our simple 6-step process to start playing games and winning rewards on LootBoxx.
           </p>
 
           <div className="space-y-12 mb-20">
@@ -105,7 +105,7 @@ const HowItWorks = () => {
           >
             <h2 className="text-3xl font-bold mb-4">Ready to Start Winning?</h2>
             <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
-              Create your account in under a minute and start playing exciting games on LootBox today.
+              Create your account in under a minute and start playing exciting games on LootBoxx today.
             </p>
             <Link to="/signup">
               <Button size="lg" className="button-gradient">

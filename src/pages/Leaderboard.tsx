@@ -57,7 +57,7 @@ const Leaderboard = () => {
               <h1 className="text-2xl sm:text-4xl font-bold">
                 Leader<span className="text-gradient">board</span>
               </h1>
-              <p className="text-muted-foreground text-sm">Top winners on LootBox</p>
+              <p className="text-muted-foreground text-sm">Top winners on LootBoxx</p>
             </div>
           </div>
 

@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Loader2, ArrowLeft } from "lucide-react";
-import lootboxLogo from "@/assets/lootbox-logo.png";
+import lootboxxLogo from "@/assets/lootboxx-logo.png";
 
 const Login = () => {
   const { toast } = useToast();
@@ -63,7 +63,7 @@ const Login = () => {
           setRequires2FA(true);
           await sendOTPCode(data.user.id, email);
         } else {
-          toast({ title: "Login successful!", description: "Welcome back to LootBox." });
+          toast({ title: "Login successful!", description: "Welcome back to LootBoxx." });
           navigate("/dashboard");
         }
       }
@@ -85,7 +85,7 @@ const Login = () => {
       if (response.error || !response.data?.success) throw new Error(response.data?.error || "Verification failed");
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      toast({ title: "Login successful!", description: "Welcome back to LootBox." });
+      toast({ title: "Login successful!", description: "Welcome back to LootBoxx." });
       navigate("/dashboard");
     } catch (error: any) {
       toast({ title: "Verification failed", description: error.message, variant: "destructive" });
@@ -111,8 +111,8 @@ const Login = () => {
       <div className="min-h-screen bg-black text-foreground flex items-center justify-center px-4">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full max-w-md">
           <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-            <img src={lootboxLogo} alt="LootBox" className="h-10 w-auto" />
-            <span className="font-bold text-2xl">LOOTBOX</span>
+            <img src={lootboxxLogo} alt="LootBoxx" className="h-10 w-auto" />
+            <span className="font-bold text-2xl">LOOTBOXX</span>
           </Link>
           <div className="glass rounded-2xl p-8">
             <button onClick={() => { setRequires2FA(false); setOtpValue(""); setPendingUserId(""); }} className="flex items-center gap-2 text-gray-400 hover:text-white mb-4">
@@ -146,8 +146,8 @@ const Login = () => {
     <div className="min-h-screen bg-black text-foreground flex items-center justify-center px-4">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full max-w-md">
         <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <img src={lootboxLogo} alt="LootBox" className="h-10 w-auto" />
-          <span className="font-bold text-2xl">LOOTBOX</span>
+          <img src={lootboxxLogo} alt="LootBoxx" className="h-10 w-auto" />
+          <span className="font-bold text-2xl">LOOTBOXX</span>
         </Link>
         <div className="glass rounded-2xl p-8">
           <h1 className="text-3xl font-bold mb-2 text-center">Welcome Back</h1>
