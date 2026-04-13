@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import mascotBg from "@/assets/lootboxx-logo.png";
+import mascotBg from "@/assets/lootbox-logo.png";
 
 interface MascotBackgroundProps {
   position?: "left" | "right" | "center";
