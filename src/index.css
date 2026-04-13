@@ -84,8 +84,22 @@
   pointer-events: none;
 }
 
+.light .glass {
+  @apply bg-white/70 backdrop-blur-md;
+  border: 1px solid hsl(220 18% 78% / 0.6);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.light .glass::before {
+  background: linear-gradient(225deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02));
+}
+
 .glass-hover {
   @apply transition-all duration-300 hover:bg-white/10;
+}
+
+.light .glass-hover {
+  @apply hover:bg-black/[0.03];
 }
 
 .text-gradient {
