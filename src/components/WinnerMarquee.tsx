@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { Volume2, VolumeX } from "lucide-react";
-import confetti from "canvas-confetti";
 
 const FIRST_NAMES = [
   "Chidi", "Amara", "Tunde", "Ngozi", "Emeka", "Fatima", "Yusuf", "Blessing",
