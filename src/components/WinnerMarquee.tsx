@@ -53,80 +53,20 @@ function generateEvent(): MarqueeEvent {
   }
 }
 
-// Simple cash register / coin sound via Web Audio API
-function playWinSound() {
-  try {
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.type = "sine";
-    gain.gain.setValueAtTime(0.15, ctx.currentTime);
-
-    // Quick ascending arpeggio
-    const notes = [523.25, 659.25, 783.99, 1046.5]; // C5 E5 G5 C6
-    const step = 0.08;
-    notes.forEach((freq, i) => {
-      osc.frequency.setValueAtTime(freq, ctx.currentTime + i * step);
-    });
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + notes.length * step + 0.2);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + notes.length * step + 0.3);
-  } catch {
-    // Audio not available
-  }
-}
-
-function fireBigWinConfetti() {
-  confetti({
-    particleCount: 80,
-    spread: 70,
-    origin: { y: 0, x: 0.5 },
-    colors: ["#8B5CF6", "#F59E0B", "#10B981", "#EC4899", "#3B82F6"],
-    gravity: 1.2,
-    ticks: 120,
-  });
-}
-
 const WinnerMarquee = () => {
   const [events, setEvents] = useState<MarqueeEvent[]>(() =>
     Array.from({ length: 8 }, generateEvent)
   );
-  const [muted, setMuted] = useState(() => {
-    try { return localStorage.getItem("lootboxx_muted") === "true"; } catch { return false; }
-  });
-  const [flash, setFlash] = useState(false);
-  const hasInteracted = useRef(false);
-
-  const toggleMute = () => {
-    setMuted((prev) => {
-      const next = !prev;
-      try { localStorage.setItem("lootboxx_muted", String(next)); } catch {}
-      return next;
-    });
-  };
-
-  useEffect(() => {
-    const handler = () => { hasInteracted.current = true; };
-    window.addEventListener("click", handler, { once: true });
-    window.addEventListener("touchstart", handler, { once: true });
-    return () => {
-      window.removeEventListener("click", handler);
-      window.removeEventListener("touchstart", handler);
-    };
-  }, []);
 
   const addEvent = useCallback(() => {
     const ev = generateEvent();
     setEvents((prev) => [...prev.slice(1), ev]);
-    if (ev.isBigWin) {
-      fireBigWinConfetti();
-      if (hasInteracted.current && !muted) playWinSound();
-      setFlash(true);
-      setTimeout(() => setFlash(false), 1200);
-    }
-  }, [muted]);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(addEvent, 4000);
+    return () => clearInterval(interval);
+  }, [addEvent]);
 
   useEffect(() => {
     const interval = setInterval(addEvent, 4000);
