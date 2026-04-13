@@ -41,12 +41,12 @@ const getCardStyle = (variant?: string) => {
 
 const getActionLabels = (variant?: string): [string, string] => {
   switch (variant) {
-    case "color-guess": return ["\u{1F534} Red", "\u26AB Black"];
-    case "blackjack": return ["\u{1F4B0} Hit", "\u270B Stand"];
-    case "roulette": return ["\u{1F534} Red", "\u26AB Black"];
-    case "war": return ["\u2694\uFE0F Attack", "\u{1F6E1}\uFE0F Defend"];
-    case "baccarat": return ["\u{1F451} Player", "\u{1F3E6} Banker"];
-    default: return ["\u2B06\uFE0F Higher", "\u2B07\uFE0F Lower"];
+    case "color-guess": return ["🔴 Red", "⚫ Black"];
+    case "blackjack": return ["💰 Hit", "✋ Stand"];
+    case "roulette": return ["🔴 Red", "⚫ Black"];
+    case "war": return ["⚔️ Attack", "🛡️ Defend"];
+    case "baccarat": return ["👑 Player", "🏦 Banker"];
+    default: return ["📈 Higher", "📉 Lower"];
   }
 };
 
