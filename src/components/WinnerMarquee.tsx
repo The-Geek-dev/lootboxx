@@ -7,17 +7,13 @@ const FIRST_NAMES = [
   "Obinna", "Aisha", "Kola", "Chioma", "Segun", "Halima", "Uche", "Zainab",
   "Dayo", "Nneka", "Ibrahim", "Grace", "Kunle", "Funke", "Musa", "Ada",
   "Femi", "Joy", "Ahmed", "Bola", "Sani", "Ify", "Tobi", "Kemi",
+  "Tayo", "Amina", "Eze", "Bukola", "Chinedu", "Hauwa", "Ifeanyi", "Jumoke",
+  "Kabiru", "Lola", "Nnamdi", "Oluwaseun", "Rasheed", "Stella", "Usman", "Vivian",
+  "Wale", "Xander", "Yakubu", "Zara", "Adebayo", "Biola", "Chukwuma", "Doyin",
+  "Ese", "Folake", "Gbenga", "Hafsat", "Ikenna", "Janet",
 ];
 
-const GAMES = [
-  "🎡 Spin the Wheel", "🎰 Lucky Slots", "🧠 Trivia Quiz", "🎟️ Raffle Draw",
-  "✈️ Aviator", "🃏 Blackjack", "🎲 Dice Roll", "💎 Diamond Rush",
-];
-
-const WIN_AMOUNTS = [500, 1000, 2000, 3000, 5000, 7500, 10000, 15000, 20000, 50000];
-const BIG_WIN_THRESHOLD = 5000;
-
-const CITIES = ["Lagos", "Abuja", "Port Harcourt", "Ibadan", "Kano", "Enugu", "Benin", "Warri"];
+const CITIES = ["Lagos", "Abuja", "Port Harcourt", "Ibadan", "Kano", "Enugu", "Benin", "Warri", "Calabar", "Abeokuta", "Jos", "Owerri", "Kaduna", "Uyo", "Asaba"];
 
 type MarqueeEvent = { text: string; icon: string; isBigWin: boolean };
 
@@ -29,48 +25,31 @@ function randomName() {
 
 function generateEvent(): MarqueeEvent {
   const roll = Math.random();
+  const city = CITIES[Math.floor(Math.random() * CITIES.length)];
 
-  if (roll < 0.5) {
-    // Win event
-    const game = GAMES[Math.floor(Math.random() * GAMES.length)];
-    const amount = WIN_AMOUNTS[Math.floor(Math.random() * WIN_AMOUNTS.length)];
+  if (roll < 0.4) {
     return {
-      text: `${randomName()} won ₦${amount.toLocaleString()} on ${game}`,
-      icon: amount >= BIG_WIN_THRESHOLD ? "💰" : "🏆",
-      isBigWin: amount >= BIG_WIN_THRESHOLD,
+      text: `${randomName()} just signed up from ${city}`,
+      icon: "🎉",
+      isBigWin: false,
     };
   } else if (roll < 0.7) {
-    // Sign in event
-    const city = CITIES[Math.floor(Math.random() * CITIES.length)];
     return {
-      text: `${randomName()} just signed in from ${city}`,
-      icon: "👋",
+      text: `${randomName()} joined the waitlist from ${city}`,
+      icon: "📝",
       isBigWin: false,
     };
-  } else if (roll < 0.82) {
-    // Deposit event
-    const amounts = [5000, 7000, 10000, 15000, 20000];
-    const amt = amounts[Math.floor(Math.random() * amounts.length)];
+  } else if (roll < 0.85) {
     return {
-      text: `${randomName()} deposited ₦${amt.toLocaleString()}`,
-      icon: "💳",
-      isBigWin: false,
-    };
-  } else if (roll < 0.92) {
-    // Referral event
-    return {
-      text: `${randomName()} just referred a friend and earned 200 pts`,
+      text: `${randomName()} referred a friend from ${city}`,
       icon: "🤝",
       isBigWin: false,
     };
   } else {
-    // Withdrawal event
-    const amounts = [2000, 5000, 10000, 20000, 50000];
-    const amt = amounts[Math.floor(Math.random() * amounts.length)];
     return {
-      text: `${randomName()} withdrew ₦${amt.toLocaleString()}`,
-      icon: "🎉",
-      isBigWin: amt >= 20000,
+      text: `${randomName()} is excited for launch in ${city}!`,
+      icon: "🚀",
+      isBigWin: false,
     };
   }
 }

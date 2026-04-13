@@ -32,7 +32,7 @@ const LaunchCountdown = () => {
       <div className="flex items-center justify-center gap-2 flex-wrap">
         <Rocket className="w-4 h-4 animate-bounce" />
         <span className="text-sm font-medium">
-          LootBoxx launches in
+          LootBoxx launches in your region in
         </span>
         <div className="flex items-center gap-1 font-mono font-bold text-base">
           <span className="bg-black/20 rounded px-1.5 py-0.5">{pad(timeLeft.hours)}h</span>
