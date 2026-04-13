@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
         metadata: {
           ...metadata,
           custom_fields: [
-            { display_name: "Platform", variable_name: "platform", value: "LootBox" },
+            { display_name: "Platform", variable_name: "platform", value: "LootBoxx" },
           ],
         },
         callback_url: metadata?.callback_url || undefined,
