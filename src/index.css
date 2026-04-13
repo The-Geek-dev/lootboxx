@@ -31,30 +31,31 @@
 
   .light {
     --background: 210 20% 96%;
-    --foreground: 220 20% 10%;
+    --foreground: 220 25% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 10%;
+    --card-foreground: 220 25% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 10%;
-    --primary: 175 85% 32%;
+    --popover-foreground: 220 25% 12%;
+    --primary: 175 85% 28%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 260 65% 55%;
+    --secondary: 260 65% 50%;
     --secondary-foreground: 0 0% 100%;
     --muted: 210 15% 90%;
-    --muted-foreground: 220 10% 35%;
-    --accent: 220 70% 50%;
+    --muted-foreground: 220 15% 30%;
+    --accent: 220 70% 45%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 80% 48%;
+    --destructive: 0 80% 45%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 15% 82%;
-    --input: 220 15% 82%;
-    --ring: 175 85% 32%;
+    --border: 220 18% 78%;
+    --input: 220 18% 78%;
+    --ring: 175 85% 28%;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
@@ -89,6 +90,14 @@
 
 .text-gradient {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-[#5ee7df] via-[#8b5cf6] to-[#6366f1];
+}
+
+.light .text-gradient {
+  @apply from-[#0d9488] via-[#7c3aed] to-[#4f46e5];
+}
+
+.light .text-glow {
+  text-shadow: none;
 }
 
 .button-gradient {
