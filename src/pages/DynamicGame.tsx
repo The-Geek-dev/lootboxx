@@ -11,51 +11,95 @@ import InstantEngine from "@/components/engines/InstantEngine";
 import ArcadeEngine from "@/components/engines/ArcadeEngine";
 import LotteryEngine from "@/components/engines/LotteryEngine";
 import SportsEngine from "@/components/engines/SportsEngine";
+import MinesEngine from "@/components/engines/MinesEngine";
+import WheelEngine from "@/components/engines/WheelEngine";
+import TowerEngine from "@/components/engines/TowerEngine";
+import CoinFlipEngine from "@/components/engines/CoinFlipEngine";
+import ReactionEngine from "@/components/engines/ReactionEngine";
 import { useEffect } from "react";
 
-const ENGINE_MAP: Record<string, string> = {
-  slots: "slots", crash: "crash", cards: "cards", dice: "dice",
-  instant: "instant", arcade: "arcade", lottery: "lottery", sports: "sports",
-};
-
 const GAME_ENGINE_OVERRIDES: Record<string, string> = {
-  "spin-wheel": "spin-wheel", "lucky-slots": "lucky-slots",
-  "trivia-quiz": "trivia", "raffle-draw": "raffle",
+  "spin-wheel": "spin-wheel",
+  "lucky-slots": "lucky-slots",
+  "trivia-quiz": "trivia",
+  "raffle-draw": "raffle",
+  // Route specific games to new engines
+  "mine-field": "mines",
+  "diamond-mine": "mines",
+  "coin-flip": "coinflip",
+  "double-or-nothing": "coinflip",
+  "cash-grab": "coinflip",
+  "mega-wheel": "wheel",
+  "wheel-fortune": "wheel",
+  "tower-climb": "tower",
+  "plinko": "tower",
+  // Reaction-based games
+  "ninja-strike": "reaction",
+  "zombie-hunt": "reaction",
+  "space-invader": "reaction",
+  "bubble-pop": "reaction",
+  "fish-catch": "reaction",
+  "balloon-pop": "reaction",
 };
 
 const SLOT_THEMES: Record<string, string[]> = {
-  "fire-strike": ["\u{1F525}", "\u{1F4A5}", "\u26A1", "\u{1F31F}", "\u{1F48E}", "7\uFE0F\u20E3"],
-  "hot-burn": ["\u{1F336}\uFE0F", "\u{1F525}", "\u{1F4B0}", "\u2B50", "\u{1F352}", "7\uFE0F\u20E3"],
-  "wild-west": ["\u{1F920}", "\u{1F40E}", "\u{1F4B0}", "\u{1F335}", "\u2B50", "\u{1F52B}"],
-  "pharaoh-gold": ["\u{1F3DB}\uFE0F", "\u{1F441}\uFE0F", "\u{1F48E}", "\u{1F40D}", "\u2B50", "\u{1F52E}"],
-  "ocean-treasure": ["\u{1F41A}", "\u{1F41F}", "\u{1F988}", "\u{1F48E}", "\u2B50", "\u{1F30A}"],
-  "mystic-gems": ["\u{1F4A0}", "\u{1F48E}", "\u{1F52E}", "\u2B50", "\u{1F319}", "\u2728"],
-  "jungle-king": ["\u{1F981}", "\u{1F418}", "\u{1F343}", "\u{1F48E}", "\u2B50", "\u{1F334}"],
-  "candy-pop": ["\u{1F36C}", "\u{1F36D}", "\u{1F36B}", "\u{1F382}", "\u2B50", "\u{1F369}"],
-  "neon-lights": ["\u{1F4A1}", "\u{1F308}", "\u26A1", "\u{1F48E}", "\u2B50", "\u{1F386}"],
-  "viking-saga": ["\u2694\uFE0F", "\u{1F6E1}\uFE0F", "\u{1F3F0}", "\u{1F48E}", "\u2B50", "\u26A1"],
-  "zeus-thunder": ["\u26C8\uFE0F", "\u26A1", "\u{1F3DB}\uFE0F", "\u{1F48E}", "\u2B50", "\u{1F531}"],
-  "moon-magic": ["\u{1F319}", "\u2728", "\u{1F52E}", "\u{1F48E}", "\u2B50", "\u{1F31F}"],
-  "lucky-7": ["7\uFE0F\u20E3", "\u{1F352}", "\u{1F48E}", "\u2B50", "\u{1F514}", "\u{1F34B}"],
-  "diamond-rush": ["\u{1F48E}", "\u{1F4B0}", "\u{1F451}", "\u2B50", "\u{1F525}", "\u2728"],
-  "jackpot-city": ["\u{1F3D9}\uFE0F", "\u{1F4B0}", "\u{1F48E}", "7\uFE0F\u20E3", "\u2B50", "\u{1F3B0}"],
-  "dragon-fortune": ["\u{1F409}", "\u{1F525}", "\u{1F48E}", "\u{1F451}", "\u2B50", "\u{1F3EE}"],
-  "star-burst": ["\u2B50", "\u{1F4AB}", "\u2728", "\u{1F31F}", "\u{1F48E}", "\u{1F525}"],
-  "ice-cold": ["\u{1F9CA}", "\u2744\uFE0F", "\u{1F48E}", "\u2B50", "\u{1F30A}", "\u2603\uFE0F"],
-  "hot-pepper": ["\u{1F336}\uFE0F", "\u{1F525}", "\u{1F4B0}", "\u{1F48E}", "\u2B50", "7\uFE0F\u20E3"],
-  "safari-wild": ["\u{1F992}", "\u{1F981}", "\u{1F418}", "\u{1F48E}", "\u2B50", "\u{1F334}"],
-  "cherry-bomb": ["\u{1F352}", "\u{1F4A3}", "\u{1F48E}", "\u2B50", "\u{1F525}", "7\uFE0F\u20E3"],
-  "magic-lamp": ["\u{1FA94}", "\u{1F9DE}", "\u{1F48E}", "\u2B50", "\u{1F451}", "\u2728"],
-  "pirate-loot": ["\u2620\uFE0F", "\u{1F3F4}\u200D\u2620\uFE0F", "\u{1F4B0}", "\u{1F48E}", "\u2B50", "\u{1F5E1}\uFE0F"],
-  "spin-match": ["\u{1F3AF}", "\u{1F48E}", "\u2B50", "\u{1F525}", "\u{1F352}", "7\uFE0F\u20E3"],
-  "fruit-blast": ["\u{1F34E}", "\u{1F34A}", "\u{1F347}", "\u{1F34B}", "\u{1F352}", "\u{1F353}"],
+  "fire-strike": ["🔥", "💥", "⚡", "🌟", "💎", "7️⃣"],
+  "hot-burn": ["🌶️", "🔥", "💰", "⭐", "🍒", "7️⃣"],
+  "wild-west": ["🤠", "🐎", "💰", "🌵", "⭐", "🔫"],
+  "pharaoh-gold": ["🏛️", "👁️", "💎", "🐍", "⭐", "🔮"],
+  "ocean-treasure": ["🐚", "🐟", "🦈", "💎", "⭐", "🌊"],
+  "mystic-gems": ["💠", "💎", "🔮", "⭐", "🌙", "✨"],
+  "jungle-king": ["🦁", "🐘", "🍃", "💎", "⭐", "🌴"],
+  "candy-pop": ["🍬", "🍭", "🍫", "🎂", "⭐", "🍩"],
+  "neon-lights": ["💡", "🌈", "⚡", "💎", "⭐", "🎆"],
+  "viking-saga": ["⚔️", "🛡️", "🏰", "💎", "⭐", "⚡"],
+  "zeus-thunder": ["⛈️", "⚡", "🏛️", "💎", "⭐", "🔱"],
+  "moon-magic": ["🌙", "✨", "🔮", "💎", "⭐", "🌟"],
+  "lucky-7": ["7️⃣", "🍒", "💎", "⭐", "🔔", "🍋"],
+  "diamond-rush": ["💎", "💰", "👑", "⭐", "🔥", "✨"],
+  "jackpot-city": ["🏙️", "💰", "💎", "7️⃣", "⭐", "🎰"],
+  "dragon-fortune": ["🐉", "🔥", "💎", "👑", "⭐", "🏮"],
+  "star-burst": ["⭐", "💫", "✨", "🌟", "💎", "🔥"],
+  "ice-cold": ["🧊", "❄️", "💎", "⭐", "🌊", "☃️"],
+  "hot-pepper": ["🌶️", "🔥", "💰", "💎", "⭐", "7️⃣"],
+  "safari-wild": ["🦒", "🦁", "🐘", "💎", "⭐", "🌴"],
+  "cherry-bomb": ["🍒", "💣", "💎", "⭐", "🔥", "7️⃣"],
+  "magic-lamp": ["🪔", "🧞", "💎", "⭐", "👑", "✨"],
+  "pirate-loot": ["☠️", "🏴‍☠️", "💰", "💎", "⭐", "🗡️"],
+  "spin-match": ["🎯", "💎", "⭐", "🔥", "🍒", "7️⃣"],
+  "fruit-blast": ["🍎", "🍊", "🍇", "🍋", "🍒", "🍓"],
+};
+
+const MINES_CONFIG: Record<string, { gridSize: number; mineCount: number }> = {
+  "mine-field": { gridSize: 25, mineCount: 5 },
+  "diamond-mine": { gridSize: 16, mineCount: 3 },
+};
+
+const COINFLIP_SIDES: Record<string, [string, string]> = {
+  "coin-flip": ["👑", "🌟"],
+  "double-or-nothing": ["✅", "❌"],
+  "cash-grab": ["💵", "💨"],
+};
+
+const TOWER_CONFIG: Record<string, { floors: number; doors: number }> = {
+  "tower-climb": { floors: 8, doors: 3 },
+  "plinko": { floors: 6, doors: 4 },
+};
+
+const REACTION_CONFIG: Record<string, { targets: string[]; duration: number; gridSize: number; gridCols: number }> = {
+  "ninja-strike": { targets: ["🥷", "⚔️", "🌙", "⭐"], duration: 20, gridSize: 16, gridCols: 4 },
+  "zombie-hunt": { targets: ["🧟", "💀", "🧠"], duration: 25, gridSize: 16, gridCols: 4 },
+  "space-invader": { targets: ["👾", "🛸", "🌟", "💥"], duration: 20, gridSize: 16, gridCols: 4 },
+  "bubble-pop": { targets: ["🫧", "🔵", "🟢", "🔴", "🟡"], duration: 25, gridSize: 12, gridCols: 4 },
+  "fish-catch": { targets: ["🐟", "🐠", "🦈", "🐙", "💎"], duration: 25, gridSize: 12, gridCols: 4 },
+  "balloon-pop": { targets: ["🎈", "🎈", "🎁", "⭐"], duration: 20, gridSize: 12, gridCols: 4 },
 };
 
 function getEngineType(gameId: string, categories: string[]): string {
   if (GAME_ENGINE_OVERRIDES[gameId]) return GAME_ENGINE_OVERRIDES[gameId];
   const priority = ["slots", "crash", "cards", "dice", "sports", "lottery", "arcade", "instant"];
   for (const cat of priority) {
-    if (categories.includes(cat)) return ENGINE_MAP[cat];
+    if (categories.includes(cat)) return cat;
   }
   return "instant";
 }
@@ -97,6 +141,22 @@ const DynamicGame = () => {
       case "dice": {
         const diceConfig = getDiceConfig(game.id);
         return <DiceEngine {...baseProps} diceCount={diceConfig.diceCount} targetRange={diceConfig.targetRange} />;
+      }
+      case "mines": {
+        const mc = MINES_CONFIG[game.id] || { gridSize: 25, mineCount: 5 };
+        return <MinesEngine {...baseProps} gridSize={mc.gridSize} mineCount={mc.mineCount} />;
+      }
+      case "wheel":
+        return <WheelEngine {...baseProps} />;
+      case "tower": {
+        const tc = TOWER_CONFIG[game.id] || { floors: 8, doors: 3 };
+        return <TowerEngine {...baseProps} floors={tc.floors} doorsPerFloor={tc.doors} />;
+      }
+      case "coinflip":
+        return <CoinFlipEngine {...baseProps} sides={COINFLIP_SIDES[game.id]} />;
+      case "reaction": {
+        const rc = REACTION_CONFIG[game.id] || { targets: ["🎯", "⭐", "💎"], duration: 20, gridSize: 16, gridCols: 4 };
+        return <ReactionEngine {...baseProps} targets={rc.targets} duration={rc.duration} gridSize={rc.gridSize} gridCols={rc.gridCols} />;
       }
       case "instant":
         return <InstantEngine {...baseProps} />;
