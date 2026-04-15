@@ -14,6 +14,7 @@ import { useDepositGate } from "@/hooks/useDepositGate";
 import { allGames, categories, getGamesByCategory, type GameCategory, type GameItem } from "@/config/gamesData";
 import { gameImages } from "@/config/gameImages";
 import { useToast } from "@/hooks/use-toast";
+import WinnersMarqueeBanner from "@/components/WinnersMarqueeBanner";
 
 const GameCard = ({ game, size = "normal" }: { game: GameItem; size?: "normal" | "large" | "numbered"; index?: number }) => {
   const { toast } = useToast();
@@ -146,6 +147,9 @@ const Games = () => {
       <Navigation />
       <AppSidebar />
       <main className="md:pl-16 container px-3 pt-24 pb-16">
+        {/* Winners Marquee */}
+        <WinnersMarqueeBanner />
+
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-4">
           <h1 className="text-xl sm:text-3xl font-bold text-center mb-1">

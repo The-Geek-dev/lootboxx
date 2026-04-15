@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import AppSidebar from "@/components/AppSidebar";
@@ -5,6 +6,7 @@ import Footer from "@/components/Footer";
 import { Trophy, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
 import { useLaunchStatus } from "@/hooks/useLaunchStatus";
 import { useFakeLeaderboard } from "@/hooks/useFakeLeaderboard";
@@ -28,8 +30,45 @@ const ComingSoonView = () => (
   </motion.div>
 );
 
+type TimeFilter = "daily" | "weekly" | "monthly" | "all-time";
+
 const LiveLeaderboardView = () => {
-  const { leaders } = useFakeLeaderboard(20);
+  const { leaders: allLeaders } = useFakeLeaderboard(50);
+  const [timeFilter, setTimeFilter] = useState<TimeFilter>("all-time");
+
+  // Simulate different data per time filter by slicing/scaling
+  const getFilteredLeaders = () => {
+    switch (timeFilter) {
+      case "daily":
+        return allLeaders.slice(0, 10).map((p, i) => ({
+          ...p,
+          rank: i + 1,
+          total_winnings: Math.floor(p.total_winnings * 0.05),
+          games_played: Math.max(1, Math.floor(p.games_played * 0.05)),
+          wins: Math.max(0, Math.floor(p.wins * 0.05)),
+        }));
+      case "weekly":
+        return allLeaders.slice(0, 15).map((p, i) => ({
+          ...p,
+          rank: i + 1,
+          total_winnings: Math.floor(p.total_winnings * 0.25),
+          games_played: Math.max(1, Math.floor(p.games_played * 0.25)),
+          wins: Math.max(0, Math.floor(p.wins * 0.25)),
+        }));
+      case "monthly":
+        return allLeaders.slice(0, 20).map((p, i) => ({
+          ...p,
+          rank: i + 1,
+          total_winnings: Math.floor(p.total_winnings * 0.6),
+          games_played: Math.max(1, Math.floor(p.games_played * 0.6)),
+          wins: Math.max(0, Math.floor(p.wins * 0.6)),
+        }));
+      default:
+        return allLeaders.slice(0, 20);
+    }
+  };
+
+  const leaders = getFilteredLeaders();
 
   const rankEmoji = (rank: number) => {
     if (rank === 1) return "🥇";
@@ -38,16 +77,34 @@ const LiveLeaderboardView = () => {
     return `#${rank}`;
   };
 
+  const filterLabels: Record<TimeFilter, string> = {
+    "daily": "Today",
+    "weekly": "This Week",
+    "monthly": "This Month",
+    "all-time": "All Time",
+  };
+
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto w-full">
       <h1 className="text-3xl font-bold text-center mb-2">🏆 Leaderboard</h1>
-      <p className="text-muted-foreground text-center mb-1">Top players by total winnings</p>
-      <p className="text-xs text-muted-foreground text-center mb-6">Updates every 30 minutes</p>
+      <p className="text-muted-foreground text-center mb-4">Top players by total winnings</p>
+
+      <Tabs value={timeFilter} onValueChange={(v) => setTimeFilter(v as TimeFilter)} className="mb-6">
+        <TabsList className="w-full grid grid-cols-4">
+          {(Object.keys(filterLabels) as TimeFilter[]).map((key) => (
+            <TabsTrigger key={key} value={key} className="text-xs sm:text-sm">
+              {filterLabels[key]}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+
+      <p className="text-xs text-muted-foreground text-center mb-4">Updates every 30 minutes</p>
 
       <div className="space-y-2">
         {leaders.map((player) => (
           <Card
-            key={player.rank}
+            key={`${timeFilter}-${player.rank}`}
             className={`p-4 flex items-center justify-between transition-all ${
               player.rank <= 3 ? "border-primary/30 bg-primary/5" : ""
             }`}
