@@ -113,12 +113,13 @@ const AdminDashboard = () => {
       setIsAdmin(true);
 
       try {
-        const [statsRes, usersRes, depositsRes, gamesRes, withdrawRes] = await Promise.all([
+        const [statsRes, usersRes, depositsRes, gamesRes, withdrawRes, gsRes] = await Promise.all([
           adminCall("get_stats"),
           adminCall("get_users"),
           adminCall("get_deposits"),
           adminCall("get_game_activity"),
           adminCall("get_withdrawals"),
+          adminCall("get_game_settings"),
         ]);
 
         setStats(statsRes?.stats);
@@ -126,6 +127,7 @@ const AdminDashboard = () => {
         setDeposits(depositsRes?.deposits || []);
         setGameActivity(gamesRes);
         setWithdrawals(withdrawRes?.withdrawals || []);
+        setGameSettings(gsRes?.settings || []);
       } catch (err: any) {
         toast({ title: "Error loading admin data", description: err.message, variant: "destructive" });
       }
