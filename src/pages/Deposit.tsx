@@ -122,7 +122,6 @@ const LiveDepositView = () => {
           <Button className="button-gradient w-full py-3 text-lg" onClick={handleDeposit} disabled={loading}>
             {loading ? "Processing..." : `Pay ₦${selectedTier.amount.toLocaleString()} with Flutterwave`}
           </Button>
-          </Button>
         </motion.div>
       )}
     </motion.div>
