@@ -52,7 +52,7 @@ const LiveDepositView = () => {
         return;
       }
 
-      const fnName = paymentMethod === "paystack" ? "paystack-initialize" : "flutterwave-initialize";
+      const fnName = "flutterwave-initialize";
       const { data, error } = await supabase.functions.invoke(fnName, {
         body: {
           amount: selectedTier.amount,
@@ -109,18 +109,9 @@ const LiveDepositView = () => {
       {selectedTier && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <h3 className="font-semibold mb-3 text-foreground">Payment Method</h3>
-          <div className="grid grid-cols-2 gap-3 mb-6">
+          <div className="mb-6">
             <Card
-              onClick={() => setPaymentMethod("paystack")}
-              className={`p-4 cursor-pointer text-center transition-all ${paymentMethod === "paystack" ? "ring-2 ring-primary bg-primary/10" : "hover:border-primary/50"}`}
-            >
-              <CreditCard className="w-6 h-6 mx-auto mb-1 text-primary" />
-              <p className="font-medium text-sm text-foreground">Paystack</p>
-              <p className="text-xs text-muted-foreground">Cards, Bank, USSD</p>
-            </Card>
-            <Card
-              onClick={() => setPaymentMethod("flutterwave")}
-              className={`p-4 cursor-pointer text-center transition-all ${paymentMethod === "flutterwave" ? "ring-2 ring-primary bg-primary/10" : "hover:border-primary/50"}`}
+              className="p-4 text-center ring-2 ring-primary bg-primary/10"
             >
               <Smartphone className="w-6 h-6 mx-auto mb-1 text-primary" />
               <p className="font-medium text-sm text-foreground">Flutterwave</p>
@@ -129,7 +120,8 @@ const LiveDepositView = () => {
           </div>
 
           <Button className="button-gradient w-full py-3 text-lg" onClick={handleDeposit} disabled={loading}>
-            {loading ? "Processing..." : `Pay ₦${selectedTier.amount.toLocaleString()} with ${paymentMethod === "paystack" ? "Paystack" : "Flutterwave"}`}
+            {loading ? "Processing..." : `Pay ₦${selectedTier.amount.toLocaleString()} with Flutterwave`}
+          </Button>
           </Button>
         </motion.div>
       )}
