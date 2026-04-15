@@ -180,6 +180,10 @@ const DynamicGame = () => {
         const rc = REACTION_CONFIG[game.id] || { targets: ["🎯", "⭐", "💎"], duration: 20, gridSize: 16, gridCols: 4 };
         return <ReactionEngine {...baseProps} targets={rc.targets} duration={rc.duration} gridSize={rc.gridSize} gridCols={rc.gridCols} />;
       }
+      case "scratch":
+        return <ScratchCardEngine {...baseProps} prizes={SCRATCH_PRIZES[game.id]} />;
+      case "race":
+        return <RaceEngine {...baseProps} racers={RACE_CONFIGS[game.id]} />;
       case "instant":
         return <InstantEngine {...baseProps} />;
       case "arcade":
