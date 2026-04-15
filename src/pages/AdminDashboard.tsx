@@ -253,6 +253,39 @@ const AdminDashboard = () => {
     setGeneratingCodes(false);
   };
 
+  const handleSaveGameSettings = async () => {
+    if (!gsUserId) {
+      toast({ title: "Select a user first", variant: "destructive" });
+      return;
+    }
+    try {
+      const res = await adminCall("upsert_game_settings", {
+        user_id: gsUserId,
+        difficulty_level: Number(gsDifficulty),
+        win_rate_modifier: Number(gsWinRate),
+        payout_modifier: Number(gsPayout),
+        is_active: gsActive,
+        admin_note: gsNote || undefined,
+      });
+      toast({ title: res.message });
+      const gsRes = await adminCall("get_game_settings");
+      setGameSettings(gsRes?.settings || []);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const handleDeleteGameSettings = async (userId: string) => {
+    try {
+      const res = await adminCall("delete_game_settings", { user_id: userId });
+      toast({ title: res.message });
+      const gsRes = await adminCall("get_game_settings");
+      setGameSettings(gsRes?.settings || []);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
+
   if (!isAdmin || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
