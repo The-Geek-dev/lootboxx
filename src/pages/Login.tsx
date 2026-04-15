@@ -52,7 +52,7 @@ const Login = () => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
-        toast({ title: "Login failed", description: error.message, variant: "destructive" });
+        toast({ title: "Login failed", description: "Invalid email or password. Please try again.", variant: "destructive" });
         return;
       }
       if (data.user) {

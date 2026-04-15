@@ -26,8 +26,12 @@ const Signup = () => {
       toast({ title: "Error", description: "Passwords don't match", variant: "destructive" });
       return;
     }
-    if (formData.password.length < 6) {
-      toast({ title: "Error", description: "Password must be at least 6 characters", variant: "destructive" });
+    if (formData.password.length < 8) {
+      toast({ title: "Error", description: "Password must be at least 8 characters", variant: "destructive" });
+      return;
+    }
+    if (!/[A-Z]/.test(formData.password) || !/[a-z]/.test(formData.password) || !/[0-9]/.test(formData.password)) {
+      toast({ title: "Error", description: "Password must contain uppercase, lowercase, and a number", variant: "destructive" });
       return;
     }
     setIsLoading(true);
@@ -37,7 +41,7 @@ const Signup = () => {
         password: formData.password,
         options: { emailRedirectTo: `${window.location.origin}/`, data: { full_name: formData.name } },
       });
-      if (signupError) { toast({ title: "Signup failed", description: signupError.message, variant: "destructive" }); return; }
+      if (signupError) { toast({ title: "Signup failed", description: "Registration failed. Please try again or use a different email.", variant: "destructive" }); return; }
       if (!authData.user) { toast({ title: "Signup failed", description: "Failed to create user account", variant: "destructive" }); return; }
       toast({ title: "Account created!", description: "Welcome to LootBoxx. Let's start playing!" });
       navigate("/dashboard");

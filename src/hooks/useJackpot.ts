@@ -28,12 +28,11 @@ export function useJackpot() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { won: false, winAmount: 0 };
 
-    const contribution = Math.max(1, Math.floor(amount * 0.02)); // 2% of bet goes to jackpot
+    const contribution = Math.max(1, Math.min(1000, Math.floor(amount * 0.02))); // 2% of bet goes to jackpot
     
     const { data, error } = await supabase.rpc("contribute_to_jackpot", {
       contribution,
-      player_id: user.id,
-    });
+    } as any);
 
     if (error || !data) return { won: false, winAmount: 0 };
 

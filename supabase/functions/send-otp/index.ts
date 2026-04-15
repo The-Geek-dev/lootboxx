@@ -20,6 +20,29 @@ serve(async (req) => {
   }
 
   try {
+    // Authenticate the caller
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    const supabaseAuth = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: authData, error: authError } = await supabaseAuth.auth.getUser();
+    if (authError || !authData.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
@@ -28,7 +51,33 @@ serve(async (req) => {
     const { email, user_id }: SendOTPRequest = await req.json();
 
     if (!email || !user_id) {
-      throw new Error("Email and user_id are required");
+      return new Response(JSON.stringify({ error: "Email and user_id are required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Verify the caller matches the requested user_id
+    if (authData.user.id !== user_id) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Rate limit: max 3 OTPs per 10 minutes per user
+    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+    const { count } = await supabaseAdmin
+      .from("otp_codes")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user_id)
+      .gte("created_at", tenMinutesAgo);
+
+    if (count && count >= 3) {
+      return new Response(JSON.stringify({ error: "Too many requests. Please wait before requesting another code." }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
     }
 
     // Generate 6-digit OTP
@@ -53,7 +102,10 @@ serve(async (req) => {
 
     if (insertError) {
       console.error("Error storing OTP:", insertError);
-      throw new Error("Failed to generate OTP");
+      return new Response(JSON.stringify({ error: "Failed to generate verification code" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
     }
 
     // Send OTP email
@@ -91,7 +143,10 @@ serve(async (req) => {
 
     if (emailError) {
       console.error("Error sending email:", emailError);
-      throw new Error("Failed to send verification email");
+      return new Response(JSON.stringify({ error: "Failed to send verification email" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
     }
 
     console.log("OTP sent successfully to:", email);
@@ -106,7 +161,7 @@ serve(async (req) => {
   } catch (error: any) {
     console.error("Error in send-otp function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "An unexpected error occurred" }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
