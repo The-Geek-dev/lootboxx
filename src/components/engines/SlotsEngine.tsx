@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import GameBackground from "./GameBackground";
 import { useWallet } from "@/hooks/useWallet";
 import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
@@ -278,65 +278,41 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
         )}
       </div>
 
-      <Card className={`p-6 sm:p-8 bg-gradient-to-br ${theme.bgGradient} backdrop-blur-sm border-primary/20 relative overflow-hidden`}>
-        {/* Decorative background */}
-        <div className="absolute inset-0 opacity-5 text-9xl flex items-center justify-center pointer-events-none select-none">
-          {emoji}
-        </div>
-
-        {/* Animated background particles for special variants */}
-        {(theme.variant === "neon" || theme.variant === "cosmic") && (
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {[...Array(6)].map((_, i) => (
+      <GameBackground type="slots" overlay="dark">
+        <div className="p-6 sm:p-8 relative">
+          <div className={`grid ${getGridCols()} gap-2 sm:gap-3 justify-center mb-4 relative`}>
+            {reels.map((symbol, i) => (
               <motion.div
                 key={i}
-                className={`absolute w-1 h-1 rounded-full ${theme.variant === "neon" ? "bg-fuchsia-400" : "bg-yellow-400"}`}
-                animate={{ y: ["100%", "-10%"], x: [Math.random() * 100 + "%", Math.random() * 100 + "%"], opacity: [0, 1, 0] }}
-                transition={{ duration: 3 + Math.random() * 2, repeat: Infinity, delay: i * 0.5 }}
-              />
+                className={`aspect-square max-w-20 sm:max-w-24 w-full mx-auto bg-black/50 rounded-xl flex items-center justify-center text-3xl sm:text-5xl border-2 relative ${getReelStyle()} ${wildPositions.includes(i) ? "ring-2 ring-purple-400 ring-offset-1 ring-offset-background" : ""}`}
+                animate={isSpinning ? getSpinAnimation() : lastWin ? { scale: [1, 1.15, 1] } : {}}
+                transition={{
+                  repeat: isSpinning ? Infinity : lastWin ? 2 : 0,
+                  duration: isSpinning ? (config.spinStyle === "cascade" ? 0.2 : 0.15) : 0.3,
+                  delay: isSpinning ? i * (config.spinStyle === "cascade" ? 0.1 : 0.05) : 0,
+                }}
+              >
+                {symbol}
+                {symbol === "🃏" && !isSpinning && (
+                  <motion.div
+                    className="absolute inset-0 rounded-xl bg-purple-500/20"
+                    animate={{ opacity: [0.2, 0.5, 0.2] }}
+                    transition={{ repeat: Infinity, duration: 1.5 }}
+                  />
+                )}
+              </motion.div>
             ))}
           </div>
-        )}
 
-        {/* Fire effect for fire variants */}
-        {theme.variant === "fire" && (
-          <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-orange-500/10 to-transparent pointer-events-none" />
-        )}
-
-        <div className={`grid ${getGridCols()} gap-2 sm:gap-3 justify-center mb-4 relative`}>
-          {reels.map((symbol, i) => (
-            <motion.div
-              key={i}
-              className={`aspect-square max-w-20 sm:max-w-24 w-full mx-auto bg-background/80 rounded-xl flex items-center justify-center text-3xl sm:text-5xl border-2 relative ${getReelStyle()} ${wildPositions.includes(i) ? "ring-2 ring-purple-400 ring-offset-1 ring-offset-background" : ""}`}
-              animate={isSpinning ? getSpinAnimation() : lastWin ? { scale: [1, 1.15, 1] } : {}}
-              transition={{
-                repeat: isSpinning ? Infinity : lastWin ? 2 : 0,
-                duration: isSpinning ? (config.spinStyle === "cascade" ? 0.2 : 0.15) : 0.3,
-                delay: isSpinning ? i * (config.spinStyle === "cascade" ? 0.1 : 0.05) : 0,
-              }}
-            >
-              {symbol}
-              {/* Wild glow */}
-              {symbol === "🃏" && !isSpinning && (
-                <motion.div
-                  className="absolute inset-0 rounded-xl bg-purple-500/20"
-                  animate={{ opacity: [0.2, 0.5, 0.2] }}
-                  transition={{ repeat: Infinity, duration: 1.5 }}
-                />
-              )}
-            </motion.div>
-          ))}
+          {!isSpinning && reels.length >= 3 && (
+            <div className="flex justify-center gap-1 mt-2">
+              {reels.map((_, i) => (
+                <div key={i} className={`h-1 flex-1 max-w-12 sm:max-w-16 rounded-full transition-colors duration-300 ${lastWin ? "bg-green-400" : "bg-white/10"}`} />
+              ))}
+            </div>
+          )}
         </div>
-
-        {/* Win line indicator */}
-        {!isSpinning && reels.length >= 3 && (
-          <div className="flex justify-center gap-1 mt-2">
-            {reels.map((_, i) => (
-              <div key={i} className={`h-1 flex-1 max-w-12 sm:max-w-16 rounded-full transition-colors duration-300 ${lastWin ? "bg-green-400" : "bg-muted/30"}`} />
-            ))}
-          </div>
-        )}
-      </Card>
+      </GameBackground>
 
       {/* Result display */}
       <AnimatePresence>
