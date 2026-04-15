@@ -556,6 +556,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      buy_xp_refill: { Args: never; Returns: boolean }
       contribute_to_jackpot:
         | { Args: { contribution: number }; Returns: Json }
         | { Args: { contribution: number; player_id: string }; Returns: Json }
