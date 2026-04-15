@@ -416,6 +416,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_game_settings: {
+        Row: {
+          admin_note: string | null
+          created_at: string
+          difficulty_level: number
+          id: string
+          is_active: boolean
+          payout_modifier: number
+          updated_at: string
+          user_id: string
+          win_rate_modifier: number
+        }
+        Insert: {
+          admin_note?: string | null
+          created_at?: string
+          difficulty_level?: number
+          id?: string
+          is_active?: boolean
+          payout_modifier?: number
+          updated_at?: string
+          user_id: string
+          win_rate_modifier?: number
+        }
+        Update: {
+          admin_note?: string | null
+          created_at?: string
+          difficulty_level?: number
+          id?: string
+          is_active?: boolean
+          payout_modifier?: number
+          updated_at?: string
+          user_id?: string
+          win_rate_modifier?: number
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -568,6 +604,15 @@ export type Database = {
           rank: number
           total_winnings: number
           wins: number
+        }[]
+      }
+      get_my_game_settings: {
+        Args: never
+        Returns: {
+          difficulty_level: number
+          is_active: boolean
+          payout_modifier: number
+          win_rate_modifier: number
         }[]
       }
       has_role: {

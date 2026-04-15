@@ -455,6 +455,74 @@ Deno.serve(async (req) => {
         );
       }
 
+      case "get_game_settings": {
+        const { data: settings } = await serviceClient
+          .from("user_game_settings")
+          .select("*")
+          .order("updated_at", { ascending: false });
+
+        // Enrich with user info
+        const settingsUserIds = [...new Set((settings || []).map((s: any) => s.user_id))];
+        const { data: settingsProfiles } = await serviceClient
+          .from("profiles")
+          .select("user_id, full_name")
+          .in("user_id", settingsUserIds.length > 0 ? settingsUserIds : ["none"]);
+
+        const enrichedSettings = (settings || []).map((s: any) => ({
+          ...s,
+          user_name: settingsProfiles?.find((p: any) => p.user_id === s.user_id)?.full_name || "Unknown",
+        }));
+
+        return new Response(JSON.stringify({ settings: enrichedSettings }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      case "upsert_game_settings": {
+        const { user_id: gsUserId, difficulty_level, win_rate_modifier, payout_modifier, is_active, admin_note: gsNote } = params;
+
+        if (!gsUserId) {
+          return new Response(JSON.stringify({ error: "user_id required" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const { error: upsertErr } = await serviceClient
+          .from("user_game_settings")
+          .upsert({
+            user_id: gsUserId,
+            difficulty_level: Number(difficulty_level) || 5,
+            win_rate_modifier: Number(win_rate_modifier) || 1.0,
+            payout_modifier: Number(payout_modifier) || 1.0,
+            is_active: is_active ?? false,
+            admin_note: gsNote || null,
+          }, { onConflict: "user_id" });
+
+        if (upsertErr) {
+          return new Response(JSON.stringify({ error: upsertErr.message }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        return new Response(
+          JSON.stringify({ success: true, message: "Game settings updated" }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      case "delete_game_settings": {
+        const { user_id: delGsUserId } = params;
+        await serviceClient
+          .from("user_game_settings")
+          .delete()
+          .eq("user_id", delGsUserId);
+
+        return new Response(
+          JSON.stringify({ success: true, message: "Game settings removed" }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400,
