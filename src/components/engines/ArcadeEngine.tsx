@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -43,6 +44,7 @@ const ArcadeEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'f
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
   const config = getGridConfig(theme.variant);
   const [grid, setGrid] = useState<string[]>([]);
   const [flipped, setFlipped] = useState<number[]>([]);
@@ -104,6 +106,7 @@ const ArcadeEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'f
       if (canFullyWin() && ratio >= 1) recordFullWin();
       await updateBalance(winnings);
     }
+    if (winnings > 0) play("win"); else play("lose");
     setResult(winnings > 0 ? `\u{1F389} Matched ${matchCount / 2} pairs! Won \u20A6${winnings.toLocaleString()}!` : "Time's up! Try again!");
     await recordGameResult(gameId, pointCost, winnings, { matchCount, moves, timeLeft });
   };

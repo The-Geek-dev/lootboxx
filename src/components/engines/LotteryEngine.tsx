@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -44,6 +45,7 @@ const LotteryEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: '
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play: playSound } = useGameSounds();
   const config = getLotteryConfig(gameId);
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [drawnNumbers, setDrawnNumbers] = useState<number[]>([]);

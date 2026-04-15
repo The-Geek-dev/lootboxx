@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -28,6 +29,7 @@ const ScratchCardEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THE
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [state, setState] = useState<"idle" | "scratching" | "revealed">("idle");
@@ -138,8 +140,10 @@ const ScratchCardEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THE
       winnings = adjustWinAmount(winnings);
       if (winnings > 0 && canFullyWin() && multiplier >= 5) recordFullWin();
       if (winnings > 0) await updateBalance(winnings);
+      play("bigwin");
       setResult(`🎉 ${matchCount}x ${symbol}! Won ₦${winnings.toLocaleString()}`);
     } else {
+      play("lose");
       setResult("No match this time! Try again 🍀");
     }
     await recordGameResult(gameId, pointCost, winnings, { grid, matchCount, symbol: best[0] });

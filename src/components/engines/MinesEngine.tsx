@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -27,6 +28,7 @@ const MinesEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, gr
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
 
   const [mines, setMines] = useState<Set<number>>(new Set());
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
@@ -65,12 +67,13 @@ const MinesEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, gr
     if (state !== "playing" || revealed.has(index)) return;
 
     if (mines.has(index)) {
-      // Hit a mine!
+      play("lose");
       setState("exploded");
       setRevealed(new Set([...revealed, ...mines]));
       setResult("💥 BOOM! You hit a mine!");
       recordGameResult(gameId, pointCost, 0, { revealed: revealed.size, mines: [...mines] });
     } else {
+      play("tick");
       const newRevealed = new Set([...revealed, index]);
       setRevealed(newRevealed);
       const newMult = getMultiplier(newRevealed.size);
@@ -84,6 +87,7 @@ const MinesEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, gr
   }, [state, revealed, mines]);
 
   const cashOutInternal = async (picks: number, mult: number) => {
+    play("cashout");
     setState("cashed");
     let winnings = Math.floor(pointCost * mult * 2);
     winnings = adjustWinAmount(winnings);

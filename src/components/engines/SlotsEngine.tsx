@@ -10,6 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useGameSounds } from "@/hooks/useGameSounds";
 import { GameTheme } from "@/config/gameThemes";
 import { SLOT_CONFIGS, SlotConfig } from "@/config/engineConfig";
+import { useJackpot } from "@/hooks/useJackpot";
+import JackpotCounter from "@/components/JackpotCounter";
 
 interface Props {
   gameId: string;
@@ -30,6 +32,7 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
   const { play } = useGameSounds();
+  const { contribute: contributeToJackpot } = useJackpot();
 
   const config: SlotConfig = SLOT_CONFIGS[gameId] || { reelCount: 3, hasWild: false, hasBonus: false, spinStyle: "classic" };
   const reelCount = config.reelCount;
@@ -166,6 +169,16 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
           setResult(bonusActive ? "No match - keep spinning!" : "No match. Try again!");
         }
 
+        // Contribute to progressive jackpot
+        if (!isBonusSpin) {
+          contributeToJackpot(pointCost).then(jp => {
+            if (jp.won) {
+              play("bigwin");
+              toast({ title: "🏆 PROGRESSIVE JACKPOT!", description: `You won ₦${jp.winAmount.toLocaleString()}!` });
+            }
+          });
+        }
+
         recordGameResult(gameId, isBonusSpin ? 0 : pointCost, payout, { reels: finalReels, bonus: bonusActive });
         setIsSpinning(false);
 
@@ -229,6 +242,7 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+      <JackpotCounter />
       <h1 className="text-2xl sm:text-4xl font-bold text-center mb-1">{emoji} {name}</h1>
       <p className={`${theme.accentColor} text-center text-sm mb-2`}>{theme.description}</p>
 

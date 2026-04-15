@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -26,6 +27,7 @@ const CoinFlipEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
 
   const [state, setState] = useState<"idle" | "flipping" | "won" | "lost" | "cashed">("idle");
   const [streak, setStreak] = useState(0);
@@ -62,6 +64,7 @@ const CoinFlipEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
       setState("won");
     } else {
       setState("lost");
+      play("lose");
       setResult(`${sides[outcome]} Wrong! You lost your ₦${currentWin().toLocaleString()} streak.`);
       await recordGameResult(gameId, pointCost, 0, { streak, guess, outcome });
     }
@@ -70,6 +73,7 @@ const CoinFlipEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
 
   const cashOut = async () => {
     setState("cashed");
+    play("cashout");
     let winnings = currentWin();
     winnings = adjustWinAmount(winnings);
     if (winnings > 0 && canFullyWin() && streak >= 3) recordFullWin();

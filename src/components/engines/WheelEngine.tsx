@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -43,6 +44,7 @@ const WheelEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, se
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [result, setResult] = useState<string | null>(null);
@@ -60,6 +62,7 @@ const WheelEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, se
     setIsSpinning(true);
     setResult(null);
     setWinSegment(null);
+    play("spin");
 
     const winIndex = Math.floor(Math.random() * segments.length);
     const targetAngle = 360 - (winIndex * segAngle + segAngle / 2);
@@ -75,6 +78,7 @@ const WheelEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, se
         if (canFullyWin() && segments[winIndex].value >= 1000) recordFullWin();
         await updateBalance(prize);
       }
+      play(prize > 0 ? "bigwin" : "lose");
       setResult(prize > 0 ? `🎉 ${segments[winIndex].emoji} ${segments[winIndex].label}! Won ₦${prize.toLocaleString()}!` : "Better luck next time!");
       await recordGameResult(gameId, pointCost, prize, { segment: segments[winIndex].label, index: winIndex });
       setIsSpinning(false);

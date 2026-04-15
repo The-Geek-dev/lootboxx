@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -27,6 +28,7 @@ const DiceEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fro
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
   const [dice, setDice] = useState(Array(diceCount).fill(1));
   const [target, setTarget] = useState(targetRange[Math.floor(targetRange.length / 2)]);
   const [rolling, setRolling] = useState(false);
@@ -54,6 +56,7 @@ const DiceEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fro
     setRolling(true);
     setResult(null);
     setLastWon(false);
+    play("spin");
 
     let count = 0;
     const interval = setInterval(() => {
@@ -77,7 +80,8 @@ const DiceEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fro
           setLastWon(true);
         }
 
-        setResult(won ? `\u{1F389} ${total}! You won \u20A6${winnings.toLocaleString()}!` : `${total}. Not this time!`);
+        if (won) play("win"); else play("lose");
+        setResult(won ? `🎉 ${total}! You won ₦${winnings.toLocaleString()}!` : `${total}. Not this time!`);
         recordGameResult(gameId, pointCost, winnings, { dice: finalDice, total, bet: betType, target });
         setRolling(false);
       }

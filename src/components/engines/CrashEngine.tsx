@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -24,6 +25,7 @@ const CrashEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
   const [multiplier, setMultiplier] = useState(1.0);
   const [crashPoint, setCrashPoint] = useState(0);
   const [state, setState] = useState<"idle" | "rising" | "crashed" | "cashed">("idle");
@@ -42,6 +44,7 @@ const CrashEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
     setMultiplier(1.0);
     setState("rising");
     setResult(null);
+    play("spin");
 
     intervalRef.current = window.setInterval(() => {
       setMultiplier((m) => {
@@ -58,6 +61,7 @@ const CrashEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
 
   useEffect(() => {
     if (state === "crashed") {
+      play("lose");
       setResult(`${v.crashEmoji} Crashed at ${crashPoint.toFixed(2)}x! You lost.`);
       recordGameResult(gameId, pointCost, 0, { crashPoint, cashedAt: null });
     }
@@ -66,6 +70,7 @@ const CrashEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
   const cashOut = useCallback(async () => {
     if (state !== "rising") return;
     if (intervalRef.current) clearInterval(intervalRef.current);
+    play("cashout");
     setState("cashed");
     const currentMult = multiplier;
     let winnings = Math.floor(pointCost * currentMult * 2);

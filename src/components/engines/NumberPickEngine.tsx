@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -28,6 +29,7 @@ const NumberPickEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEM
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
 
   const [selected, setSelected] = useState<number[]>([]);
   const [drawn, setDrawn] = useState<number[]>([]);
@@ -97,6 +99,7 @@ const NumberPickEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEM
       if (canFullyWin() && matches >= pickCount - 1) recordFullWin();
       await updateBalance(winnings);
     }
+    if (winnings > 0) play("win"); else play("lose");
     setResult(winnings > 0
       ? `🎉 ${matches}/${pickCount} matched! Won ₦${winnings.toLocaleString()}!`
       : `${matches}/${pickCount} matched. Better luck next time!`);

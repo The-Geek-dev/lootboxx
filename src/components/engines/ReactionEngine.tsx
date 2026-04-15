@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -29,6 +30,7 @@ const ReactionEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
 
   const defaultTargets = ["👾", "🎯", "⭐", "💎", "🔥"];
   const tgtIcons = targets || defaultTargets;
@@ -113,6 +115,7 @@ const ReactionEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
       if (canFullyWin() && score >= 150) recordFullWin();
       await updateBalance(winnings);
     }
+    if (winnings > 0) play("win"); else play("lose");
     setResult(winnings > 0 ? `🎉 Score: ${score}! Won ₦${winnings.toLocaleString()}!` : `Score: ${score}. Need 20+ to win!`);
     await recordGameResult(gameId, pointCost, winnings, { score, duration });
   };

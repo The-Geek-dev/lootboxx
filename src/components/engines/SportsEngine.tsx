@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -24,6 +25,7 @@ const SportsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'f
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play: playSound } = useGameSounds();
   const OUTCOMES = teams || [{ icon: "\u{1F3E0}", label: "Home" }, { icon: "\u{1F3C3}", label: "Away" }];
   const [bet, setBet] = useState<0 | 1 | null>(null);
   const [state, setState] = useState<"idle" | "playing" | "done">("idle");
@@ -78,6 +80,7 @@ const SportsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'f
       await updateBalance(winnings);
     }
 
+    playSound(won ? "win" : "lose");
     setResult(won ? `\u{1F389} ${OUTCOMES[bet].label} wins! You won \u20A6${winnings.toLocaleString()}!` : isDraw ? `\u{1F91D} Draw! Partial refund \u20A6${winnings.toLocaleString()}` : `${OUTCOMES[winner as 0 | 1].label} wins. Better luck next time!`);
     await recordGameResult(gameId, pointCost, winnings, { scores: [s1, s2], bet, winner });
     setState("done");

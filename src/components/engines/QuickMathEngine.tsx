@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -81,6 +82,7 @@ const QuickMathEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
 
   const [question, setQuestion] = useState<Question | null>(null);
   const [score, setScore] = useState(0);
@@ -161,6 +163,7 @@ const QuickMathEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME
       if (canFullyWin() && finalScore >= 150) recordFullWin();
       await updateBalance(winnings);
     }
+    if (winnings > 0) play("win"); else play("lose");
     setResult(winnings > 0 ? `🎉 Score: ${finalScore}! Won ₦${winnings.toLocaleString()}!` : `Score: ${finalScore}. Keep practicing!`);
     await recordGameResult(gameId, pointCost, winnings, { score: finalScore, questionsAnswered, mode });
   };

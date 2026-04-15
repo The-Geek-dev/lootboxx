@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -56,6 +57,7 @@ const CardsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
   const [currentCard, setCurrentCard] = useState(randomCard());
   const [streak, setStreak] = useState(0);
   const [state, setState] = useState<"idle" | "playing" | "lost">("idle");
@@ -89,6 +91,7 @@ const CardsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
     const correct = direction === "hi" ? next.value >= currentCard.value : next.value <= currentCard.value;
 
     if (correct) {
+      play("win");
       setStreak((s) => s + 1);
       setTimeout(() => {
         setCurrentCard(next);
@@ -96,6 +99,7 @@ const CardsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
         setLastGuess(null);
       }, 1000);
     } else {
+      play("lose");
       setState("lost");
       const winnings = streak > 0 ? streak * 100 : 0;
       let adjusted = winnings > 0 ? adjustWinAmount(winnings) : 0;
@@ -107,6 +111,7 @@ const CardsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
   };
 
   const cashOut = async () => {
+    play("cashout");
     const winnings = streak * 100;
     let adjusted = adjustWinAmount(winnings);
     if (adjusted > 0 && canFullyWin() && streak >= 5) recordFullWin();

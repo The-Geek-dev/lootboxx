@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 import { ArrowUp, ArrowDown } from "lucide-react";
 
 interface Props {
@@ -37,6 +38,7 @@ const HighLowEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME }
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
 
   const [currentCard, setCurrentCard] = useState(STANDARD_DECK[0]);
   const [nextCard, setNextCard] = useState<typeof STANDARD_DECK[0] | null>(null);
@@ -70,6 +72,7 @@ const HighLowEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME }
     const correct = higher ? next.value >= currentCard.value : next.value <= currentCard.value;
     setIsCorrect(correct);
     setState("reveal");
+    play(correct ? "win" : "lose");
 
     setTimeout(() => {
       if (correct) {
@@ -85,7 +88,7 @@ const HighLowEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME }
     }, 1200);
   };
 
-  const cashOut = () => endGame(streak);
+  const cashOut = () => { play("cashout"); endGame(streak); };
 
   const endGame = async (finalStreak: number) => {
     setState("done");
