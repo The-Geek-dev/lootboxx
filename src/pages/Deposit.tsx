@@ -40,6 +40,25 @@ const LiveDepositView = () => {
   const [selectedTier, setSelectedTier] = useState<typeof DEPOSIT_TIERS[0] | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<"flutterwave">("flutterwave");
   const [loading, setLoading] = useState(false);
+  const [isActivated, setIsActivated] = useState(false);
+
+  useEffect(() => {
+    const checkActivation = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const { data: wallet } = await supabase
+        .from("user_wallets")
+        .select("is_activated")
+        .eq("user_id", session.user.id)
+        .single();
+      if (wallet?.is_activated) setIsActivated(true);
+    };
+    checkActivation();
+  }, []);
+
+  const availableTiers = DEPOSIT_TIERS.filter(
+    (tier) => !(tier.type === "activation" && isActivated)
+  );
 
   const handleDeposit = async () => {
     if (!selectedTier) return;
