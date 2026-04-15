@@ -3,6 +3,11 @@ import { useDepositGate } from "@/hooks/useDepositGate";
 import GamePageLayout from "@/components/GamePageLayout";
 import { allGames } from "@/config/gamesData";
 import { getGameTheme, getSportsTeams, getDiceConfig, getCrashVisuals } from "@/config/gameThemes";
+import {
+  getEngineType, SLOT_THEMES, MINES_CONFIG, COINFLIP_SIDES, TOWER_CONFIG,
+  REACTION_CONFIG, SCRATCH_PRIZES, RACE_CONFIGS, MATCH3_SYMBOLS,
+  NUMBER_PICK_CONFIG, CATCHER_CONFIG
+} from "@/config/engineConfig";
 import SlotsEngine from "@/components/engines/SlotsEngine";
 import CrashEngine from "@/components/engines/CrashEngine";
 import CardsEngine from "@/components/engines/CardsEngine";
@@ -18,113 +23,12 @@ import CoinFlipEngine from "@/components/engines/CoinFlipEngine";
 import ReactionEngine from "@/components/engines/ReactionEngine";
 import ScratchCardEngine from "@/components/engines/ScratchCardEngine";
 import RaceEngine from "@/components/engines/RaceEngine";
+import MatchThreeEngine from "@/components/engines/MatchThreeEngine";
+import NumberPickEngine from "@/components/engines/NumberPickEngine";
+import HighLowEngine from "@/components/engines/HighLowEngine";
+import CatcherEngine from "@/components/engines/CatcherEngine";
+import QuickMathEngine from "@/components/engines/QuickMathEngine";
 import { useEffect } from "react";
-
-const GAME_ENGINE_OVERRIDES: Record<string, string> = {
-  "spin-wheel": "spin-wheel",
-  "lucky-slots": "lucky-slots",
-  "trivia-quiz": "trivia",
-  "raffle-draw": "raffle",
-  // Route specific games to new engines
-  "mine-field": "mines",
-  "diamond-mine": "mines",
-  "coin-flip": "coinflip",
-  "double-or-nothing": "coinflip",
-  "cash-grab": "coinflip",
-  "mega-wheel": "wheel",
-  "wheel-fortune": "wheel",
-  "tower-climb": "tower",
-  "plinko": "tower",
-  // Reaction-based games
-  "ninja-strike": "reaction",
-  "zombie-hunt": "reaction",
-  "space-invader": "reaction",
-  "bubble-pop": "reaction",
-  "fish-catch": "reaction",
-  "balloon-pop": "reaction",
-  // Scratch card games
-  "scratch-win": "scratch",
-  "golden-ticket": "scratch",
-  "lucky-scratch": "scratch",
-  // Race games
-  "speed-race": "race",
-  "horse-derby": "race",
-  "rocket-race": "race",
-};
-
-const SLOT_THEMES: Record<string, string[]> = {
-  "fire-strike": ["🔥", "💥", "⚡", "🌟", "💎", "7️⃣"],
-  "hot-burn": ["🌶️", "🔥", "💰", "⭐", "🍒", "7️⃣"],
-  "wild-west": ["🤠", "🐎", "💰", "🌵", "⭐", "🔫"],
-  "pharaoh-gold": ["🏛️", "👁️", "💎", "🐍", "⭐", "🔮"],
-  "ocean-treasure": ["🐚", "🐟", "🦈", "💎", "⭐", "🌊"],
-  "mystic-gems": ["💠", "💎", "🔮", "⭐", "🌙", "✨"],
-  "jungle-king": ["🦁", "🐘", "🍃", "💎", "⭐", "🌴"],
-  "candy-pop": ["🍬", "🍭", "🍫", "🎂", "⭐", "🍩"],
-  "neon-lights": ["💡", "🌈", "⚡", "💎", "⭐", "🎆"],
-  "viking-saga": ["⚔️", "🛡️", "🏰", "💎", "⭐", "⚡"],
-  "zeus-thunder": ["⛈️", "⚡", "🏛️", "💎", "⭐", "🔱"],
-  "moon-magic": ["🌙", "✨", "🔮", "💎", "⭐", "🌟"],
-  "lucky-7": ["7️⃣", "🍒", "💎", "⭐", "🔔", "🍋"],
-  "diamond-rush": ["💎", "💰", "👑", "⭐", "🔥", "✨"],
-  "jackpot-city": ["🏙️", "💰", "💎", "7️⃣", "⭐", "🎰"],
-  "dragon-fortune": ["🐉", "🔥", "💎", "👑", "⭐", "🏮"],
-  "star-burst": ["⭐", "💫", "✨", "🌟", "💎", "🔥"],
-  "ice-cold": ["🧊", "❄️", "💎", "⭐", "🌊", "☃️"],
-  "hot-pepper": ["🌶️", "🔥", "💰", "💎", "⭐", "7️⃣"],
-  "safari-wild": ["🦒", "🦁", "🐘", "💎", "⭐", "🌴"],
-  "cherry-bomb": ["🍒", "💣", "💎", "⭐", "🔥", "7️⃣"],
-  "magic-lamp": ["🪔", "🧞", "💎", "⭐", "👑", "✨"],
-  "pirate-loot": ["☠️", "🏴‍☠️", "💰", "💎", "⭐", "🗡️"],
-  "spin-match": ["🎯", "💎", "⭐", "🔥", "🍒", "7️⃣"],
-  "fruit-blast": ["🍎", "🍊", "🍇", "🍋", "🍒", "🍓"],
-};
-
-const MINES_CONFIG: Record<string, { gridSize: number; mineCount: number }> = {
-  "mine-field": { gridSize: 25, mineCount: 5 },
-  "diamond-mine": { gridSize: 16, mineCount: 3 },
-};
-
-const COINFLIP_SIDES: Record<string, [string, string]> = {
-  "coin-flip": ["👑", "🌟"],
-  "double-or-nothing": ["✅", "❌"],
-  "cash-grab": ["💵", "💨"],
-};
-
-const TOWER_CONFIG: Record<string, { floors: number; doors: number }> = {
-  "tower-climb": { floors: 8, doors: 3 },
-  "plinko": { floors: 6, doors: 4 },
-};
-
-const REACTION_CONFIG: Record<string, { targets: string[]; duration: number; gridSize: number; gridCols: number }> = {
-  "ninja-strike": { targets: ["🥷", "⚔️", "🌙", "⭐"], duration: 20, gridSize: 16, gridCols: 4 },
-  "zombie-hunt": { targets: ["🧟", "💀", "🧠"], duration: 25, gridSize: 16, gridCols: 4 },
-  "space-invader": { targets: ["👾", "🛸", "🌟", "💥"], duration: 20, gridSize: 16, gridCols: 4 },
-  "bubble-pop": { targets: ["🫧", "🔵", "🟢", "🔴", "🟡"], duration: 25, gridSize: 12, gridCols: 4 },
-  "fish-catch": { targets: ["🐟", "🐠", "🦈", "🐙", "💎"], duration: 25, gridSize: 12, gridCols: 4 },
-  "balloon-pop": { targets: ["🎈", "🎈", "🎁", "⭐"], duration: 20, gridSize: 12, gridCols: 4 },
-};
-
-const SCRATCH_PRIZES: Record<string, string[]> = {
-  "scratch-win": ["💎x5", "⭐x3", "🍒x2", "💰x10", "🎯x4", "🔥x2", "👑x8", "💫x1", "🌟x3"],
-  "golden-ticket": ["🎫x5", "👑x10", "💰x8", "🌟x3", "💎x6", "🏆x12", "⭐x2", "🎁x4", "✨x1"],
-  "lucky-scratch": ["🍀x3", "🌈x5", "💵x4", "🎲x2", "🔔x6", "💎x8", "⭐x1", "🎯x3", "🍒x2"],
-};
-
-const RACE_CONFIGS: Record<string, { emoji: string; name: string }[]> = {
-  "speed-race": [{ emoji: "🏎️", name: "Red Fury" }, { emoji: "🏍️", name: "Blue Bolt" }, { emoji: "🚗", name: "Gold Rush" }, { emoji: "🚕", name: "Thunder" }],
-  "horse-derby": [{ emoji: "🐎", name: "Storm" }, { emoji: "🦄", name: "Mystic" }, { emoji: "🐴", name: "Thunder" }, { emoji: "🏇", name: "Flash" }],
-  "rocket-race": [{ emoji: "🚀", name: "Apollo" }, { emoji: "🛸", name: "Nebula" }, { emoji: "✈️", name: "Falcon" }, { emoji: "⚡", name: "Comet" }],
-};
-
-function getEngineType(gameId: string, categories: string[]): string {
-  if (GAME_ENGINE_OVERRIDES[gameId]) return GAME_ENGINE_OVERRIDES[gameId];
-  const priority = ["slots", "crash", "cards", "dice", "sports", "lottery", "arcade", "instant"];
-  for (const cat of priority) {
-    if (categories.includes(cat)) return cat;
-  }
-  return "instant";
-}
 
 const DynamicGame = () => {
   const { gameId } = useParams<{ gameId: string }>();
@@ -161,8 +65,8 @@ const DynamicGame = () => {
       case "cards":
         return <CardsEngine {...baseProps} />;
       case "dice": {
-        const diceConfig = getDiceConfig(game.id);
-        return <DiceEngine {...baseProps} diceCount={diceConfig.diceCount} targetRange={diceConfig.targetRange} />;
+        const dc = getDiceConfig(game.id);
+        return <DiceEngine {...baseProps} diceCount={dc.diceCount} targetRange={dc.targetRange} />;
       }
       case "mines": {
         const mc = MINES_CONFIG[game.id] || { gridSize: 25, mineCount: 5 };
@@ -184,6 +88,24 @@ const DynamicGame = () => {
         return <ScratchCardEngine {...baseProps} prizes={SCRATCH_PRIZES[game.id]} />;
       case "race":
         return <RaceEngine {...baseProps} racers={RACE_CONFIGS[game.id]} />;
+      case "match3":
+        return <MatchThreeEngine {...baseProps} symbols={MATCH3_SYMBOLS[game.id]} />;
+      case "numberpick": {
+        const nc = NUMBER_PICK_CONFIG[game.id] || { maxNumber: 49, pickCount: 6, drawCount: 6 };
+        return <NumberPickEngine {...baseProps} maxNumber={nc.maxNumber} pickCount={nc.pickCount} drawCount={nc.drawCount} />;
+      }
+      case "highlow":
+        return <HighLowEngine {...baseProps} />;
+      case "catcher": {
+        const cc = CATCHER_CONFIG[game.id] || { items: [{ emoji: "💎", points: 30 }, { emoji: "⭐", points: 20 }], badItems: ["💣"], duration: 25 };
+        return <CatcherEngine {...baseProps} items={cc.items} badItems={cc.badItems} duration={cc.duration} />;
+      }
+      case "quickmath":
+        return <QuickMathEngine {...baseProps} mode="math" />;
+      case "quickword":
+        return <QuickMathEngine {...baseProps} mode="word" />;
+      case "quickcolor":
+        return <QuickMathEngine {...baseProps} mode="color" />;
       case "instant":
         return <InstantEngine {...baseProps} />;
       case "arcade":
