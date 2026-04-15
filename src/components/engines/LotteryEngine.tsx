@@ -45,7 +45,7 @@ const LotteryEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: '
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
-  const { play } = useGameSounds();
+  const { play: playSound } = useGameSounds();
   const config = getLotteryConfig(gameId);
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [drawnNumbers, setDrawnNumbers] = useState<number[]>([]);
