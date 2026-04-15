@@ -1,14 +1,13 @@
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
-import { Trophy, Rocket, Medal } from "lucide-react";
+import { Trophy, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { useLaunchStatus } from "@/hooks/useLaunchStatus";
-import { supabase } from "@/integrations/supabase/client";
+import { useFakeLeaderboard } from "@/hooks/useFakeLeaderboard";
 
 const ComingSoonView = () => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md mx-auto">
@@ -30,17 +29,7 @@ const ComingSoonView = () => (
 );
 
 const LiveLeaderboardView = () => {
-  const [leaders, setLeaders] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetch = async () => {
-      const { data } = await supabase.rpc("get_leaderboard", { limit_count: 20 });
-      if (data) setLeaders(data);
-      setLoading(false);
-    };
-    fetch();
-  }, []);
+  const { leaders } = useFakeLeaderboard(20);
 
   const rankEmoji = (rank: number) => {
     if (rank === 1) return "🥇";
@@ -52,40 +41,28 @@ const LiveLeaderboardView = () => {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto">
       <h1 className="text-3xl font-bold text-center mb-2">🏆 Leaderboard</h1>
-      <p className="text-muted-foreground text-center mb-6">Top players by total winnings</p>
+      <p className="text-muted-foreground text-center mb-1">Top players by total winnings</p>
+      <p className="text-xs text-muted-foreground text-center mb-6">Updates every 30 minutes</p>
 
-      {loading ? (
-        <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-3" />
-          <p className="text-muted-foreground">Loading rankings...</p>
-        </div>
-      ) : leaders.length === 0 ? (
-        <Card className="p-8 text-center">
-          <Medal className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
-          <p className="text-muted-foreground">No rankings yet. Start playing to claim your spot!</p>
-          <Link to="/games"><Button className="button-gradient mt-4">Play Now</Button></Link>
-        </Card>
-      ) : (
-        <div className="space-y-2">
-          {leaders.map((player) => (
-            <Card
-              key={player.rank}
-              className={`p-4 flex items-center justify-between transition-all ${
-                player.rank <= 3 ? "border-primary/30 bg-primary/5" : ""
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-xl font-bold w-10 text-center">{rankEmoji(player.rank)}</span>
-                <div>
-                  <p className="font-semibold text-foreground">{player.player_name}</p>
-                  <p className="text-xs text-muted-foreground">{player.games_played} games • {player.wins} wins</p>
-                </div>
+      <div className="space-y-2">
+        {leaders.map((player) => (
+          <Card
+            key={player.rank}
+            className={`p-4 flex items-center justify-between transition-all ${
+              player.rank <= 3 ? "border-primary/30 bg-primary/5" : ""
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-xl font-bold w-10 text-center">{rankEmoji(player.rank)}</span>
+              <div>
+                <p className="font-semibold text-foreground">{player.player_name}</p>
+                <p className="text-xs text-muted-foreground">{player.games_played} games • {player.wins} wins</p>
               </div>
-              <p className="font-bold text-primary">₦{Number(player.total_winnings).toLocaleString()}</p>
-            </Card>
-          ))}
-        </div>
-      )}
+            </div>
+            <p className="font-bold text-primary">₦{Number(player.total_winnings).toLocaleString()}</p>
+          </Card>
+        ))}
+      </div>
     </motion.div>
   );
 };
