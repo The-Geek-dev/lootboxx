@@ -10,6 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useGameSounds } from "@/hooks/useGameSounds";
 import { GameTheme } from "@/config/gameThemes";
 import { SLOT_CONFIGS, SlotConfig } from "@/config/engineConfig";
+import { useJackpot } from "@/hooks/useJackpot";
+import JackpotCounter from "@/components/JackpotCounter";
 
 interface Props {
   gameId: string;
