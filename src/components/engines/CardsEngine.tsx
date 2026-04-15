@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import GameBackground from "./GameBackground";
 import { useWallet } from "@/hooks/useWallet";
 import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
@@ -126,9 +126,8 @@ const CardsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
       <h1 className="text-2xl sm:text-4xl font-bold text-center mb-1">{emoji} {name}</h1>
       <p className={`${theme.accentColor} text-center text-sm mb-6`}>{theme.description}</p>
 
-      <Card className={`p-8 bg-gradient-to-br ${theme.bgGradient} backdrop-blur-sm border-primary/20 text-center mb-4 relative overflow-hidden`}>
-        {/* Background decoration */}
-        <div className="absolute inset-0 opacity-5 text-9xl flex items-center justify-center pointer-events-none">{emoji}</div>
+      <GameBackground type="cards" overlay="medium" className="mb-4">
+        <div className="p-8 text-center relative">
 
         <div className="flex gap-6 justify-center items-center relative">
           <motion.div
@@ -168,7 +167,8 @@ const CardsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
             Streak: {streak} (₦{(streak * 100).toLocaleString()})
           </motion.p>
         )}
-      </Card>
+        </div>
+      </GameBackground>
 
       {result && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-lg font-bold text-center mb-4">{result}</motion.div>}
 
