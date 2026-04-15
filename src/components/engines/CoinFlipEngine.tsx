@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { useWallet } from "@/hooks/useWallet";
 import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
@@ -9,6 +8,8 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import GameBackground from "./GameBackground";
+import BetControls from "./BetControls";
 
 interface Props {
   gameId: string;
@@ -53,8 +54,6 @@ const CoinFlipEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
     setIsFlipping(true);
     const outcome = Math.random() < 0.5 ? 0 : 1;
     setCoinResult(outcome);
-
-    // Animate
     await new Promise(r => setTimeout(r, 1500));
 
     if (guess === outcome) {
@@ -93,64 +92,68 @@ const CoinFlipEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-      <h1 className="text-2xl sm:text-4xl font-bold text-center mb-1">{emoji} {name}</h1>
-      <p className={`${theme.accentColor} text-center text-sm mb-6`}>{theme.description}</p>
+      <h1 className="text-2xl sm:text-4xl font-bold text-center mb-1 text-foreground">{emoji} {name}</h1>
+      <p className="text-muted-foreground text-center text-sm mb-3">{theme.description}</p>
 
-      <Card className={`p-8 bg-gradient-to-br ${theme.bgGradient} backdrop-blur-sm border-primary/20 text-center mb-4`}>
-        {/* Coin */}
-        <motion.div
-          className="w-28 h-28 sm:w-36 sm:h-36 mx-auto rounded-full bg-gradient-to-br from-yellow-400 to-amber-600 flex items-center justify-center text-5xl sm:text-6xl shadow-lg border-4 border-yellow-300/50"
-          animate={isFlipping ? { rotateY: [0, 360, 720, 1080], scale: [1, 1.2, 1] } : {}}
-          transition={{ duration: 1.5, ease: "easeOut" }}
-        >
-          {state === "idle" ? "🪙" : sides[coinResult]}
-        </motion.div>
+      <GameBackground type="coinflip" overlay="medium" className="mb-4">
+        <div className="p-8 sm:p-10 flex flex-col items-center">
+          {/* Coin */}
+          <motion.div
+            className="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gradient-to-br from-yellow-400 to-amber-600 flex items-center justify-center text-6xl sm:text-7xl shadow-2xl border-4 border-yellow-300/40"
+            animate={isFlipping ? { rotateY: [0, 360, 720, 1080], scale: [1, 1.2, 1] } : {}}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            style={{ boxShadow: "0 0 60px rgba(234,179,8,0.3)" }}
+          >
+            {state === "idle" ? "🪙" : sides[coinResult]}
+          </motion.div>
 
-        {(state === "won" || state === "lost") && streak > 0 && (
-          <motion.div className="mt-4 flex justify-center gap-1" animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 1 }}>
-            {Array.from({ length: Math.min(streak, 8) }).map((_, i) => (
-              <span key={i} className="text-yellow-400">🔥</span>
-            ))}
+          {/* Streak fire */}
+          {(state === "won" || state === "lost") && streak > 0 && (
+            <motion.div className="mt-4 flex justify-center gap-1" animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 1 }}>
+              {Array.from({ length: Math.min(streak, 8) }).map((_, i) => (
+                <span key={i} className="text-yellow-400 text-lg">🔥</span>
+              ))}
+            </motion.div>
+          )}
+
+          {state !== "idle" && (
+            <div className="mt-4">
+              <p className="text-xl font-black text-white" style={{ textShadow: "0 0 20px rgba(234,179,8,0.5)" }}>
+                {state === "won" || isFlipping ? `Streak: ${streak} | ₦${currentWin().toLocaleString()}` :
+                 state === "lost" ? "💔 Game Over" : `Cashed: ₦${currentWin().toLocaleString()}`}
+              </p>
+            </div>
+          )}
+        </div>
+      </GameBackground>
+
+      <AnimatePresence>
+        {result && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className={`text-lg font-bold text-center mb-4 ${state === "lost" ? "text-red-400" : "text-green-400"}`}>
+            {result}
           </motion.div>
         )}
-
-        {state !== "idle" && (
-          <div className="mt-4">
-            <p className={`text-lg font-bold ${theme.accentColor}`}>
-              {state === "won" || isFlipping ? `Streak: ${streak} | ₦${currentWin().toLocaleString()}` :
-               state === "lost" ? "💔 Game Over" : `Cashed: ₦${currentWin().toLocaleString()}`}
-            </p>
-          </div>
-        )}
-      </Card>
-
-      {result && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          className={`text-lg font-bold text-center mb-4 ${state === "lost" ? "text-destructive" : theme.accentColor}`}>
-          {result}
-        </motion.div>
-      )}
+      </AnimatePresence>
 
       {state === "won" && !isFlipping ? (
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
-            <Button className="py-6 text-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white" onClick={() => flip(0)}>
+            <Button className="py-6 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20" onClick={() => flip(0)}>
               {sides[0]} {getSideLabel(0)}
             </Button>
-            <Button className="py-6 text-lg bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white" onClick={() => flip(1)}>
+            <Button className="py-6 text-lg font-bold bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-600/20" onClick={() => flip(1)}>
               {sides[1]} {getSideLabel(1)}
             </Button>
           </div>
           {streak > 0 && (
-            <Button className="w-full py-3 bg-green-600 hover:bg-green-700 text-white" onClick={cashOut}>
+            <Button className="w-full py-4 font-bold bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/20" onClick={cashOut}>
               💰 Cash Out (₦{currentWin().toLocaleString()})
             </Button>
           )}
         </div>
       ) : (state === "idle" || state === "lost" || state === "cashed") ? (
-        <Button className="button-gradient w-full py-3 text-lg" onClick={startGame} disabled={xpLives <= 0}>
-          {xpLives <= 0 ? "No XP Lives" : `Play (${pointCost} pts)`}
-        </Button>
+        <BetControls onPlay={startGame} xpLives={xpLives} pointCost={pointCost} playLabel={`BET ${pointCost} pts`} />
       ) : null}
     </motion.div>
   );

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import GameBackground from "./GameBackground";
 import { useWallet } from "@/hooks/useWallet";
 import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
@@ -159,7 +159,7 @@ const InstantEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: '
       <div className={`grid ${getGridCols(boxCount)} gap-3 mb-4`}>
         {boxes.map((box, i) => (
           <motion.div key={i} whileHover={state === "playing" && !revealed[i] ? { scale: 1.05 } : {}} whileTap={state === "playing" && !revealed[i] ? { scale: 0.95 } : {}}>
-            <Card className={`p-4 sm:p-6 text-center cursor-pointer transition-all ${getBoxStyle(revealed[i])}`}
+            <div className={`p-4 sm:p-6 text-center cursor-pointer transition-all rounded-xl border ${getBoxStyle(revealed[i])}`}
               onClick={() => reveal(i)}>
               {revealed[i] ? (
                 <motion.div initial={{ rotateY: 90, scale: 0 }} animate={{ rotateY: 0, scale: 1 }}>
@@ -174,7 +174,7 @@ const InstantEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: '
                   {boxIcons[i % boxIcons.length]}
                 </motion.p>
               )}
-            </Card>
+            </div>
           </motion.div>
         ))}
       </div>

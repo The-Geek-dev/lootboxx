@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import GameBackground from "./GameBackground";
 import { useWallet } from "@/hooks/useWallet";
 import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
@@ -103,8 +103,8 @@ const SportsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'f
       <h1 className="text-2xl sm:text-4xl font-bold text-center mb-1">{emoji} {name}</h1>
       <p className={`${theme.accentColor} text-center text-sm mb-6`}>{theme.description}</p>
 
-      <Card className={`p-6 bg-gradient-to-br ${theme.bgGradient} backdrop-blur-sm border-primary/20 mb-4 relative overflow-hidden`}>
-        <div className="absolute inset-0 opacity-5 text-9xl flex items-center justify-center pointer-events-none">{emoji}</div>
+      <GameBackground type="sports" overlay="medium" className="mb-4">
+        <div className="p-6 relative">
 
         {state === "playing" && (
           <motion.p
@@ -162,7 +162,8 @@ const SportsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'f
             </motion.p>
           </div>
         </div>
-      </Card>
+        </div>
+      </GameBackground>
 
       {state === "idle" && (
         <div className="grid grid-cols-2 gap-3 mb-4">

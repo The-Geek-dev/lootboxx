@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { useWallet } from "@/hooks/useWallet";
 import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
@@ -9,6 +8,9 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import GameBackground from "./GameBackground";
+import RoundHistory from "./RoundHistory";
+import BetControls from "./BetControls";
 
 interface Props {
   gameId: string;
@@ -30,11 +32,12 @@ const CrashEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
   const [crashPoint, setCrashPoint] = useState(0);
   const [state, setState] = useState<"idle" | "rising" | "crashed" | "cashed">("idle");
   const [result, setResult] = useState<string | null>(null);
+  const [history, setHistory] = useState<{ value: number; won: boolean }[]>([]);
   const intervalRef = useRef<number | null>(null);
-  const v = visuals || { icon: "\u2708\uFE0F", trailEmoji: "\u2601\uFE0F", crashEmoji: "\u{1F4A5}" };
+  const v = visuals || { icon: "✈️", trailEmoji: "☁️", crashEmoji: "💥" };
 
   const start = async () => {
-    if (xpLives <= 0) { toast({ title: "No XP lives! \u26A1", variant: "destructive" }); return; }
+    if (xpLives <= 0) { toast({ title: "No XP lives! ⚡", variant: "destructive" }); return; }
     if (points < pointCost) { toast({ title: "Insufficient points", variant: "destructive" }); return; }
     const lifeConsumed = await consumeLife();
     if (!lifeConsumed) return;
@@ -62,7 +65,8 @@ const CrashEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
   useEffect(() => {
     if (state === "crashed") {
       play("lose");
-      setResult(`${v.crashEmoji} Crashed at ${crashPoint.toFixed(2)}x! You lost.`);
+      setResult(`${v.crashEmoji} Crashed at ${crashPoint.toFixed(2)}x!`);
+      setHistory(prev => [...prev, { value: crashPoint, won: false }]);
       recordGameResult(gameId, pointCost, 0, { crashPoint, cashedAt: null });
     }
   }, [state, crashPoint]);
@@ -77,7 +81,8 @@ const CrashEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
     winnings = adjustWinAmount(winnings);
     if (winnings > 0 && canFullyWin() && currentMult >= 3) recordFullWin();
     if (winnings > 0) await updateBalance(winnings);
-    setResult(`\u2705 Cashed out at ${currentMult.toFixed(2)}x! Won \u20A6${winnings.toLocaleString()}`);
+    setResult(`✅ Cashed out at ${currentMult.toFixed(2)}x! Won ₦${winnings.toLocaleString()}`);
+    setHistory(prev => [...prev, { value: currentMult, won: true }]);
     await recordGameResult(gameId, pointCost, winnings, { crashPoint, cashedAt: currentMult });
   }, [state, multiplier, crashPoint]);
 
@@ -86,89 +91,149 @@ const CrashEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
   }, []);
 
   const getColor = () => {
-    if (state === "crashed") return "text-destructive";
+    if (state === "crashed") return "text-red-500";
     if (state === "cashed") return "text-green-400";
-    if (multiplier > 3) return theme.accentColor;
+    if (multiplier > 5) return "text-yellow-400";
+    if (multiplier > 3) return "text-orange-400";
     if (multiplier > 2) return "text-primary";
-    return "text-foreground";
+    return "text-white";
   };
 
-  // Generate trail dots based on multiplier
-  const trailCount = Math.min(Math.floor(multiplier * 2), 10);
+  // Calculate position for the flying icon
+  const flyProgress = state === "rising" ? Math.min((multiplier - 1) / 8, 1) : 0;
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-      <h1 className="text-2xl sm:text-4xl font-bold text-center mb-1">{emoji} {name}</h1>
-      <p className={`${theme.accentColor} text-center text-sm mb-6`}>{theme.description}</p>
+      <h1 className="text-2xl sm:text-4xl font-bold text-center mb-1 text-foreground">{emoji} {name}</h1>
+      <p className="text-muted-foreground text-center text-sm mb-3">{theme.description}</p>
 
-      <Card className={`p-8 bg-gradient-to-br ${theme.bgGradient} backdrop-blur-sm border-primary/20 text-center mb-4 relative overflow-hidden`}>
-        {/* Animated atmosphere text */}
-        {state === "rising" && theme.atmosphere && (
-          <motion.p
-            className={`absolute top-3 left-0 right-0 text-xs ${theme.accentColor} opacity-60`}
-            animate={{ opacity: [0.3, 0.7, 0.3] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-          >
-            {theme.atmosphere}
-          </motion.p>
-        )}
+      <RoundHistory results={history} />
 
-        {/* Animated icon */}
-        <motion.div
-          className="text-3xl mb-2"
-          animate={state === "rising" ? { 
-            y: [-20, -40 - multiplier * 5],
-            x: [0, Math.sin(multiplier) * 10],
-          } : state === "crashed" ? { y: [0, 20], rotate: [0, 45], opacity: [1, 0.5] } : {}}
-          transition={{ duration: 0.5 }}
-        >
-          {state === "crashed" ? v.crashEmoji : v.icon}
-        </motion.div>
-
-        {/* Trail elements */}
-        {state === "rising" && (
-          <div className="flex justify-center gap-1 mb-2">
-            {Array.from({ length: trailCount }).map((_, i) => (
-              <motion.span
-                key={i}
-                className="text-sm opacity-40"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0.2, 0.5, 0.2] }}
-                transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.1 }}
-              >
-                {v.trailEmoji}
-              </motion.span>
-            ))}
-          </div>
-        )}
-
-        <motion.div
-          className={`text-6xl sm:text-8xl font-mono font-bold ${getColor()}`}
-          animate={state === "rising" ? { scale: [1, 1.02, 1] } : state === "crashed" ? { x: [-5, 5, -5, 0] } : {}}
-          transition={{ repeat: state === "rising" ? Infinity : 0, duration: 0.3 }}
-        >
-          {multiplier.toFixed(2)}x
-        </motion.div>
-
-        <div className="mt-4 h-3 bg-muted/30 rounded-full overflow-hidden">
+      <GameBackground type="crash" overlay="medium" className="mb-4">
+        <div className="p-6 sm:p-10 min-h-[280px] sm:min-h-[320px] flex flex-col items-center justify-center relative">
+          {/* Animated flying icon */}
           <motion.div
-            className={`h-full rounded-full ${state === "crashed" ? "bg-destructive" : `bg-gradient-to-r ${theme.bgGradient.replace("/80", "").replace("/80", "")}`}`}
-            style={{ width: `${Math.min((multiplier / 10) * 100, 100)}%` }}
-          />
+            className="absolute text-4xl sm:text-5xl"
+            animate={
+              state === "rising"
+                ? {
+                    x: flyProgress * 120 - 60,
+                    y: -flyProgress * 140 + 40,
+                    rotate: -30 - flyProgress * 15,
+                  }
+                : state === "crashed"
+                ? { y: [0, 80], rotate: [0, 90], opacity: [1, 0] }
+                : { x: 0, y: 40, rotate: 0 }
+            }
+            transition={{ duration: state === "crashed" ? 0.8 : 0.3, ease: "easeOut" }}
+          >
+            {state === "crashed" ? v.crashEmoji : v.icon}
+          </motion.div>
+
+          {/* Trail particles when rising */}
+          <AnimatePresence>
+            {state === "rising" && (
+              <>
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1.5 h-1.5 rounded-full bg-orange-400/60"
+                    initial={{ opacity: 0 }}
+                    animate={{
+                      x: flyProgress * 120 - 60 - (i * 15) - Math.random() * 10,
+                      y: -flyProgress * 140 + 40 + (i * 18) + Math.random() * 10,
+                      opacity: [0, 0.8, 0],
+                      scale: [0.5, 1.2, 0],
+                    }}
+                    transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.15 }}
+                  />
+                ))}
+              </>
+            )}
+          </AnimatePresence>
+
+          {/* Big multiplier display */}
+          <motion.div
+            className={`text-7xl sm:text-9xl font-black tabular-nums tracking-tight ${getColor()} drop-shadow-2xl`}
+            animate={
+              state === "rising"
+                ? { scale: [1, 1.02, 1] }
+                : state === "crashed"
+                ? { scale: [1, 1.3, 1], x: [-8, 8, -4, 4, 0] }
+                : {}
+            }
+            transition={{
+              repeat: state === "rising" ? Infinity : 0,
+              duration: state === "rising" ? 0.4 : 0.5,
+            }}
+            style={{ textShadow: "0 0 40px currentColor" }}
+          >
+            {multiplier.toFixed(2)}x
+          </motion.div>
+
+          {/* Progress bar */}
+          <div className="w-full max-w-xs mt-6 h-2 bg-white/10 rounded-full overflow-hidden">
+            <motion.div
+              className={`h-full rounded-full ${
+                state === "crashed"
+                  ? "bg-red-500"
+                  : "bg-gradient-to-r from-green-400 via-yellow-400 to-red-500"
+              }`}
+              style={{ width: `${Math.min((multiplier / 10) * 100, 100)}%` }}
+              transition={{ duration: 0.1 }}
+            />
+          </div>
+
+          {/* Status label */}
+          <div className="mt-3">
+            {state === "rising" && (
+              <motion.span
+                className="text-xs text-white/60 uppercase tracking-widest"
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ repeat: Infinity, duration: 1.5 }}
+              >
+                🔴 LIVE — Multiplier Rising
+              </motion.span>
+            )}
+            {state === "crashed" && (
+              <span className="text-xs text-red-400 uppercase tracking-widest font-bold">
+                CRASHED
+              </span>
+            )}
+            {state === "cashed" && (
+              <span className="text-xs text-green-400 uppercase tracking-widest font-bold">
+                CASHED OUT ✓
+              </span>
+            )}
+          </div>
         </div>
-      </Card>
+      </GameBackground>
 
-      {result && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-lg font-bold text-center mb-4">{result}</motion.div>}
+      {/* Result */}
+      <AnimatePresence>
+        {result && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            className={`text-lg font-bold text-center mb-4 ${
+              result.includes("Won") ? "text-green-400" : "text-red-400"
+            }`}
+          >
+            {result}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {state === "rising" ? (
-        <Button className="w-full py-6 text-lg bg-green-600 hover:bg-green-700 text-white" onClick={cashOut}>
-          {"💰"} Cash Out ({"₦"}{Math.floor(pointCost * multiplier * 2).toLocaleString()})
-        </Button>
-      ) : (
-        <Button className="button-gradient w-full py-3 text-lg" onClick={start} disabled={xpLives <= 0}>
-          {xpLives <= 0 ? "No XP Lives" : `Start (${pointCost} pts)`}
-        </Button>
-      )}
+      <BetControls
+        onPlay={start}
+        xpLives={xpLives}
+        pointCost={pointCost}
+        showCashOut={state === "rising"}
+        onCashOut={cashOut}
+        cashOutLabel={`Cash Out (₦${Math.floor(pointCost * multiplier * 2).toLocaleString()})`}
+        playLabel={`BET ${pointCost} pts`}
+      />
     </motion.div>
   );
 };
