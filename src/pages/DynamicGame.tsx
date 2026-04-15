@@ -42,6 +42,14 @@ const GAME_ENGINE_OVERRIDES: Record<string, string> = {
   "bubble-pop": "reaction",
   "fish-catch": "reaction",
   "balloon-pop": "reaction",
+  // Scratch card games
+  "scratch-win": "scratch",
+  "golden-ticket": "scratch",
+  "lucky-scratch": "scratch",
+  // Race games
+  "speed-race": "race",
+  "horse-derby": "race",
+  "rocket-race": "race",
 };
 
 const SLOT_THEMES: Record<string, string[]> = {
