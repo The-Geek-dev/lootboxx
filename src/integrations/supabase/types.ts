@@ -556,10 +556,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      contribute_to_jackpot: {
-        Args: { contribution: number; player_id: string }
-        Returns: Json
-      }
+      contribute_to_jackpot:
+        | { Args: { contribution: number }; Returns: Json }
+        | { Args: { contribution: number; player_id: string }; Returns: Json }
       get_leaderboard: {
         Args: { limit_count?: number }
         Returns: {
