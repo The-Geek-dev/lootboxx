@@ -106,6 +106,7 @@ const ArcadeEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'f
       if (canFullyWin() && ratio >= 1) recordFullWin();
       await updateBalance(winnings);
     }
+    if (winnings > 0) play("win"); else play("lose");
     setResult(winnings > 0 ? `\u{1F389} Matched ${matchCount / 2} pairs! Won \u20A6${winnings.toLocaleString()}!` : "Time's up! Try again!");
     await recordGameResult(gameId, pointCost, winnings, { matchCount, moves, timeLeft });
   };

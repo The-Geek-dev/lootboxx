@@ -140,8 +140,10 @@ const ScratchCardEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THE
       winnings = adjustWinAmount(winnings);
       if (winnings > 0 && canFullyWin() && multiplier >= 5) recordFullWin();
       if (winnings > 0) await updateBalance(winnings);
+      play("bigwin");
       setResult(`🎉 ${matchCount}x ${symbol}! Won ₦${winnings.toLocaleString()}`);
     } else {
+      play("lose");
       setResult("No match this time! Try again 🍀");
     }
     await recordGameResult(gameId, pointCost, winnings, { grid, matchCount, symbol: best[0] });

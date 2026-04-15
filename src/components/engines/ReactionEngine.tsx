@@ -115,6 +115,7 @@ const ReactionEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
       if (canFullyWin() && score >= 150) recordFullWin();
       await updateBalance(winnings);
     }
+    if (winnings > 0) play("win"); else play("lose");
     setResult(winnings > 0 ? `🎉 Score: ${score}! Won ₦${winnings.toLocaleString()}!` : `Score: ${score}. Need 20+ to win!`);
     await recordGameResult(gameId, pointCost, winnings, { score, duration });
   };

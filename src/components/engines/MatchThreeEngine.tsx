@@ -181,6 +181,7 @@ const MatchThreeEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEM
       if (canFullyWin() && score >= 200) recordFullWin();
       await updateBalance(winnings);
     }
+    if (winnings > 0) play("win"); else play("lose");
     setResult(winnings > 0 ? `🎉 Score: ${score}! Won ₦${winnings.toLocaleString()}!` : `Score: ${score}. Keep practicing!`);
     await recordGameResult(gameId, pointCost, winnings, { score, duration });
   };

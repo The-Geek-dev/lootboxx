@@ -62,6 +62,7 @@ const TowerEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, fl
 
     if (isTrap) {
       setState("fell");
+        play("lose");
       setResult(`💥 Trap on floor ${currentFloor + 1}! You fell!`);
       await recordGameResult(gameId, pointCost, 0, { floor: currentFloor, choices: newChoices });
     } else {
@@ -76,6 +77,7 @@ const TowerEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, fl
   };
 
   const cashOutInternal = async (floor: number) => {
+    play("cashout");
     setState("cashed");
     const mult = getMultiplier(floor);
     let winnings = Math.floor(pointCost * mult * 2);

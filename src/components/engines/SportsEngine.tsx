@@ -80,6 +80,7 @@ const SportsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'f
       await updateBalance(winnings);
     }
 
+    play(won ? "win" : "lose");
     setResult(won ? `\u{1F389} ${OUTCOMES[bet].label} wins! You won \u20A6${winnings.toLocaleString()}!` : isDraw ? `\u{1F91D} Draw! Partial refund \u20A6${winnings.toLocaleString()}` : `${OUTCOMES[winner as 0 | 1].label} wins. Better luck next time!`);
     await recordGameResult(gameId, pointCost, winnings, { scores: [s1, s2], bet, winner });
     setState("done");

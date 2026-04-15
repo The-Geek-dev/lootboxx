@@ -93,8 +93,10 @@ const RaceEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, rac
       winnings = adjustWinAmount(winnings);
       if (winnings > 0 && canFullyWin()) recordFullWin();
       if (winnings > 0) await updateBalance(winnings);
+      play("bigwin");
       setResult(`🏆 ${racers[winnerIdx].name} wins! You earned ₦${winnings.toLocaleString()}!`);
     } else {
+      play("lose");
       setResult(`${racers[winnerIdx].emoji} ${racers[winnerIdx].name} wins! Better luck next time.`);
     }
     await recordGameResult(gameId, pointCost, winnings, { picked: pickedIdx, winner: winnerIdx });

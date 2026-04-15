@@ -64,6 +64,7 @@ const CoinFlipEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
       setState("won");
     } else {
       setState("lost");
+      play("lose");
       setResult(`${sides[outcome]} Wrong! You lost your ₦${currentWin().toLocaleString()} streak.`);
       await recordGameResult(gameId, pointCost, 0, { streak, guess, outcome });
     }
@@ -72,6 +73,7 @@ const CoinFlipEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
 
   const cashOut = async () => {
     setState("cashed");
+    play("cashout");
     let winnings = currentWin();
     winnings = adjustWinAmount(winnings);
     if (winnings > 0 && canFullyWin() && streak >= 3) recordFullWin();

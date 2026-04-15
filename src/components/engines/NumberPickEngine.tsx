@@ -99,6 +99,7 @@ const NumberPickEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEM
       if (canFullyWin() && matches >= pickCount - 1) recordFullWin();
       await updateBalance(winnings);
     }
+    if (winnings > 0) play("win"); else play("lose");
     setResult(winnings > 0
       ? `🎉 ${matches}/${pickCount} matched! Won ₦${winnings.toLocaleString()}!`
       : `${matches}/${pickCount} matched. Better luck next time!`);

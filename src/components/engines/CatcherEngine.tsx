@@ -160,6 +160,7 @@ const CatcherEngine = ({
       if (canFullyWin() && finalScore >= 200) recordFullWin();
       await updateBalance(winnings);
     }
+    if (winnings > 0) play("win"); else play("lose");
     setResult(winnings > 0 ? `🎉 Score: ${finalScore}! Won ₦${winnings.toLocaleString()}!` : `Score: ${finalScore}. Keep trying!`);
     await recordGameResult(gameId, pointCost, winnings, { score: finalScore, duration });
   };
