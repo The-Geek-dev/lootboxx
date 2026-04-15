@@ -38,7 +38,7 @@ const ComingSoonView = () => (
 const LiveDepositView = () => {
   const { toast } = useToast();
   const [selectedTier, setSelectedTier] = useState<typeof DEPOSIT_TIERS[0] | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<"paystack" | "flutterwave">("paystack");
+  const [paymentMethod, setPaymentMethod] = useState<"flutterwave">("flutterwave");
   const [loading, setLoading] = useState(false);
 
   const handleDeposit = async () => {
