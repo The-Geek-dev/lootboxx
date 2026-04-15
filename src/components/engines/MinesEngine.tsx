@@ -67,12 +67,13 @@ const MinesEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, gr
     if (state !== "playing" || revealed.has(index)) return;
 
     if (mines.has(index)) {
-      // Hit a mine!
+      play("lose");
       setState("exploded");
       setRevealed(new Set([...revealed, ...mines]));
       setResult("💥 BOOM! You hit a mine!");
       recordGameResult(gameId, pointCost, 0, { revealed: revealed.size, mines: [...mines] });
     } else {
+      play("tick");
       const newRevealed = new Set([...revealed, index]);
       setRevealed(newRevealed);
       const newMult = getMultiplier(newRevealed.size);
@@ -86,6 +87,7 @@ const MinesEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, gr
   }, [state, revealed, mines]);
 
   const cashOutInternal = async (picks: number, mult: number) => {
+    play("cashout");
     setState("cashed");
     let winnings = Math.floor(pointCost * mult * 2);
     winnings = adjustWinAmount(winnings);
