@@ -160,7 +160,7 @@ const CardsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
             animate={streak > 0 ? { scale: [1, 1.05, 1] } : {}}
             transition={{ repeat: Infinity, duration: 1 }}
           >
-            Streak: {streak} (\u20A6{(streak * 100).toLocaleString()})
+            Streak: {streak} (₦{(streak * 100).toLocaleString()})
           </motion.p>
         )}
       </Card>
