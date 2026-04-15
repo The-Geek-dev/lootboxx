@@ -1,31 +1,12 @@
 import { useState, useEffect } from "react";
 import { Rocket } from "lucide-react";
-
-// Launch at midnight tonight (user's local time)
-function getMidnightTonight() {
-  const now = new Date();
-  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
-  return midnight;
-}
-
-const LAUNCH_DATE = getMidnightTonight();
+import { getTimeUntilLaunch } from "@/hooks/useLaunchStatus";
 
 const LaunchCountdown = () => {
-  const [timeLeft, setTimeLeft] = useState(getTimeLeft());
-
-  function getTimeLeft() {
-    const diff = LAUNCH_DATE.getTime() - Date.now();
-    if (diff <= 0) return { hours: 0, minutes: 0, seconds: 0, launched: true };
-    return {
-      hours: Math.floor(diff / (1000 * 60 * 60)),
-      minutes: Math.floor((diff / (1000 * 60)) % 60),
-      seconds: Math.floor((diff / 1000) % 60),
-      launched: false,
-    };
-  }
+  const [timeLeft, setTimeLeft] = useState(getTimeUntilLaunch());
 
   useEffect(() => {
-    const interval = setInterval(() => setTimeLeft(getTimeLeft()), 1000);
+    const interval = setInterval(() => setTimeLeft(getTimeUntilLaunch()), 1000);
     return () => clearInterval(interval);
   }, []);
 
