@@ -62,6 +62,10 @@ export default {
           '0%': { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-100%)' }
         },
+        'marquee-scroll': {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' }
+        },
         'spin-slow': {
           '0%': { transform: 'rotate(0deg)' },
           '100%': { transform: 'rotate(360deg)' }
@@ -69,6 +73,7 @@ export default {
       },
       animation: {
         marquee: 'marquee 20s linear infinite',
+        'marquee-scroll': 'marquee-scroll 30s linear infinite',
         'spin-slow': 'spin-slow 4s linear infinite'
       }
     },
