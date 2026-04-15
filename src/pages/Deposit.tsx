@@ -40,6 +40,25 @@ const LiveDepositView = () => {
   const [selectedTier, setSelectedTier] = useState<typeof DEPOSIT_TIERS[0] | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<"flutterwave">("flutterwave");
   const [loading, setLoading] = useState(false);
+  const [isActivated, setIsActivated] = useState(false);
+
+  useEffect(() => {
+    const checkActivation = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const { data: wallet } = await supabase
+        .from("user_wallets")
+        .select("is_activated")
+        .eq("user_id", session.user.id)
+        .single();
+      if (wallet?.is_activated) setIsActivated(true);
+    };
+    checkActivation();
+  }, []);
+
+  const availableTiers = DEPOSIT_TIERS.filter(
+    (tier) => !(tier.type === "activation" && isActivated)
+  );
 
   const handleDeposit = async () => {
     if (!selectedTier) return;
@@ -86,7 +105,7 @@ const LiveDepositView = () => {
       <p className="text-muted-foreground text-center mb-6">Choose a deposit option and payment method</p>
 
       <div className="grid gap-3 mb-6">
-        {DEPOSIT_TIERS.map((tier) => (
+        {availableTiers.map((tier) => (
           <Card
             key={tier.label}
             onClick={() => setSelectedTier(tier)}
