@@ -28,6 +28,7 @@ const DiceEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fro
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
   const [dice, setDice] = useState(Array(diceCount).fill(1));
   const [target, setTarget] = useState(targetRange[Math.floor(targetRange.length / 2)]);
   const [rolling, setRolling] = useState(false);

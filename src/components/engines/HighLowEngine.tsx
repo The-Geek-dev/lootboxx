@@ -38,6 +38,7 @@ const HighLowEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME }
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
 
   const [currentCard, setCurrentCard] = useState(STANDARD_DECK[0]);
   const [nextCard, setNextCard] = useState<typeof STANDARD_DECK[0] | null>(null);

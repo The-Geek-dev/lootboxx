@@ -25,6 +25,7 @@ const CrashEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
   const [multiplier, setMultiplier] = useState(1.0);
   const [crashPoint, setCrashPoint] = useState(0);
   const [state, setState] = useState<"idle" | "rising" | "crashed" | "cashed">("idle");

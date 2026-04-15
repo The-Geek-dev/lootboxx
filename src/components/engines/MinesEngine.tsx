@@ -28,6 +28,7 @@ const MinesEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, gr
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
 
   const [mines, setMines] = useState<Set<number>>(new Set());
   const [revealed, setRevealed] = useState<Set<number>>(new Set());

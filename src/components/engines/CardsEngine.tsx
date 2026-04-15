@@ -57,6 +57,7 @@ const CardsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
   const [currentCard, setCurrentCard] = useState(randomCard());
   const [streak, setStreak] = useState(0);
   const [state, setState] = useState<"idle" | "playing" | "lost">("idle");
