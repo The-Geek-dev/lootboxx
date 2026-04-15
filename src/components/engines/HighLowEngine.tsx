@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import GameBackground from "./GameBackground";
 import { useWallet } from "@/hooks/useWallet";
 import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
@@ -158,7 +158,8 @@ const HighLowEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME }
       )}
 
       {/* Main card area */}
-      <Card className={`p-6 bg-gradient-to-br ${theme.bgGradient} backdrop-blur-sm border-primary/20 mb-4`}>
+      <GameBackground type="highlow" overlay="medium" className="mb-4">
+        <div className="p-6">
         <div className="flex items-center justify-center gap-6">
           {renderCard(currentCard)}
           {state === "reveal" && nextCard && (
@@ -181,7 +182,8 @@ const HighLowEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME }
             {isCorrect ? "✅ Correct!" : "❌ Wrong!"}
           </motion.p>
         )}
-      </Card>
+        </div>
+      </GameBackground>
 
       {state === "playing" && (
         <div className="grid grid-cols-2 gap-3 mb-4">
