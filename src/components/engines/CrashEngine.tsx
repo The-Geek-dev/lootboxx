@@ -44,6 +44,7 @@ const CrashEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
     setMultiplier(1.0);
     setState("rising");
     setResult(null);
+    play("spin");
 
     intervalRef.current = window.setInterval(() => {
       setMultiplier((m) => {
@@ -60,6 +61,7 @@ const CrashEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
 
   useEffect(() => {
     if (state === "crashed") {
+      play("lose");
       setResult(`${v.crashEmoji} Crashed at ${crashPoint.toFixed(2)}x! You lost.`);
       recordGameResult(gameId, pointCost, 0, { crashPoint, cashedAt: null });
     }
@@ -68,6 +70,7 @@ const CrashEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
   const cashOut = useCallback(async () => {
     if (state !== "rising") return;
     if (intervalRef.current) clearInterval(intervalRef.current);
+    play("cashout");
     setState("cashed");
     const currentMult = multiplier;
     let winnings = Math.floor(pointCost * currentMult * 2);
