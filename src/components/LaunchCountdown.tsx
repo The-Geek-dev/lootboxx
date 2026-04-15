@@ -1,8 +1,14 @@
 import { useState, useEffect } from "react";
 import { Rocket } from "lucide-react";
 
-// Set launch time to 48 hours from first deploy — adjust this date as needed
-const LAUNCH_DATE = new Date("2026-04-15T17:00:00Z");
+// Launch at midnight tonight (user's local time)
+function getMidnightTonight() {
+  const now = new Date();
+  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+  return midnight;
+}
+
+const LAUNCH_DATE = getMidnightTonight();
 
 const LaunchCountdown = () => {
   const [timeLeft, setTimeLeft] = useState(getTimeLeft());
