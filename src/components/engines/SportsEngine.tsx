@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -24,6 +25,7 @@ const SportsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'f
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
   const OUTCOMES = teams || [{ icon: "\u{1F3E0}", label: "Home" }, { icon: "\u{1F3C3}", label: "Away" }];
   const [bet, setBet] = useState<0 | 1 | null>(null);
   const [state, setState] = useState<"idle" | "playing" | "done">("idle");

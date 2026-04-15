@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -33,6 +34,7 @@ const RaceEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, rac
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
 
   const [state, setState] = useState<"idle" | "picking" | "racing" | "finished">("idle");
   const [picked, setPicked] = useState<number | null>(null);

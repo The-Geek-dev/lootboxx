@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -81,6 +82,7 @@ const InstantEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: '
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
   const boxCount = getBoxCount(theme.variant);
   const pickCount = getPickCount(theme.variant);
   const boxIcons = getBoxIcons(theme.variant);

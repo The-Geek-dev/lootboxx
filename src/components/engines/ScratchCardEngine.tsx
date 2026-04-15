@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 interface Props {
   gameId: string;
@@ -28,6 +29,7 @@ const ScratchCardEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THE
   const { xpLives, consumeLife } = useXpLives();
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
+  const { play } = useGameSounds();
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [state, setState] = useState<"idle" | "scratching" | "revealed">("idle");
