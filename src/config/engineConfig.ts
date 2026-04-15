@@ -71,6 +71,36 @@ export const GAME_ENGINE_OVERRIDES: Record<string, string> = {
   "memory-match": "arcade",
 };
 
+export interface SlotConfig {
+  reelCount: number;        // 3, 4, or 5
+  hasWild: boolean;         // wild symbol substitution
+  hasBonus: boolean;        // bonus free-spin round
+  spinStyle: "classic" | "cascade" | "avalanche" | "tumble";
+}
+
+export const SLOT_CONFIGS: Record<string, SlotConfig> = {
+  "fire-strike":    { reelCount: 5, hasWild: true,  hasBonus: true,  spinStyle: "avalanche" },
+  "hot-burn":       { reelCount: 4, hasWild: true,  hasBonus: false, spinStyle: "classic" },
+  "wild-west":      { reelCount: 3, hasWild: true,  hasBonus: false, spinStyle: "classic" },
+  "pharaoh-gold":   { reelCount: 5, hasWild: true,  hasBonus: true,  spinStyle: "tumble" },
+  "mystic-gems":    { reelCount: 4, hasWild: true,  hasBonus: true,  spinStyle: "cascade" },
+  "neon-lights":    { reelCount: 5, hasWild: false, hasBonus: true,  spinStyle: "cascade" },
+  "viking-saga":    { reelCount: 4, hasWild: true,  hasBonus: false, spinStyle: "avalanche" },
+  "zeus-thunder":   { reelCount: 5, hasWild: true,  hasBonus: true,  spinStyle: "tumble" },
+  "moon-magic":     { reelCount: 3, hasWild: false, hasBonus: true,  spinStyle: "classic" },
+  "lucky-7":        { reelCount: 3, hasWild: false, hasBonus: false, spinStyle: "classic" },
+  "diamond-rush":   { reelCount: 4, hasWild: true,  hasBonus: true,  spinStyle: "cascade" },
+  "jackpot-city":   { reelCount: 4, hasWild: true,  hasBonus: true,  spinStyle: "classic" },
+  "dragon-fortune": { reelCount: 4, hasWild: true,  hasBonus: true,  spinStyle: "avalanche" },
+  "star-burst":     { reelCount: 5, hasWild: true,  hasBonus: false, spinStyle: "tumble" },
+  "ice-cold":       { reelCount: 3, hasWild: false, hasBonus: true,  spinStyle: "cascade" },
+  "hot-pepper":     { reelCount: 3, hasWild: false, hasBonus: false, spinStyle: "classic" },
+  "safari-wild":    { reelCount: 4, hasWild: true,  hasBonus: false, spinStyle: "avalanche" },
+  "spin-match":     { reelCount: 3, hasWild: false, hasBonus: false, spinStyle: "classic" },
+  "pirate-loot":    { reelCount: 5, hasWild: true,  hasBonus: true,  spinStyle: "tumble" },
+  "magic-lamp":     { reelCount: 4, hasWild: true,  hasBonus: true,  spinStyle: "cascade" },
+};
+
 export const SLOT_THEMES: Record<string, string[]> = {
   "fire-strike": ["🔥", "💥", "⚡", "🌟", "💎", "7️⃣"],
   "hot-burn": ["🌶️", "🔥", "💰", "⭐", "🍒", "7️⃣"],

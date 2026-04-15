@@ -4,7 +4,7 @@ import GamePageLayout from "@/components/GamePageLayout";
 import { allGames } from "@/config/gamesData";
 import { getGameTheme, getSportsTeams, getDiceConfig, getCrashVisuals } from "@/config/gameThemes";
 import {
-  getEngineType, SLOT_THEMES, MINES_CONFIG, COINFLIP_SIDES, TOWER_CONFIG,
+  getEngineType, SLOT_THEMES, SLOT_CONFIGS, MINES_CONFIG, COINFLIP_SIDES, TOWER_CONFIG,
   REACTION_CONFIG, SCRATCH_PRIZES, RACE_CONFIGS, MATCH3_SYMBOLS,
   NUMBER_PICK_CONFIG, CATCHER_CONFIG
 } from "@/config/engineConfig";
