@@ -169,6 +169,16 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
           setResult(bonusActive ? "No match - keep spinning!" : "No match. Try again!");
         }
 
+        // Contribute to progressive jackpot
+        if (!isBonusSpin) {
+          contributeToJackpot(pointCost).then(jp => {
+            if (jp.won) {
+              play("bigwin");
+              toast({ title: "🏆 PROGRESSIVE JACKPOT!", description: `You won ₦${jp.winAmount.toLocaleString()}!` });
+            }
+          });
+        }
+
         recordGameResult(gameId, isBonusSpin ? 0 : pointCost, payout, { reels: finalReels, bonus: bonusActive });
         setIsSpinning(false);
 
