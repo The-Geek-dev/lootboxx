@@ -163,6 +163,7 @@ const QuickMathEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME
       if (canFullyWin() && finalScore >= 150) recordFullWin();
       await updateBalance(winnings);
     }
+    if (winnings > 0) play("win"); else play("lose");
     setResult(winnings > 0 ? `🎉 Score: ${finalScore}! Won ₦${winnings.toLocaleString()}!` : `Score: ${finalScore}. Keep practicing!`);
     await recordGameResult(gameId, pointCost, winnings, { score: finalScore, questionsAnswered, mode });
   };
