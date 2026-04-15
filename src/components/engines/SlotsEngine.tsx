@@ -32,6 +32,7 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
   const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
   const { play } = useGameSounds();
+  const { contribute: contributeToJackpot } = useJackpot();
 
   const config: SlotConfig = SLOT_CONFIGS[gameId] || { reelCount: 3, hasWild: false, hasBonus: false, spinStyle: "classic" };
   const reelCount = config.reelCount;
