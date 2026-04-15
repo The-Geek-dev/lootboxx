@@ -45,17 +45,5 @@ export const useNotifications = () => {
     fetchNotifications();
   };
 
-  const createNotification = async (title: string, message: string, type = "info") => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
-    await supabase.from("notifications").insert({
-      user_id: session.user.id,
-      title,
-      message,
-      type,
-    });
-    fetchNotifications();
-  };
-
-  return { notifications, unreadCount, loading, markAsRead, markAllAsRead, createNotification, fetchNotifications };
+  return { notifications, unreadCount, loading, markAsRead, markAllAsRead, fetchNotifications };
 };
