@@ -854,6 +854,152 @@ const AdminDashboard = () => {
                 </div>
               </Card>
             </TabsContent>
+
+            {/* GAME CONTROL TAB */}
+            <TabsContent value="game-ctrl">
+              <div className="grid md:grid-cols-2 gap-6 mb-6">
+                <Card className="glass p-6">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <Gamepad2 className="w-5 h-5" /> User Game Modifiers
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Control difficulty, win rate, and payout for a specific user. Lower win rate = harder to win. Lower payout = smaller winnings.
+                  </p>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium mb-1 block">Difficulty (1=Easy, 10=Hard): {gsDifficulty}</label>
+                      <Slider
+                        min={1} max={10} step={1}
+                        value={[Number(gsDifficulty)]}
+                        onValueChange={([v]) => setGsDifficulty(String(v))}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-1 block">Win Rate Multiplier: {gsWinRate}x</label>
+                      <Slider
+                        min={0} max={3} step={0.1}
+                        value={[Number(gsWinRate)]}
+                        onValueChange={([v]) => setGsWinRate(v.toFixed(1))}
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">0 = never wins, 1 = normal, 3 = 3x more likely to win</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-1 block">Payout Multiplier: {gsPayout}x</label>
+                      <Slider
+                        min={0} max={3} step={0.1}
+                        value={[Number(gsPayout)]}
+                        onValueChange={([v]) => setGsPayout(v.toFixed(1))}
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">0.3 = 30% of normal payout, 2 = double payout</p>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium">Active</label>
+                      <Switch checked={gsActive} onCheckedChange={setGsActive} />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-1 block">Admin Note</label>
+                      <Input
+                        placeholder="Reason for adjustment..."
+                        value={gsNote}
+                        onChange={(e) => setGsNote(e.target.value)}
+                      />
+                    </div>
+                    <Button className="button-gradient w-full" onClick={handleSaveGameSettings} disabled={!gsUserId}>
+                      {gsUserId ? "Save Settings" : "Select a user first →"}
+                    </Button>
+                    {gsUserId && (
+                      <p className="text-xs text-muted-foreground">
+                        Selected: {users.find(u => u.id === gsUserId)?.full_name} ({users.find(u => u.id === gsUserId)?.email})
+                      </p>
+                    )}
+                  </div>
+                </Card>
+
+                <Card className="glass p-6">
+                  <h3 className="text-lg font-semibold mb-4">Select User</h3>
+                  <div className="space-y-2 max-h-80 overflow-y-auto">
+                    {users.map((u) => {
+                      const hasSettings = gameSettings.find((gs: any) => gs.user_id === u.id);
+                      return (
+                        <div
+                          key={u.id}
+                          className={`flex items-center justify-between py-2 px-2 rounded cursor-pointer transition-colors ${
+                            gsUserId === u.id ? "bg-primary/10 border border-primary/30" : "border-b border-border/50"
+                          }`}
+                          onClick={() => {
+                            setGsUserId(u.id);
+                            if (hasSettings) {
+                              setGsDifficulty(String(hasSettings.difficulty_level));
+                              setGsWinRate(String(Number(hasSettings.win_rate_modifier)));
+                              setGsPayout(String(Number(hasSettings.payout_modifier)));
+                              setGsActive(hasSettings.is_active);
+                              setGsNote(hasSettings.admin_note || "");
+                            } else {
+                              setGsDifficulty("5");
+                              setGsWinRate("1.0");
+                              setGsPayout("1.0");
+                              setGsActive(true);
+                              setGsNote("");
+                            }
+                          }}
+                        >
+                          <div>
+                            <p className="font-medium text-sm">{u.full_name}</p>
+                            <p className="text-xs text-muted-foreground">{u.email}</p>
+                          </div>
+                          <div className="text-right">
+                            {hasSettings?.is_active && (
+                              <Badge variant="outline" className="text-xs border-yellow-500 text-yellow-500">
+                                Modified
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Card>
+              </div>
+
+              {/* Active Modifiers */}
+              {gameSettings.filter((gs: any) => gs.is_active).length > 0 && (
+                <Card className="glass p-4 sm:p-6 overflow-x-auto">
+                  <h3 className="text-lg font-semibold mb-4">Active Game Modifiers</h3>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>User</TableHead>
+                        <TableHead>Difficulty</TableHead>
+                        <TableHead>Win Rate</TableHead>
+                        <TableHead>Payout</TableHead>
+                        <TableHead>Note</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {gameSettings.filter((gs: any) => gs.is_active).map((gs: any) => (
+                        <TableRow key={gs.id}>
+                          <TableCell className="font-medium">{gs.user_name}</TableCell>
+                          <TableCell>{gs.difficulty_level}/10</TableCell>
+                          <TableCell className={Number(gs.win_rate_modifier) < 1 ? "text-red-400" : Number(gs.win_rate_modifier) > 1 ? "text-green-400" : ""}>
+                            {Number(gs.win_rate_modifier).toFixed(1)}x
+                          </TableCell>
+                          <TableCell className={Number(gs.payout_modifier) < 1 ? "text-red-400" : Number(gs.payout_modifier) > 1 ? "text-green-400" : ""}>
+                            {Number(gs.payout_modifier).toFixed(1)}x
+                          </TableCell>
+                          <TableCell className="text-xs text-muted-foreground">{gs.admin_note || "—"}</TableCell>
+                          <TableCell>
+                            <Button size="sm" variant="destructive" onClick={() => handleDeleteGameSettings(gs.user_id)}>
+                              Remove
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Card>
+              )}
+            </TabsContent>
           </Tabs>
         </motion.div>
       </main>
