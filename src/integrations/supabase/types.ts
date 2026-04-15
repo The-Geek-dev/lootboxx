@@ -245,6 +245,39 @@ export type Database = {
         }
         Relationships: []
       }
+      progressive_jackpot: {
+        Row: {
+          created_at: string
+          current_amount: number
+          id: string
+          last_won_amount: number
+          last_won_at: string | null
+          last_won_by: string | null
+          total_contributions: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_amount?: number
+          id?: string
+          last_won_amount?: number
+          last_won_at?: string | null
+          last_won_by?: string | null
+          total_contributions?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_amount?: number
+          id?: string
+          last_won_amount?: number
+          last_won_at?: string | null
+          last_won_by?: string | null
+          total_contributions?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       raffle_entries: {
         Row: {
           created_at: string
@@ -523,6 +556,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      contribute_to_jackpot: {
+        Args: { contribution: number; player_id: string }
+        Returns: Json
+      }
       get_leaderboard: {
         Args: { limit_count?: number }
         Returns: {
