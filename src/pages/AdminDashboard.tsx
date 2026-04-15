@@ -56,6 +56,14 @@ const AdminDashboard = () => {
   const [pointsAmount, setPointsAmount] = useState("");
   const [pointsOperation, setPointsOperation] = useState<"add" | "subtract">("add");
   const [generatingCodes, setGeneratingCodes] = useState(false);
+  // Game control state
+  const [gameSettings, setGameSettings] = useState<any[]>([]);
+  const [gsUserId, setGsUserId] = useState("");
+  const [gsDifficulty, setGsDifficulty] = useState("5");
+  const [gsWinRate, setGsWinRate] = useState("1.0");
+  const [gsPayout, setGsPayout] = useState("1.0");
+  const [gsActive, setGsActive] = useState(true);
+  const [gsNote, setGsNote] = useState("");
 
   const adminCall = useCallback(async (action: string, params: any = {}) => {
     const { data: { session } } = await supabase.auth.getSession();
