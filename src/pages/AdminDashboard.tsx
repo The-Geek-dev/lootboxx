@@ -296,7 +296,7 @@ const AdminDashboard = () => {
           </div>
 
           <Tabs defaultValue="users" className="space-y-6">
-            <TabsList className="grid grid-cols-4 sm:grid-cols-7 w-full max-w-3xl">
+            <TabsList className="grid grid-cols-4 sm:grid-cols-8 w-full max-w-4xl">
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="deposits">Deposits</TabsTrigger>
               <TabsTrigger value="games">Games</TabsTrigger>
@@ -304,6 +304,7 @@ const AdminDashboard = () => {
               <TabsTrigger value="wallet">Wallet</TabsTrigger>
               <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
               <TabsTrigger value="points">Points</TabsTrigger>
+              <TabsTrigger value="game-ctrl">Game Ctrl</TabsTrigger>
             </TabsList>
 
             {/* USERS TAB */}
