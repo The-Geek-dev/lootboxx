@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Gamepad2, Gift, Rocket } from "lucide-react";
+import { ArrowRight, Gamepad2, Gift } from "lucide-react";
 import WaitlistForm from "@/components/WaitlistForm";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
