@@ -105,7 +105,7 @@ const LiveDepositView = () => {
       <p className="text-muted-foreground text-center mb-6">Choose a deposit option and payment method</p>
 
       <div className="grid gap-3 mb-6">
-        {DEPOSIT_TIERS.map((tier) => (
+        {availableTiers.map((tier) => (
           <Card
             key={tier.label}
             onClick={() => setSelectedTier(tier)}
