@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Gamepad2, Gift, Rocket } from "lucide-react";
+import { ArrowRight, Gamepad2, Gift } from "lucide-react";
 import WaitlistForm from "@/components/WaitlistForm";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
@@ -31,23 +31,15 @@ const Index = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
-  const [showBetaDialog, setShowBetaDialog] = useState(false);
+  
   const [animationKey, setAnimationKey] = useState(Date.now());
 
   useEffect(() => {
     setAnimationKey(Date.now());
   }, []);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const hasSeenBeta = sessionStorage.getItem('hasSeenBetaPopup');
-      if (!hasSeenBeta) {
-        setShowBetaDialog(true);
-        sessionStorage.setItem('hasSeenBetaPopup', 'true');
-      }
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, []);
+
+
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -204,27 +196,8 @@ const Index = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Beta Phase Dialog */}
-      <AlertDialog open={showBetaDialog} onOpenChange={setShowBetaDialog}>
-        <AlertDialogContent className="max-w-md">
-          <AlertDialogHeader>
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center">
-                <Rocket className="w-8 h-8 text-primary" />
-              </div>
-            </div>
-            <AlertDialogTitle className="text-center text-2xl">Beta Phase</AlertDialogTitle>
-            <AlertDialogDescription className="text-center text-base">
-              Welcome! LootBoxx is currently in beta development. We're working hard to bring you the full gaming experience soon. Stay tuned for exciting updates!
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="justify-center sm:justify-center">
-            <AlertDialogAction className="button-gradient px-8">
-              Got it!
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+
+
     </div>
   );
 };

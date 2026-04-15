@@ -76,29 +76,11 @@ export const useXpLives = () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return false;
 
-    // Fetch fresh points from DB to avoid stale state
-    const { data: wallet } = await supabase
-      .from("user_wallets")
-      .select("points")
-      .eq("user_id", session.user.id)
-      .single();
+    const { data, error } = await supabase.rpc("buy_xp_refill");
 
-    const freshPoints = wallet ? Number(wallet.points) : 0;
-    if (freshPoints < XP_REFILL_COST_POINTS) return false;
-
-    const newPoints = freshPoints - XP_REFILL_COST_POINTS;
-    const { error } = await supabase
-      .from("user_wallets")
-      .update({
-        xp_lives: MAX_LIVES,
-        points: newPoints,
-        xp_last_refill_at: new Date().toISOString(),
-      })
-      .eq("user_id", session.user.id);
-
-    if (!error) {
+    if (!error && data === true) {
       setXpLives(MAX_LIVES);
-      setPoints(newPoints);
+      setPoints((prev) => prev - XP_REFILL_COST_POINTS);
       return true;
     }
     return false;
