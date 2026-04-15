@@ -72,6 +72,7 @@ const HighLowEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME }
     const correct = higher ? next.value >= currentCard.value : next.value <= currentCard.value;
     setIsCorrect(correct);
     setState("reveal");
+    play(correct ? "win" : "lose");
 
     setTimeout(() => {
       if (correct) {
@@ -87,7 +88,7 @@ const HighLowEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME }
     }, 1200);
   };
 
-  const cashOut = () => endGame(streak);
+  const cashOut = () => { play("cashout"); endGame(streak); };
 
   const endGame = async (finalStreak: number) => {
     setState("done");
