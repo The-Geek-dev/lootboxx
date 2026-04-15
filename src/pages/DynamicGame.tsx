@@ -105,6 +105,18 @@ const REACTION_CONFIG: Record<string, { targets: string[]; duration: number; gri
   "balloon-pop": { targets: ["🎈", "🎈", "🎁", "⭐"], duration: 20, gridSize: 12, gridCols: 4 },
 };
 
+const SCRATCH_PRIZES: Record<string, string[]> = {
+  "scratch-win": ["💎x5", "⭐x3", "🍒x2", "💰x10", "🎯x4", "🔥x2", "👑x8", "💫x1", "🌟x3"],
+  "golden-ticket": ["🎫x5", "👑x10", "💰x8", "🌟x3", "💎x6", "🏆x12", "⭐x2", "🎁x4", "✨x1"],
+  "lucky-scratch": ["🍀x3", "🌈x5", "💵x4", "🎲x2", "🔔x6", "💎x8", "⭐x1", "🎯x3", "🍒x2"],
+};
+
+const RACE_CONFIGS: Record<string, { emoji: string; name: string }[]> = {
+  "speed-race": [{ emoji: "🏎️", name: "Red Fury" }, { emoji: "🏍️", name: "Blue Bolt" }, { emoji: "🚗", name: "Gold Rush" }, { emoji: "🚕", name: "Thunder" }],
+  "horse-derby": [{ emoji: "🐎", name: "Storm" }, { emoji: "🦄", name: "Mystic" }, { emoji: "🐴", name: "Thunder" }, { emoji: "🏇", name: "Flash" }],
+  "rocket-race": [{ emoji: "🚀", name: "Apollo" }, { emoji: "🛸", name: "Nebula" }, { emoji: "✈️", name: "Falcon" }, { emoji: "⚡", name: "Comet" }],
+};
+
 function getEngineType(gameId: string, categories: string[]): string {
   if (GAME_ENGINE_OVERRIDES[gameId]) return GAME_ENGINE_OVERRIDES[gameId];
   const priority = ["slots", "crash", "cards", "dice", "sports", "lottery", "arcade", "instant"];
