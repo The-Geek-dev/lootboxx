@@ -242,6 +242,7 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+      <JackpotCounter />
       <h1 className="text-2xl sm:text-4xl font-bold text-center mb-1">{emoji} {name}</h1>
       <p className={`${theme.accentColor} text-center text-sm mb-2`}>{theme.description}</p>
 
