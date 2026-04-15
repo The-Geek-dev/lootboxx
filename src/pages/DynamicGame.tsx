@@ -16,6 +16,8 @@ import WheelEngine from "@/components/engines/WheelEngine";
 import TowerEngine from "@/components/engines/TowerEngine";
 import CoinFlipEngine from "@/components/engines/CoinFlipEngine";
 import ReactionEngine from "@/components/engines/ReactionEngine";
+import ScratchCardEngine from "@/components/engines/ScratchCardEngine";
+import RaceEngine from "@/components/engines/RaceEngine";
 import { useEffect } from "react";
 
 const GAME_ENGINE_OVERRIDES: Record<string, string> = {
