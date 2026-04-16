@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useGameSettings } from "@/hooks/useGameSettings";
 
 // Win window: a random hour of the day (0-23) where full wins are possible
 // Max 3 full wins per day
 const MAX_FULL_WINS_PER_DAY = 3;
 
 export const useWinRestrictions = () => {
+  const { settings: adminSettings } = useGameSettings();
   const [winData, setWinData] = useState<{
     fullWinCount: number;
     winWindowHour: number;
@@ -58,6 +60,12 @@ export const useWinRestrictions = () => {
 
   const canFullyWin = (): boolean => {
     if (!winData) return false;
+    // Admin override: win_rate_modifier of 0 means user can never fully win
+    if (adminSettings.is_active && adminSettings.win_rate_modifier <= 0) return false;
+    // Admin override: high win_rate_modifier (>=2) bypasses time/count restrictions
+    if (adminSettings.is_active && adminSettings.win_rate_modifier >= 2) {
+      return winData.fullWinCount < MAX_FULL_WINS_PER_DAY * 3;
+    }
     const currentHour = new Date().getHours();
     const isInWindow = Math.abs(currentHour - winData.winWindowHour) <= 1; // ±1 hour window
     return isInWindow && winData.fullWinCount < MAX_FULL_WINS_PER_DAY;
@@ -82,10 +90,23 @@ export const useWinRestrictions = () => {
   // Reduce win amount if not in win window or max wins reached
   const adjustWinAmount = (originalWin: number): number => {
     if (originalWin <= 0) return 0;
-    if (canFullyWin()) return originalWin;
-    // Outside win window or max wins reached: reduce to 10-30% of original
-    const reduction = 0.1 + Math.random() * 0.2;
-    return Math.floor(originalWin * reduction);
+    let amount: number;
+    if (canFullyWin()) {
+      amount = originalWin;
+    } else {
+      // Outside win window or max wins reached: reduce to 10-30% of original
+      const reduction = 0.1 + Math.random() * 0.2;
+      amount = Math.floor(originalWin * reduction);
+    }
+    // Apply admin payout modifier on top
+    if (adminSettings.is_active) {
+      amount = Math.round(amount * adminSettings.payout_modifier);
+      // Apply win rate modifier as a probability gate: low modifier => chance to nullify win
+      if (adminSettings.win_rate_modifier < 1) {
+        if (Math.random() > adminSettings.win_rate_modifier) amount = 0;
+      }
+    }
+    return Math.max(0, amount);
   };
 
   return {
