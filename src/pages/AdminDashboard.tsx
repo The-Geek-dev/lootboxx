@@ -867,6 +867,36 @@ const AdminDashboard = () => {
                   </p>
                   <div className="space-y-4">
                     <div>
+                      <label className="text-sm font-medium mb-2 block">Quick Presets</label>
+                      <div className="grid grid-cols-4 gap-2">
+                        <Button
+                          type="button" size="sm" variant="destructive"
+                          onClick={() => { setGsDifficulty("9"); setGsWinRate("0.3"); setGsPayout("0.5"); setGsActive(true); }}
+                        >
+                          Nerf
+                        </Button>
+                        <Button
+                          type="button" size="sm" variant="outline"
+                          onClick={() => { setGsDifficulty("5"); setGsWinRate("1.0"); setGsPayout("1.0"); setGsActive(true); }}
+                        >
+                          Normal
+                        </Button>
+                        <Button
+                          type="button" size="sm" variant="default"
+                          onClick={() => { setGsDifficulty("3"); setGsWinRate("2.0"); setGsPayout("2.0"); setGsActive(true); }}
+                        >
+                          Boost
+                        </Button>
+                        <Button
+                          type="button" size="sm" variant="secondary"
+                          onClick={() => { setGsDifficulty("10"); setGsWinRate("0"); setGsPayout("0"); setGsActive(true); }}
+                        >
+                          Block
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">Nerf: 0.3x win, 0.5x payout · Boost: 2x both · Block: never wins</p>
+                    </div>
+                    <div>
                       <label className="text-sm font-medium mb-1 block">Difficulty (1=Easy, 10=Hard): {gsDifficulty}</label>
                       <Slider
                         min={1} max={10} step={1}
