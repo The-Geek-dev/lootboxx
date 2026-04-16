@@ -12,6 +12,7 @@ import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import CyberpunkParticles from "@/components/CyberpunkParticles";
 import HexagonGrid from "@/components/HexagonGrid";
 import MascotBackground from "@/components/MascotBackground";
+import TutorialVideoButton from "@/components/TutorialVideoButton";
 import dashboardPreview from "@/assets/dashboard-preview-new.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -196,7 +197,8 @@ const Index = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-
+      {/* Floating tutorial video button */}
+      <TutorialVideoButton />
 
     </div>
   );
