@@ -34,7 +34,7 @@ export const Scene5Withdraw: React.FC = () => {
   const outro = frame >= 135;
 
   return (
-    <AbsoluteFill style={{ fontFamily, background: COLORS.bg }}>
+    <AbsoluteFill style={{ fontFamily: `${fontFamily}, "Noto Color Emoji"`, background: COLORS.bg }}>
       {!outro ? (
         <BrowserChrome url="lootboxx.live/withdraw">
           <div

@@ -37,7 +37,7 @@ export const Scene4Deposit: React.FC = () => {
   const paidSpring = spring({ frame: frame - 130, fps, config: { damping: 14, stiffness: 160 } });
 
   return (
-    <AbsoluteFill style={{ fontFamily, background: COLORS.bg }}>
+    <AbsoluteFill style={{ fontFamily: `${fontFamily}, "Noto Color Emoji"`, background: COLORS.bg }}>
       <BrowserChrome url="lootboxx.live/deposit">
         <div
           style={{

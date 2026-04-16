@@ -24,7 +24,7 @@ export const Scene1Intro: React.FC = () => {
     <AbsoluteFill
       style={{
         background: `radial-gradient(circle at 50% 50%, #0F1F2A 0%, #050505 70%)`,
-        fontFamily,
+        fontFamily: `${fontFamily}, "Noto Color Emoji"`,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",

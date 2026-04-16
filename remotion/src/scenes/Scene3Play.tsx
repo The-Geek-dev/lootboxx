@@ -52,7 +52,7 @@ export const Scene3Play: React.FC = () => {
   });
 
   return (
-    <AbsoluteFill style={{ fontFamily, background: COLORS.bg }}>
+    <AbsoluteFill style={{ fontFamily: `${fontFamily}, "Noto Color Emoji"`, background: COLORS.bg }}>
       <BrowserChrome url="lootboxx.live/games/lucky-slots">
         {/* Top bar */}
         <div

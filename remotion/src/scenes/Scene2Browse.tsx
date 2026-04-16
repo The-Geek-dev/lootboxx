@@ -37,7 +37,7 @@ export const Scene2Browse: React.FC = () => {
   const navHighlight = interpolate(frame, [25, 35], [0, 1], { extrapolateRight: "clamp" });
 
   return (
-    <AbsoluteFill style={{ fontFamily, background: COLORS.bg }}>
+    <AbsoluteFill style={{ fontFamily: `${fontFamily}, "Noto Color Emoji"`, background: COLORS.bg }}>
       <BrowserChrome url="lootboxx.live/games">
         {/* Top nav */}
         <div
