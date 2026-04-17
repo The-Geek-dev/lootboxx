@@ -47,9 +47,9 @@ const TutorialVideoButton = () => {
             )}
           </div>
           <div className="px-6 pb-5 pt-3">
-            <h3 className="text-lg font-bold text-foreground">How LootBoxx works in 25 seconds</h3>
+            <h3 className="text-lg font-bold text-foreground">How LootBoxx works in 40 seconds</h3>
             <p className="text-sm text-muted-foreground">
-              Browse games · Spin to win · Top up · Cash out — that's it.
+              Browse games · Spin to win · Top up · Cash out — narrated walkthrough.
             </p>
           </div>
         </DialogContent>
