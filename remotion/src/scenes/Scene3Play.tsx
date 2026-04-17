@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate, spring, useVideoConfig } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Inter";
 import { COLORS } from "../theme";
-import { Caption } from "../components/Caption";
+import { CaptionTrack } from "../components/CaptionTrack";
 import { BrowserChrome } from "../components/BrowserChrome";
 import { Cursor } from "../components/Cursor";
 
@@ -187,7 +187,13 @@ export const Scene3Play: React.FC = () => {
       </BrowserChrome>
 
       <Cursor path={cursorPath} legDuration={15} clickFrame={15} />
-      <Caption text="Spin to win real cash" subtitle="Wins drop straight into your wallet" />
+      <CaptionTrack
+        cues={[
+          { start: 0.2, end: 2.8, text: "Tap spin and watch the reels roll." },
+          { start: 2.8, end: 5.4, text: "Match three symbols to win real cash." },
+          { start: 5.4, end: 7.8, text: "Winnings land straight in your wallet." },
+        ]}
+      />
     </AbsoluteFill>
   );
 };

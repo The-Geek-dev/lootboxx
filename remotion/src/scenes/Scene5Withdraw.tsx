@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate, spring, useVideoConfig } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Inter";
 import { COLORS } from "../theme";
-import { Caption } from "../components/Caption";
+import { CaptionTrack } from "../components/CaptionTrack";
 import { BrowserChrome } from "../components/BrowserChrome";
 import { Cursor } from "../components/Cursor";
 
@@ -205,7 +205,14 @@ export const Scene5Withdraw: React.FC = () => {
       )}
 
       {!outro && <Cursor path={cursorPath} legDuration={40} clickFrame={88} />}
-      {!outro && <Caption text="Cash out your winnings" subtitle="Direct to your bank account" />}
+      <CaptionTrack
+        cues={[
+          { start: 0.2, end: 2.8, text: "Ready to cash out? Open the Withdraw page." },
+          { start: 2.8, end: 5.4, text: "Enter the amount and your bank details." },
+          { start: 5.4, end: 7.8, text: "Withdrawals run weekends, 5 to 7 PM WAT." },
+          { start: 7.8, end: 10.8, text: "That's it — sign up, play, and start winning!" },
+        ]}
+      />
     </AbsoluteFill>
   );
 };

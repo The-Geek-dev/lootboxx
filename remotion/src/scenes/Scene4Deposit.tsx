@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate, spring, useVideoConfig } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Inter";
 import { COLORS } from "../theme";
-import { Caption } from "../components/Caption";
+import { CaptionTrack } from "../components/CaptionTrack";
 import { BrowserChrome } from "../components/BrowserChrome";
 import { Cursor } from "../components/Cursor";
 
@@ -189,7 +189,13 @@ export const Scene4Deposit: React.FC = () => {
       </BrowserChrome>
 
       <Cursor path={cursorPath} legDuration={20} clickFrame={120} />
-      <Caption text="Top up easily" subtitle="Secure payments via Flutterwave" />
+      <CaptionTrack
+        cues={[
+          { start: 0.2, end: 2.6, text: "Head to Deposit to top up your wallet." },
+          { start: 2.6, end: 5.0, text: "Pick a tier — start with seven thousand to activate." },
+          { start: 5.0, end: 7.3, text: "Pay securely through Flutterwave." },
+        ]}
+      />
     </AbsoluteFill>
   );
 };

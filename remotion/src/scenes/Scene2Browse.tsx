@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame, interpolate, spring, useVideoConfig } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Inter";
 import { COLORS } from "../theme";
-import { Caption } from "../components/Caption";
+import { CaptionTrack } from "../components/CaptionTrack";
 import { BrowserChrome } from "../components/BrowserChrome";
 import { Cursor } from "../components/Cursor";
 
@@ -132,7 +132,13 @@ export const Scene2Browse: React.FC = () => {
       </BrowserChrome>
 
       <Cursor path={cursorPath} legDuration={25} clickFrame={75} />
-      <Caption text="Browse 16+ games" subtitle="Slots, dice, crash, mines & more" />
+      <CaptionTrack
+        cues={[
+          { start: 0.2, end: 3.0, text: "Open the Games tab to browse the library." },
+          { start: 3.0, end: 6.0, text: "Pick from slots, dice, crash, mines and more." },
+          { start: 6.0, end: 8.8, text: "Each game costs just 20 points to play." },
+        ]}
+      />
     </AbsoluteFill>
   );
 };

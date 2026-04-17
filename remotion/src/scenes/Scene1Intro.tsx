@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Inter";
 import { COLORS } from "../theme";
-import { Caption } from "../components/Caption";
+import { CaptionTrack } from "../components/CaptionTrack";
 
 const { fontFamily } = loadFont("normal", { weights: ["400", "600", "700", "800"], subsets: ["latin"] });
 
@@ -88,7 +88,12 @@ export const Scene1Intro: React.FC = () => {
         Quick tutorial · 25 seconds
       </div>
 
-      {frame > 50 && <Caption text="Welcome — let's show you around." />}
+      <CaptionTrack
+        cues={[
+          { start: 0.2, end: 2.6, text: "Welcome to LootBoxx." },
+          { start: 2.6, end: 5.6, text: "Here's a quick tour of the platform." },
+        ]}
+      />
     </AbsoluteFill>
   );
 };
