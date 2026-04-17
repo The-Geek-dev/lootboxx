@@ -11,3 +11,6 @@ verify_jwt = true
 
 [functions.trading-bot-api]
 verify_jwt = false
+
+[functions.tts-narration]
+verify_jwt = false
