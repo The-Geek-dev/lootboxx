@@ -134,7 +134,10 @@ const DynamicGame = () => {
         const mc = MEMORY_CONFIG[game.id] || { symbols: ["💎","🔥","⭐","🌟","👑","💰","🎯","✨"], pairs: 8, timeLimit: 50, maxMistakes: 8 };
         return <MemoryMatchEngine {...baseProps} symbols={mc.symbols} pairs={mc.pairs} timeLimit={mc.timeLimit} maxMistakes={mc.maxMistakes} />;
       }
-      case "sports": {
+      case "rps": {
+        const rpsc = RPS_CONFIG[game.id] || { moves: ["✊", "✋", "✌️"] as [string, string, string] };
+        return <RockPaperScissorsEngine {...baseProps} moves={rpsc.moves} />;
+      }
         const teams = getSportsTeams(game.id);
         return <SportsEngine {...baseProps} teams={teams} />;
       }
