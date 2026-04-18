@@ -25,6 +25,8 @@ export const GAME_ENGINE_OVERRIDES: Record<string, string> = {
   "keno": "keno",
   // Memory Match (dedicated engine)
   "memory-match": "memory",
+  // Rock Paper Scissors
+  "rock-paper-scissors": "rps",
   // Reaction tap
   "ninja-strike": "reaction",
   "zombie-hunt": "reaction",
@@ -163,6 +165,11 @@ export const MEMORY_CONFIG: Record<string, { symbols: string[]; pairs: number; t
     symbols: ["💎", "🔥", "⭐", "🌟", "👑", "💰", "🎯", "✨"],
     pairs: 8, timeLimit: 50, maxMistakes: 8,
   },
+};
+
+// Rock Paper Scissors: optional move emoji overrides
+export const RPS_CONFIG: Record<string, { moves: [string, string, string] }> = {
+  "rock-paper-scissors": { moves: ["✊", "✋", "✌️"] },
 };
 
 export const REACTION_CONFIG: Record<string, { targets: string[]; duration: number; gridSize: number; gridCols: number }> = {

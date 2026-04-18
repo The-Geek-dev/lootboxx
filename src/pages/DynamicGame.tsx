@@ -7,7 +7,7 @@ import {
   getEngineType, SLOT_THEMES, SLOT_CONFIGS, MINES_CONFIG, COINFLIP_SIDES, TOWER_CONFIG,
   REACTION_CONFIG, SCRATCH_PRIZES, RACE_CONFIGS, MATCH3_SYMBOLS,
   NUMBER_PICK_CONFIG, CATCHER_CONFIG,
-  PLINKO_CONFIG, ROULETTE_CONFIG, KENO_CONFIG, MEMORY_CONFIG,
+  PLINKO_CONFIG, ROULETTE_CONFIG, KENO_CONFIG, MEMORY_CONFIG, RPS_CONFIG,
 } from "@/config/engineConfig";
 import SlotsEngine from "@/components/engines/SlotsEngine";
 import CrashEngine from "@/components/engines/CrashEngine";
@@ -33,6 +33,7 @@ import PlinkoEngine from "@/components/engines/PlinkoEngine";
 import RouletteEngine from "@/components/engines/RouletteEngine";
 import KenoEngine from "@/components/engines/KenoEngine";
 import MemoryMatchEngine from "@/components/engines/MemoryMatchEngine";
+import RockPaperScissorsEngine from "@/components/engines/RockPaperScissorsEngine";
 import { useEffect } from "react";
 
 const DynamicGame = () => {
@@ -132,6 +133,10 @@ const DynamicGame = () => {
       case "memory": {
         const mc = MEMORY_CONFIG[game.id] || { symbols: ["💎","🔥","⭐","🌟","👑","💰","🎯","✨"], pairs: 8, timeLimit: 50, maxMistakes: 8 };
         return <MemoryMatchEngine {...baseProps} symbols={mc.symbols} pairs={mc.pairs} timeLimit={mc.timeLimit} maxMistakes={mc.maxMistakes} />;
+      }
+      case "rps": {
+        const rpsc = RPS_CONFIG[game.id] || { moves: ["✊", "✋", "✌️"] as [string, string, string] };
+        return <RockPaperScissorsEngine {...baseProps} moves={rpsc.moves} />;
       }
       case "sports": {
         const teams = getSportsTeams(game.id);

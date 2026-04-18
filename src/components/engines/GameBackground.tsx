@@ -20,7 +20,7 @@ export type GameBgType =
   | "mines" | "wheel" | "tower" | "coinflip" | "scratch" 
   | "arcade" | "dice" | "lottery" | "instant" | "reaction"
   | "match3" | "numberpick" | "highlow" | "catcher" | "quickmath"
-  | "plinko" | "roulette" | "keno" | "memory";
+  | "plinko" | "roulette" | "keno" | "memory" | "rps";
 
 const bgMap: Record<string, string> = {
   crash: crashSpace,
@@ -49,6 +49,7 @@ const bgMap: Record<string, string> = {
   roulette: cardsTable,
   keno: scratchLottery,
   memory: arcadeRetro,
+  rps: arcadeRetro,
 };
 
 interface ParticleConfig {
