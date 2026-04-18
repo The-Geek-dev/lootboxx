@@ -48,7 +48,6 @@ export const GAME_ENGINE_OVERRIDES: Record<string, string> = {
   "jungle-king": "match3",
   "cherry-bomb": "match3",
   // Number Pick (lottery-style)
-  "keno": "numberpick",
   "lotto-6": "numberpick",
   "pick-3": "numberpick",
   "power-ball": "numberpick",
@@ -61,7 +60,6 @@ export const GAME_ENGINE_OVERRIDES: Record<string, string> = {
   "poker-rush": "highlow",
   "blackjack": "highlow",
   "baccarat": "highlow",
-  "roulette": "highlow",
   "red-black": "highlow",
   "royal-flush": "highlow",
   // Catcher (falling items)
@@ -74,7 +72,6 @@ export const GAME_ENGINE_OVERRIDES: Record<string, string> = {
   "math-blitz": "quickmath",
   "word-hunt": "quickword",
   "color-guess": "quickcolor",
-  "memory-match": "arcade",
 };
 
 export interface SlotConfig {
