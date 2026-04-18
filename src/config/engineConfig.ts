@@ -167,6 +167,11 @@ export const MEMORY_CONFIG: Record<string, { symbols: string[]; pairs: number; t
   },
 };
 
+// Rock Paper Scissors: optional move emoji overrides
+export const RPS_CONFIG: Record<string, { moves: [string, string, string] }> = {
+  "rock-paper-scissors": { moves: ["✊", "✋", "✌️"] },
+};
+
 export const REACTION_CONFIG: Record<string, { targets: string[]; duration: number; gridSize: number; gridCols: number }> = {
   "ninja-strike": { targets: ["🥷", "⚔️", "🌙", "⭐"], duration: 20, gridSize: 16, gridCols: 4 },
   "zombie-hunt": { targets: ["🧟", "💀", "🧠"], duration: 25, gridSize: 16, gridCols: 4 },
