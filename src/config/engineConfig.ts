@@ -16,9 +16,15 @@ export const GAME_ENGINE_OVERRIDES: Record<string, string> = {
   // Wheel
   "mega-wheel": "wheel",
   "wheel-fortune": "wheel",
-  // Tower
+  // Tower / Plinko
   "tower-climb": "tower",
-  "plinko": "tower",
+  "plinko": "plinko",
+  // Roulette (dedicated engine)
+  "roulette": "roulette",
+  // Keno (dedicated engine)
+  "keno": "keno",
+  // Memory Match (dedicated engine)
+  "memory-match": "memory",
   // Reaction tap
   "ninja-strike": "reaction",
   "zombie-hunt": "reaction",
@@ -42,7 +48,6 @@ export const GAME_ENGINE_OVERRIDES: Record<string, string> = {
   "jungle-king": "match3",
   "cherry-bomb": "match3",
   // Number Pick (lottery-style)
-  "keno": "numberpick",
   "lotto-6": "numberpick",
   "pick-3": "numberpick",
   "power-ball": "numberpick",
@@ -55,7 +60,6 @@ export const GAME_ENGINE_OVERRIDES: Record<string, string> = {
   "poker-rush": "highlow",
   "blackjack": "highlow",
   "baccarat": "highlow",
-  "roulette": "highlow",
   "red-black": "highlow",
   "royal-flush": "highlow",
   // Catcher (falling items)
@@ -68,7 +72,6 @@ export const GAME_ENGINE_OVERRIDES: Record<string, string> = {
   "math-blitz": "quickmath",
   "word-hunt": "quickword",
   "color-guess": "quickcolor",
-  "memory-match": "arcade",
 };
 
 export interface SlotConfig {
@@ -137,7 +140,29 @@ export const COINFLIP_SIDES: Record<string, [string, string]> = {
 
 export const TOWER_CONFIG: Record<string, { floors: number; doors: number }> = {
   "tower-climb": { floors: 8, doors: 3 },
-  "plinko": { floors: 6, doors: 4 },
+};
+
+// Plinko: ball drops through `rows` of pegs into rows+1 multiplier slots
+export const PLINKO_CONFIG: Record<string, { rows: number; ballEmoji: string; pegEmoji: string; multipliers?: number[] }> = {
+  "plinko": { rows: 9, ballEmoji: "🔵", pegEmoji: "•", multipliers: [29, 4, 1.5, 0.5, 0.3, 0.3, 0.5, 1.5, 4, 29] },
+};
+
+// Roulette variants
+export const ROULETTE_CONFIG: Record<string, { variant: "european" | "vegas" | "midnight" }> = {
+  "roulette": { variant: "vegas" },
+};
+
+// Keno: maxNumber pool, pickCount user picks, drawCount drawn
+export const KENO_CONFIG: Record<string, { maxNumber: number; pickCount: number; drawCount: number; payouts?: number[] }> = {
+  "keno": { maxNumber: 60, pickCount: 6, drawCount: 15, payouts: [0, 0, 1, 3, 12, 50, 250] },
+};
+
+// Memory Match: per-game symbols + difficulty
+export const MEMORY_CONFIG: Record<string, { symbols: string[]; pairs: number; timeLimit: number; maxMistakes: number }> = {
+  "memory-match": {
+    symbols: ["💎", "🔥", "⭐", "🌟", "👑", "💰", "🎯", "✨"],
+    pairs: 8, timeLimit: 50, maxMistakes: 8,
+  },
 };
 
 export const REACTION_CONFIG: Record<string, { targets: string[]; duration: number; gridSize: number; gridCols: number }> = {

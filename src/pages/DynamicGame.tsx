@@ -6,7 +6,8 @@ import { getGameTheme, getSportsTeams, getDiceConfig, getCrashVisuals } from "@/
 import {
   getEngineType, SLOT_THEMES, SLOT_CONFIGS, MINES_CONFIG, COINFLIP_SIDES, TOWER_CONFIG,
   REACTION_CONFIG, SCRATCH_PRIZES, RACE_CONFIGS, MATCH3_SYMBOLS,
-  NUMBER_PICK_CONFIG, CATCHER_CONFIG
+  NUMBER_PICK_CONFIG, CATCHER_CONFIG,
+  PLINKO_CONFIG, ROULETTE_CONFIG, KENO_CONFIG, MEMORY_CONFIG,
 } from "@/config/engineConfig";
 import SlotsEngine from "@/components/engines/SlotsEngine";
 import CrashEngine from "@/components/engines/CrashEngine";
@@ -28,6 +29,10 @@ import NumberPickEngine from "@/components/engines/NumberPickEngine";
 import HighLowEngine from "@/components/engines/HighLowEngine";
 import CatcherEngine from "@/components/engines/CatcherEngine";
 import QuickMathEngine from "@/components/engines/QuickMathEngine";
+import PlinkoEngine from "@/components/engines/PlinkoEngine";
+import RouletteEngine from "@/components/engines/RouletteEngine";
+import KenoEngine from "@/components/engines/KenoEngine";
+import MemoryMatchEngine from "@/components/engines/MemoryMatchEngine";
 import { useEffect } from "react";
 
 const DynamicGame = () => {
@@ -112,6 +117,22 @@ const DynamicGame = () => {
         return <ArcadeEngine {...baseProps} />;
       case "lottery":
         return <LotteryEngine {...baseProps} />;
+      case "plinko": {
+        const pc = PLINKO_CONFIG[game.id] || { rows: 8, ballEmoji: "🔵", pegEmoji: "•" };
+        return <PlinkoEngine {...baseProps} rows={pc.rows} ballEmoji={pc.ballEmoji} pegEmoji={pc.pegEmoji} multipliers={pc.multipliers} />;
+      }
+      case "roulette": {
+        const rc = ROULETTE_CONFIG[game.id] || { variant: "european" as const };
+        return <RouletteEngine {...baseProps} variant={rc.variant} />;
+      }
+      case "keno": {
+        const kc = KENO_CONFIG[game.id] || { maxNumber: 60, pickCount: 6, drawCount: 15 };
+        return <KenoEngine {...baseProps} maxNumber={kc.maxNumber} pickCount={kc.pickCount} drawCount={kc.drawCount} payouts={kc.payouts} />;
+      }
+      case "memory": {
+        const mc = MEMORY_CONFIG[game.id] || { symbols: ["💎","🔥","⭐","🌟","👑","💰","🎯","✨"], pairs: 8, timeLimit: 50, maxMistakes: 8 };
+        return <MemoryMatchEngine {...baseProps} symbols={mc.symbols} pairs={mc.pairs} timeLimit={mc.timeLimit} maxMistakes={mc.maxMistakes} />;
+      }
       case "sports": {
         const teams = getSportsTeams(game.id);
         return <SportsEngine {...baseProps} teams={teams} />;
