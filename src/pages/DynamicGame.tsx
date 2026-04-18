@@ -138,6 +138,7 @@ const DynamicGame = () => {
         const rpsc = RPS_CONFIG[game.id] || { moves: ["✊", "✋", "✌️"] as [string, string, string] };
         return <RockPaperScissorsEngine {...baseProps} moves={rpsc.moves} />;
       }
+      case "sports": {
         const teams = getSportsTeams(game.id);
         return <SportsEngine {...baseProps} teams={teams} />;
       }
