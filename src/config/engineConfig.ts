@@ -16,9 +16,15 @@ export const GAME_ENGINE_OVERRIDES: Record<string, string> = {
   // Wheel
   "mega-wheel": "wheel",
   "wheel-fortune": "wheel",
-  // Tower
+  // Tower / Plinko
   "tower-climb": "tower",
-  "plinko": "tower",
+  "plinko": "plinko",
+  // Roulette (dedicated engine)
+  "roulette": "roulette",
+  // Keno (dedicated engine)
+  "keno": "keno",
+  // Memory Match (dedicated engine)
+  "memory-match": "memory",
   // Reaction tap
   "ninja-strike": "reaction",
   "zombie-hunt": "reaction",
