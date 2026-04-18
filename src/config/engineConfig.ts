@@ -25,6 +25,8 @@ export const GAME_ENGINE_OVERRIDES: Record<string, string> = {
   "keno": "keno",
   // Memory Match (dedicated engine)
   "memory-match": "memory",
+  // Rock Paper Scissors
+  "rock-paper-scissors": "rps",
   // Reaction tap
   "ninja-strike": "reaction",
   "zombie-hunt": "reaction",
