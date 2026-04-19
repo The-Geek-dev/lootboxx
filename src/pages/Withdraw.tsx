@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLaunchStatus } from "@/hooks/useLaunchStatus";
 import { supabase } from "@/integrations/supabase/client";
 import { useWallet } from "@/hooks/useWallet";
@@ -36,6 +36,7 @@ const ComingSoonView = () => (
 const LiveWithdrawView = () => {
   const { balance } = useWallet();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [amount, setAmount] = useState("");
   const [bankName, setBankName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
@@ -78,18 +79,56 @@ const LiveWithdrawView = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      const { error } = await supabase.from("withdrawals").insert({
-        user_id: session.user.id,
-        amount: amt,
-        bank_name: bankName,
-        account_number: accountNumber,
-        account_name: accountName,
-      });
+      const { data: inserted, error } = await supabase
+        .from("withdrawals")
+        .insert({
+          user_id: session.user.id,
+          amount: amt,
+          bank_name: bankName,
+          account_number: accountNumber,
+          account_name: accountName,
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
-      toast({ title: "Withdrawal submitted! 🎉", description: `₦${amt.toLocaleString()} (5% fee applies). Admin will review.` });
-      setAmount("");
+      const feeAmount = Math.round(amt * fee * 100) / 100;
+      const netAmount = Math.round((amt - feeAmount) * 100) / 100;
+      const reference = `LBX-WD-${(inserted?.id ?? crypto.randomUUID()).slice(0, 8).toUpperCase()}`;
+      const processedAt = new Date().toISOString();
+      const recipientEmail = session.user.email ?? "";
+
+      const details = {
+        recipientName: accountName,
+        recipientEmail,
+        amount: amt,
+        feeAmount,
+        netAmount,
+        bankName,
+        accountNumber,
+        accountName,
+        reference,
+        processedAt,
+      };
+
+      // Send receipt email (non-blocking failure)
+      try {
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "withdrawal-receipt",
+            recipientEmail,
+            idempotencyKey: `withdrawal-receipt-${inserted?.id ?? reference}`,
+            templateData: details,
+          },
+        });
+      } catch (emailErr) {
+        console.warn("Receipt email failed to enqueue", emailErr);
+      }
+
+      sessionStorage.setItem("lootboxx_last_withdrawal", JSON.stringify(details));
+      toast({ title: "Withdrawal submitted! 🎉", description: `Receipt sent to ${recipientEmail}` });
+      navigate("/withdraw/success", { state: { details } });
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {

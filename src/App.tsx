@@ -36,6 +36,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Withdraw from "./pages/Withdraw";
 import Leaderboard from "./pages/Leaderboard";
 import DynamicGame from "./pages/DynamicGame";
+import WithdrawalSuccess from "./pages/WithdrawalSuccess";
+import Unsubscribe from "./pages/Unsubscribe";
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
@@ -83,6 +85,8 @@ const AppRoutes = () => {
         <Route path="/transactions" element={<TransactionHistory />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/withdraw" element={<Withdraw />} />
+        <Route path="/withdraw/success" element={<WithdrawalSuccess />} />
+        <Route path="/unsubscribe" element={<Unsubscribe />} />
         <Route path="/points" element={<Points />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
       </Routes>
