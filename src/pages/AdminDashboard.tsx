@@ -36,6 +36,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import EmailLogPanel from "@/components/admin/EmailLogPanel";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -341,7 +342,7 @@ const AdminDashboard = () => {
           </div>
 
           <Tabs defaultValue="users" className="space-y-6">
-            <TabsList className="grid grid-cols-4 sm:grid-cols-8 w-full max-w-4xl">
+            <TabsList className="grid grid-cols-3 sm:grid-cols-9 w-full max-w-5xl">
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="deposits">Deposits</TabsTrigger>
               <TabsTrigger value="games">Games</TabsTrigger>
@@ -350,6 +351,7 @@ const AdminDashboard = () => {
               <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
               <TabsTrigger value="points">Points</TabsTrigger>
               <TabsTrigger value="game-ctrl">Game Ctrl</TabsTrigger>
+              <TabsTrigger value="emails">Emails</TabsTrigger>
             </TabsList>
 
             {/* USERS TAB */}
@@ -1029,6 +1031,16 @@ const AdminDashboard = () => {
                   </Table>
                 </Card>
               )}
+            </TabsContent>
+
+            {/* EMAILS TAB */}
+            <TabsContent value="emails">
+              <EmailLogPanel
+                fetchLogs={async () => {
+                  const res = await adminCall("get_email_log");
+                  return res?.logs || [];
+                }}
+              />
             </TabsContent>
           </Tabs>
         </motion.div>

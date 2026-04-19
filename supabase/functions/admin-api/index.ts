@@ -346,10 +346,74 @@ Deno.serve(async (req) => {
           }
         }
 
+        // If approved, send the receipt email
+        if (newStatus === "approved") {
+          try {
+            const { data: authUser } = await serviceClient.auth.admin.getUserById(withdrawal.user_id);
+            const recipientEmail = authUser?.user?.email;
+            if (recipientEmail) {
+              const amt = Number(withdrawal.amount);
+              const feeAmount = Math.round(amt * 0.05 * 100) / 100;
+              const netAmount = Math.round((amt - feeAmount) * 100) / 100;
+              const reference = `LBX-WD-${String(withdrawal.id).slice(0, 8).toUpperCase()}`;
+              await serviceClient.functions.invoke("send-transactional-email", {
+                body: {
+                  templateName: "withdrawal-receipt",
+                  recipientEmail,
+                  idempotencyKey: `withdrawal-approved-${withdrawal.id}`,
+                  templateData: {
+                    recipientName: withdrawal.account_name,
+                    recipientEmail,
+                    amount: amt,
+                    feeAmount,
+                    netAmount,
+                    bankName: withdrawal.bank_name,
+                    accountNumber: withdrawal.account_number,
+                    accountName: withdrawal.account_name,
+                    reference,
+                    processedAt: new Date().toISOString(),
+                  },
+                },
+              });
+            }
+          } catch (emailErr) {
+            console.warn("Failed to send approval receipt email", emailErr);
+          }
+        }
+
         return new Response(
           JSON.stringify({ success: true, message: `Withdrawal ${newStatus}` }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
+      }
+
+      case "get_email_log": {
+        const { data: logs, error: logErr } = await serviceClient
+          .from("email_send_log")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(1000);
+
+        if (logErr) {
+          return new Response(JSON.stringify({ error: logErr.message }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Deduplicate by message_id, keeping the latest row (already ordered desc)
+        const seen = new Set<string>();
+        const deduped: any[] = [];
+        for (const row of logs || []) {
+          const key = row.message_id || row.id;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          deduped.push(row);
+        }
+
+        return new Response(JSON.stringify({ logs: deduped }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       case "set_wallet_balance": {
