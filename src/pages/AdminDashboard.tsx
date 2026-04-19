@@ -37,7 +37,6 @@ import {
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import EmailLogPanel from "@/components/admin/EmailLogPanel";
-import { Mail } from "lucide-react";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
