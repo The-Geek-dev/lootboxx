@@ -587,6 +587,70 @@ Deno.serve(async (req) => {
         );
       }
 
+      case "send_manual_receipt": {
+        const {
+          recipient_email,
+          recipient_name,
+          amount,
+          bank_name,
+          account_number,
+          account_name,
+          processed_at,
+        } = params;
+
+        const amt = Number(amount);
+        if (!recipient_email || !amt || amt <= 0 || !bank_name || !account_number || !account_name) {
+          return new Response(
+            JSON.stringify({ error: "Missing required fields (recipient_email, amount, bank_name, account_number, account_name)" }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const feeAmount = Math.round(amt * 0.05 * 100) / 100;
+        const netAmount = Math.round((amt - feeAmount) * 100) / 100;
+        const refSeed = crypto.randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase();
+        const reference = `LBX-WD-${refSeed}`;
+        const processedIso = processed_at ? new Date(processed_at).toISOString() : new Date().toISOString();
+
+        const { error: invokeErr } = await serviceClient.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "withdrawal-receipt",
+            recipientEmail: recipient_email,
+            idempotencyKey: `withdrawal-manual-${reference}`,
+            templateData: {
+              recipientName: recipient_name || account_name,
+              recipientEmail: recipient_email,
+              amount: amt,
+              feeAmount,
+              netAmount,
+              bankName: bank_name,
+              accountNumber: account_number,
+              accountName: account_name,
+              reference,
+              processedAt: processedIso,
+            },
+          },
+        });
+
+        if (invokeErr) {
+          return new Response(
+            JSON.stringify({ error: invokeErr.message }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            message: `Receipt sent to ${recipient_email}`,
+            reference,
+            netAmount,
+            feeAmount,
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400,
