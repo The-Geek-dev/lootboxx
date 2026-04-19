@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import EmailLogPanel from "@/components/admin/EmailLogPanel";
+import SendManualReceiptPanel from "@/components/admin/SendManualReceiptPanel";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -1034,7 +1035,8 @@ const AdminDashboard = () => {
             </TabsContent>
 
             {/* EMAILS TAB */}
-            <TabsContent value="emails">
+            <TabsContent value="emails" className="space-y-6">
+              <SendManualReceiptPanel adminCall={adminCall} />
               <EmailLogPanel
                 fetchLogs={async () => {
                   const res = await adminCall("get_email_log");
