@@ -1033,6 +1033,16 @@ const AdminDashboard = () => {
                 </Card>
               )}
             </TabsContent>
+
+            {/* EMAILS TAB */}
+            <TabsContent value="emails">
+              <EmailLogPanel
+                fetchLogs={async () => {
+                  const res = await adminCall("get_email_log");
+                  return res?.logs || [];
+                }}
+              />
+            </TabsContent>
           </Tabs>
         </motion.div>
       </main>
