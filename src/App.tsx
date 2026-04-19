@@ -85,6 +85,8 @@ const AppRoutes = () => {
         <Route path="/transactions" element={<TransactionHistory />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/withdraw" element={<Withdraw />} />
+        <Route path="/withdraw/success" element={<WithdrawalSuccess />} />
+        <Route path="/unsubscribe" element={<Unsubscribe />} />
         <Route path="/points" element={<Points />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
       </Routes>
