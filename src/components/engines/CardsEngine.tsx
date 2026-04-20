@@ -101,7 +101,7 @@ const CardsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
     } else {
       play("lose");
       setState("lost");
-      const winnings = streak > 0 ? streak * 350 : 0;
+      const winnings = streak > 0 ? streak * CARDS_PER_STREAK : 0;
       let adjusted = winnings > 0 ? adjustWinAmount(winnings) : 0;
       if (adjusted > 0 && canFullyWin() && streak >= 5) recordFullWin();
       if (adjusted > 0) await updateBalance(adjusted);

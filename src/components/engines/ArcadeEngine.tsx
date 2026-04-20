@@ -99,8 +99,8 @@ const ArcadeEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'f
     setState("done");
     if (timerRef.current) clearInterval(timerRef.current);
     const ratio = matchCount / config.size;
-    let winnings = ratio >= 1 ? 5000 : ratio >= 0.5 ? 1500 : ratio > 0 ? 500 : 0;
-    if (config.size === 16 && ratio >= 1) winnings = 8000;
+    let winnings = ratio >= 1 ? ARCADE_PAYOUTS.perfect : ratio >= 0.5 ? ARCADE_PAYOUTS.half : ratio > 0 ? ARCADE_PAYOUTS.partial : 0;
+    if (config.size === 16 && ratio >= 1) winnings = ARCADE_PAYOUTS.perfect16;
     if (winnings > 0) {
       winnings = adjustWinAmount(winnings);
       if (canFullyWin() && ratio >= 1) recordFullWin();

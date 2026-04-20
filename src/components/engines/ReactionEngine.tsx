@@ -109,7 +109,7 @@ const ReactionEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
     if (spawnRef.current) clearInterval(spawnRef.current);
     setActiveTargets([]);
 
-    let winnings = score >= 200 ? 8000 : score >= 150 ? 5000 : score >= 100 ? 2500 : score >= 50 ? 1500 : score >= 20 ? 500 : 0;
+    let winnings = getTierPayout(score, REACTION_TIERS);
     if (winnings > 0) {
       winnings = adjustWinAmount(winnings);
       if (canFullyWin() && score >= 150) recordFullWin();

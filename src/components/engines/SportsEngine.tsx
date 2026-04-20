@@ -70,7 +70,7 @@ const SportsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'f
 
     let winnings = 0;
     if (won) {
-      winnings = Math.abs(s1 - s2) >= 3 ? 8000 : Math.abs(s1 - s2) >= 2 ? 4000 : 2000;
+      winnings = Math.abs(s1 - s2) >= 3 ? SPORTS_PAYOUTS.bigMargin : Math.abs(s1 - s2) >= 2 ? SPORTS_PAYOUTS.midMargin : SPORTS_PAYOUTS.smallMargin;
       winnings = adjustWinAmount(winnings);
       if (canFullyWin() && winnings >= 1500) recordFullWin();
       await updateBalance(winnings);
