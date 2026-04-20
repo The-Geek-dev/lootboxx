@@ -8,6 +8,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { DICE_PAYOUTS } from "@/config/payouts";
 import GameBackground from "./GameBackground";
 import RoundHistory from "./RoundHistory";
 import BetControls from "./BetControls";
@@ -64,8 +65,8 @@ const DiceEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fro
         let winnings = 0;
         if (won) {
           const diff = Math.abs(total - target);
-          winnings = diff >= 4 ? 2000 : diff >= 2 ? 1000 : 500;
-          if (diceCount === 3) winnings = Math.floor(winnings * 1.3);
+          winnings = diff >= 4 ? DICE_PAYOUTS.bigDiff : diff >= 2 ? DICE_PAYOUTS.midDiff : DICE_PAYOUTS.smallDiff;
+          if (diceCount === 3) winnings = Math.floor(winnings * DICE_PAYOUTS.threeDiceBonus);
           winnings = adjustWinAmount(winnings);
           if (canFullyWin() && winnings >= 1000) recordFullWin();
           if (winnings > 0) updateBalance(winnings);

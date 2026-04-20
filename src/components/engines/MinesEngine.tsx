@@ -8,6 +8,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { PAYOUT_COEF } from "@/config/payouts";
 import GameBackground from "./GameBackground";
 import BetControls from "./BetControls";
 
@@ -80,7 +81,7 @@ const MinesEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, gr
   const cashOutInternal = async (picks: number, mult: number) => {
     play("cashout");
     setState("cashed");
-    let winnings = Math.floor(pointCost * mult * 2);
+    let winnings = Math.floor(pointCost * mult * PAYOUT_COEF.mines);
     winnings = adjustWinAmount(winnings);
     if (winnings > 0 && canFullyWin() && mult >= 3) recordFullWin();
     if (winnings > 0) await updateBalance(winnings);
@@ -162,7 +163,7 @@ const MinesEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, gr
 
       {state === "playing" ? (
         <Button className="w-full py-5 text-lg font-bold bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/20" onClick={cashOut} disabled={revealed.size === 0}>
-          💰 Cash Out (₦{Math.floor(pointCost * multiplier * 2).toLocaleString()})
+          💰 Cash Out (₦{Math.floor(pointCost * multiplier * PAYOUT_COEF.mines).toLocaleString()})
         </Button>
       ) : (
         <BetControls onPlay={startGame} xpLives={xpLives} pointCost={pointCost} playLabel={`BET ${pointCost} pts`} />

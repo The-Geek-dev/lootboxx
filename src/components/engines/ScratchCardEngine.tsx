@@ -9,6 +9,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { PAYOUT_COEF } from "@/config/payouts";
 
 interface Props {
   gameId: string;
@@ -136,7 +137,7 @@ const ScratchCardEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THE
     let winnings = 0;
     if (matchCount >= 3) {
       const multiplier = matchCount === 3 ? 3 : matchCount === 4 ? 5 : 10;
-      winnings = Math.floor(pointCost * multiplier * 2);
+      winnings = Math.floor(pointCost * multiplier * PAYOUT_COEF.scratchCard);
       winnings = adjustWinAmount(winnings);
       if (winnings > 0 && canFullyWin() && multiplier >= 5) recordFullWin();
       if (winnings > 0) await updateBalance(winnings);

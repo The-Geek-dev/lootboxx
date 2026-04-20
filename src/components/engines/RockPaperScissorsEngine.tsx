@@ -8,6 +8,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { PAYOUT_COEF } from "@/config/payouts";
 import GameBackground from "./GameBackground";
 import BetControls from "./BetControls";
 
@@ -149,7 +150,7 @@ const RockPaperScissorsEngine = ({
       mult = best >= 2 ? 3 : 1.5;
       if (best > 2) mult += (best - 2) * 0.5;
     }
-    let winnings = Math.floor(pointCost * mult);
+    let winnings = Math.floor(pointCost * mult * PAYOUT_COEF.rps);
     winnings = adjustWinAmount(winnings);
     if (winnings > 0 && canFullyWin() && mult >= 3) recordFullWin();
     if (winnings > 0) await updateBalance(winnings);

@@ -8,6 +8,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { PAYOUT_COEF } from "@/config/payouts";
 import GameBackground from "./GameBackground";
 import BetControls from "./BetControls";
 
@@ -86,7 +87,7 @@ const RaceEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, rac
     const won = winnerIdx === pickedIdx;
     let winnings = 0;
     if (won) {
-      winnings = Math.floor(pointCost * racers.length * 1.5);
+      winnings = Math.floor(pointCost * racers.length * PAYOUT_COEF.race);
       winnings = adjustWinAmount(winnings);
       if (winnings > 0 && canFullyWin()) recordFullWin();
       if (winnings > 0) await updateBalance(winnings);
