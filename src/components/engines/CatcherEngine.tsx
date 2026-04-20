@@ -9,6 +9,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { getTierPayout, SCORE_4_TIERS } from "@/config/payouts";
 
 interface Props {
   gameId: string;

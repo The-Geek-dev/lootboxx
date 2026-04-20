@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
 import { ArrowUp, ArrowDown } from "lucide-react";
+import { getTierPayout, HIGHLOW_STREAK_TIERS } from "@/config/payouts";
 
 interface Props {
   gameId: string;

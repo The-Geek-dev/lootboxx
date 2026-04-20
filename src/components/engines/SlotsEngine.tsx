@@ -12,6 +12,7 @@ import { GameTheme } from "@/config/gameThemes";
 import { SLOT_CONFIGS, SlotConfig } from "@/config/engineConfig";
 import { useJackpot } from "@/hooks/useJackpot";
 import JackpotCounter from "@/components/JackpotCounter";
+import { SLOTS_ENGINE } from "@/config/payouts";
 
 interface Props {
   gameId: string;

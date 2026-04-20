@@ -9,6 +9,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { CARDS_PER_STREAK } from "@/config/payouts";
 
 interface Props {
   gameId: string;
@@ -112,7 +113,7 @@ const CardsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
 
   const cashOut = async () => {
     play("cashout");
-    const winnings = streak * 350;
+    const winnings = streak * CARDS_PER_STREAK;
     let adjusted = adjustWinAmount(winnings);
     if (adjusted > 0 && canFullyWin() && streak >= 5) recordFullWin();
     if (adjusted > 0) await updateBalance(adjusted);
