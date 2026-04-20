@@ -93,11 +93,11 @@ const HighLowEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME }
   const endGame = async (finalStreak: number) => {
     setState("done");
     let winnings = 0;
-    if (finalStreak >= 10) winnings = 5000;
-    else if (finalStreak >= 7) winnings = 3000;
-    else if (finalStreak >= 5) winnings = 1500;
-    else if (finalStreak >= 3) winnings = 500;
-    else if (finalStreak >= 1) winnings = 100;
+    if (finalStreak >= 10) winnings = 12000;
+    else if (finalStreak >= 7) winnings = 7000;
+    else if (finalStreak >= 5) winnings = 4000;
+    else if (finalStreak >= 3) winnings = 1500;
+    else if (finalStreak >= 1) winnings = 500;
 
     if (winnings > 0) {
       winnings = adjustWinAmount(winnings);

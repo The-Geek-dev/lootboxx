@@ -87,7 +87,7 @@ const LotteryEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: '
     const matches = selectedNumbers.filter((n) => drawn.includes(n)).length;
     const payouts: Record<number, number> = {};
     for (let i = 0; i <= config.maxPicks; i++) {
-      payouts[i] = i === 0 ? 0 : i === 1 ? 50 : i === 2 ? 500 : i === 3 ? 3000 : i === 4 ? 10000 : i === 5 ? 25000 : 50000;
+      payouts[i] = i === 0 ? 0 : i === 1 ? 300 : i === 2 ? 1500 : i === 3 ? 7000 : i === 4 ? 20000 : i === 5 ? 50000 : 100000;
     }
     let winnings = payouts[matches] || 0;
     if (winnings > 0) {

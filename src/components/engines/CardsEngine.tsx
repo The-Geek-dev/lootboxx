@@ -101,7 +101,7 @@ const CardsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
     } else {
       play("lose");
       setState("lost");
-      const winnings = streak > 0 ? streak * 100 : 0;
+      const winnings = streak > 0 ? streak * 350 : 0;
       let adjusted = winnings > 0 ? adjustWinAmount(winnings) : 0;
       if (adjusted > 0 && canFullyWin() && streak >= 5) recordFullWin();
       if (adjusted > 0) await updateBalance(adjusted);
@@ -112,7 +112,7 @@ const CardsEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
 
   const cashOut = async () => {
     play("cashout");
-    const winnings = streak * 100;
+    const winnings = streak * 350;
     let adjusted = adjustWinAmount(winnings);
     if (adjusted > 0 && canFullyWin() && streak >= 5) recordFullWin();
     if (adjusted > 0) await updateBalance(adjusted);

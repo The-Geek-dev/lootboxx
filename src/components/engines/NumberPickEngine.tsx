@@ -89,10 +89,10 @@ const NumberPickEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEM
     setState("done");
     const matches = selected.filter(n => drawNums.includes(n)).length;
     let winnings = 0;
-    if (matches >= pickCount) winnings = 5000;
-    else if (matches >= pickCount - 1) winnings = 2000;
-    else if (matches >= pickCount - 2) winnings = 500;
-    else if (matches >= 2) winnings = 100;
+    if (matches >= pickCount) winnings = 12000;
+    else if (matches >= pickCount - 1) winnings = 5000;
+    else if (matches >= pickCount - 2) winnings = 1500;
+    else if (matches >= 2) winnings = 500;
 
     if (winnings > 0) {
       winnings = adjustWinAmount(winnings);

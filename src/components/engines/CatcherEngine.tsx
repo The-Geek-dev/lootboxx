@@ -154,7 +154,7 @@ const CatcherEngine = ({
     [timerRef, spawnRef, gameRef].forEach(ref => { if (ref.current) clearInterval(ref.current); });
     setFallingItems([]);
     const finalScore = scoreRef.current;
-    let winnings = finalScore >= 300 ? 3000 : finalScore >= 200 ? 2000 : finalScore >= 100 ? 1000 : finalScore >= 50 ? 300 : 0;
+    let winnings = finalScore >= 300 ? 8000 : finalScore >= 200 ? 5000 : finalScore >= 100 ? 2500 : finalScore >= 50 ? 1000 : 0;
     if (winnings > 0) {
       winnings = adjustWinAmount(winnings);
       if (canFullyWin() && finalScore >= 200) recordFullWin();

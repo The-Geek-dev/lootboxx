@@ -84,7 +84,7 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
       if (wilds.length > 0) payout = Math.floor(payout * (1 + wilds.length * 0.5));
       if (effective[0] === symbols[0] || effective[0] === "7️⃣") isJackpot = true;
     } else if (pairs > 0) {
-      payout = pairs === 1 ? 50 : 150; // 2 pairs = bigger win
+      payout = pairs === 1 ? 300 : 800; // 2 pairs = bigger win
     }
 
     return { payout, isJackpot, wilds };
