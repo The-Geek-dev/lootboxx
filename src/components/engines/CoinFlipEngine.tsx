@@ -8,6 +8,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { COINFLIP_BASE } from "@/config/payouts";
 import GameBackground from "./GameBackground";
 import BetControls from "./BetControls";
 

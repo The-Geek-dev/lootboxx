@@ -8,6 +8,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { PAYOUT_COEF } from "@/config/payouts";
 import GameBackground from "./GameBackground";
 import RoundHistory from "./RoundHistory";
 import BetControls from "./BetControls";
@@ -77,7 +78,7 @@ const CrashEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fr
     play("cashout");
     setState("cashed");
     const currentMult = multiplier;
-    let winnings = Math.floor(pointCost * currentMult * 2);
+    let winnings = Math.floor(pointCost * currentMult * PAYOUT_COEF.crash);
     winnings = adjustWinAmount(winnings);
     if (winnings > 0 && canFullyWin() && currentMult >= 3) recordFullWin();
     if (winnings > 0) await updateBalance(winnings);

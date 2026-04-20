@@ -7,6 +7,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { WHEEL_PRIZE_MULTIPLIER } from "@/config/payouts";
 import GameBackground from "./GameBackground";
 import BetControls from "./BetControls";
 
@@ -65,7 +66,7 @@ const WheelEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, se
     setRotation(finalRotation);
 
     setTimeout(async () => {
-      let prize = segments[winIndex].value;
+      let prize = Math.floor(segments[winIndex].value * WHEEL_PRIZE_MULTIPLIER);
       setWinSegment(winIndex);
       if (prize > 0) {
         prize = adjustWinAmount(prize);
