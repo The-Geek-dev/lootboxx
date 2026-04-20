@@ -37,7 +37,7 @@ const CoinFlipEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
   const [result, setResult] = useState<string | null>(null);
   const [isFlipping, setIsFlipping] = useState(false);
 
-  const currentWin = () => Math.floor(pointCost * Math.pow(2, streak));
+  const currentWin = () => Math.floor(pointCost * Math.pow(COINFLIP_BASE, streak));
 
   const startGame = async () => {
     if (xpLives <= 0) { toast({ title: "No XP lives! ⚡", variant: "destructive" }); return; }
@@ -60,7 +60,7 @@ const CoinFlipEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
     if (guess === outcome) {
       const newStreak = streak + 1;
       setStreak(newStreak);
-      setResult(`${sides[outcome]} Correct! Streak: ${newStreak} (₦${Math.floor(pointCost * Math.pow(2, newStreak)).toLocaleString()})`);
+      setResult(`${sides[outcome]} Correct! Streak: ${newStreak} (₦${Math.floor(pointCost * Math.pow(COINFLIP_BASE, newStreak)).toLocaleString()})`);
       setState("won");
     } else {
       setState("lost");
