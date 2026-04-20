@@ -14,12 +14,12 @@ const SYMBOLS = ["🍒", "🍋", "🔔", "⭐", "💎", "7️⃣"];
 const BET_COST = 20;
 
 const PAYOUTS: Record<string, number> = {
-  "💎💎💎": 5000,
-  "7️⃣7️⃣7️⃣": 3000,
-  "⭐⭐⭐": 1500,
-  "🔔🔔🔔": 1000,
-  "🍒🍒🍒": 500,
-  "🍋🍋🍋": 300,
+  "💎💎💎": 15000,
+  "7️⃣7️⃣7️⃣": 10000,
+  "⭐⭐⭐": 6000,
+  "🔔🔔🔔": 4000,
+  "🍒🍒🍒": 2000,
+  "🍋🍋🍋": 1200,
 };
 
 const LuckySlots = () => {
@@ -67,7 +67,7 @@ const LuckySlots = () => {
         const combo = finalReels.join("");
         let payout = PAYOUTS[combo] || 0;
         const twoMatch = finalReels[0] === finalReels[1] || finalReels[1] === finalReels[2] || finalReels[0] === finalReels[2];
-        const smallWin = twoMatch ? 50 : 0;
+        const smallWin = twoMatch ? 300 : 0;
         let totalWin = payout || smallWin;
         if (totalWin > 0) {
           totalWin = adjustWinAmount(totalWin);
@@ -120,7 +120,7 @@ const LuckySlots = () => {
             ))}
             <div className="flex justify-between px-3 py-1 bg-background/50 rounded col-span-2">
               <span>Any 2 match</span>
-              <span className="text-primary font-bold">₦50</span>
+              <span className="text-primary font-bold">₦300</span>
             </div>
           </div>
         </Card>

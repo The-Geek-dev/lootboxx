@@ -157,7 +157,7 @@ const QuickMathEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME
     setState("done");
     if (timerRef.current) clearInterval(timerRef.current);
     const finalScore = scoreRef.current;
-    let winnings = finalScore >= 200 ? 3000 : finalScore >= 150 ? 2000 : finalScore >= 100 ? 1000 : finalScore >= 50 ? 300 : 0;
+    let winnings = finalScore >= 200 ? 8000 : finalScore >= 150 ? 5000 : finalScore >= 100 ? 2500 : finalScore >= 50 ? 1000 : 0;
     if (winnings > 0) {
       winnings = adjustWinAmount(winnings);
       if (canFullyWin() && finalScore >= 150) recordFullWin();
