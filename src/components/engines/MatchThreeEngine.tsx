@@ -9,6 +9,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { getTierPayout, SCORE_4_TIERS } from "@/config/payouts";
 
 interface Props {
   gameId: string;
@@ -175,7 +176,7 @@ const MatchThreeEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEM
   const endGame = async () => {
     setState("done");
     if (timerRef.current) clearInterval(timerRef.current);
-    let winnings = score >= 300 ? 8000 : score >= 200 ? 5000 : score >= 100 ? 2500 : score >= 50 ? 1000 : 0;
+    let winnings = getTierPayout(score, SCORE_4_TIERS);
     if (winnings > 0) {
       winnings = adjustWinAmount(winnings);
       if (canFullyWin() && score >= 200) recordFullWin();

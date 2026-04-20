@@ -29,9 +29,9 @@ const HowItWorks = () => {
     },
     {
       number: "04",
-      title: "Play & Win",
-      description: "Play exciting games and win real rewards! Every game gives you a chance to multiply your investment.",
-      details: ["Fair and transparent games", "Instant reward distribution", "Multiple games to choose from"]
+      title: "Play & Win Big",
+      description: "Play exciting games and win real cash! Payouts now range from ₦300 on small matches up to ₦100,000 on top lottery wins, with most arcade and slot games paying ₦500–₦15,000 per round.",
+      details: ["Wins from ₦300 to ₦100,000+", "Boosted payouts across all games", "Instant credit to your wallet"]
     },
     {
       number: "05",

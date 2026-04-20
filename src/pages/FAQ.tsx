@@ -79,6 +79,18 @@ const FAQ = () => {
       answer: "Absolutely! All games use provably fair algorithms. Results are generated using verified random number generators and can be independently verified for transparency."
     },
     {
+      id: "games-4",
+      category: "Games",
+      question: "How much can I win in a single game?",
+      answer: "Payouts have been boosted across the board! Single-game wins now range from ₦300 (small wins) up to ₦100,000 for the top lottery jackpot. Most arcade and skill games pay out ₦500–₦8,000, slot combos pay ₦1,200–₦15,000, and progressive games like Mines, Crash and Tower scale with your multiplier — the higher you push, the bigger the cash-out."
+    },
+    {
+      id: "games-5",
+      category: "Games",
+      question: "What's the smallest win I can get?",
+      answer: "The minimum payout on most games is ₦300 (e.g. a 2-symbol match on Lucky Slots). Skill-based games like Reaction and QuickMath start paying from ₦500 once you hit the lowest score tier."
+    },
+    {
       id: "referral-1",
       category: "Referrals",
       question: "How does the referral program work?",

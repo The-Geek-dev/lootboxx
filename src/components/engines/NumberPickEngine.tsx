@@ -9,6 +9,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { NUMBER_PICK } from "@/config/payouts";
 
 interface Props {
   gameId: string;
@@ -89,10 +90,10 @@ const NumberPickEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEM
     setState("done");
     const matches = selected.filter(n => drawNums.includes(n)).length;
     let winnings = 0;
-    if (matches >= pickCount) winnings = 12000;
-    else if (matches >= pickCount - 1) winnings = 5000;
-    else if (matches >= pickCount - 2) winnings = 1500;
-    else if (matches >= 2) winnings = 500;
+    if (matches >= pickCount) winnings = NUMBER_PICK.full;
+    else if (matches >= pickCount - 1) winnings = NUMBER_PICK.oneOff;
+    else if (matches >= pickCount - 2) winnings = NUMBER_PICK.twoOff;
+    else if (matches >= 2) winnings = NUMBER_PICK.twoMatch;
 
     if (winnings > 0) {
       winnings = adjustWinAmount(winnings);

@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
 import { ArrowUp, ArrowDown } from "lucide-react";
+import { getTierPayout, HIGHLOW_STREAK_TIERS } from "@/config/payouts";
 
 interface Props {
   gameId: string;
@@ -92,12 +93,7 @@ const HighLowEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME }
 
   const endGame = async (finalStreak: number) => {
     setState("done");
-    let winnings = 0;
-    if (finalStreak >= 10) winnings = 12000;
-    else if (finalStreak >= 7) winnings = 7000;
-    else if (finalStreak >= 5) winnings = 4000;
-    else if (finalStreak >= 3) winnings = 1500;
-    else if (finalStreak >= 1) winnings = 500;
+    let winnings = getTierPayout(finalStreak, HIGHLOW_STREAK_TIERS);
 
     if (winnings > 0) {
       winnings = adjustWinAmount(winnings);

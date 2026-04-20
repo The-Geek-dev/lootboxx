@@ -9,6 +9,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { LOTTERY_PAYOUTS } from "@/config/payouts";
 
 interface Props {
   gameId: string;
@@ -87,7 +88,7 @@ const LotteryEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: '
     const matches = selectedNumbers.filter((n) => drawn.includes(n)).length;
     const payouts: Record<number, number> = {};
     for (let i = 0; i <= config.maxPicks; i++) {
-      payouts[i] = i === 0 ? 0 : i === 1 ? 300 : i === 2 ? 1500 : i === 3 ? 7000 : i === 4 ? 20000 : i === 5 ? 50000 : 100000;
+      payouts[i] = LOTTERY_PAYOUTS[i] ?? LOTTERY_PAYOUTS[LOTTERY_PAYOUTS.length - 1];
     }
     let winnings = payouts[matches] || 0;
     if (winnings > 0) {
