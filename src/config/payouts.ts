@@ -126,3 +126,50 @@ export const ARCADE_PAYOUTS = {
   /** Bonus when fully solving the largest (16-tile) board */
   perfect16: 8000,
 };
+
+// ============================================================
+// MULTIPLIER-BASED GAMES (Mines, Crash, Plinko, Tower, Roulette,
+// Keno, RPS, MemoryMatch, ScratchCard, CoinFlip, Race, Dice, Wheel, Instant)
+//
+// These games already compute a per-round multiplier `mult` based on
+// difficulty (probability, mines hit, crash point, picks, etc.).
+// We only scale the FINAL cash-out — difficulty stays untouched.
+// ============================================================
+
+/**
+ * Final payout coefficient applied AFTER difficulty-based multiplier.
+ * Formula: winnings = floor(pointCost * mult * PAYOUT_COEF[game])
+ * Bumping these gives bigger wins without making any game easier.
+ */
+export const PAYOUT_COEF = {
+  mines: 4,         // was 2
+  crash: 4,         // was 2
+  plinko: 4,        // was 2
+  tower: 4,         // was 2
+  scratchCard: 4,   // was 2
+  roulette: 2.2,    // was 1
+  keno: 2.2,        // was 1
+  rps: 2.5,         // was 1
+  memoryMatch: 2.5, // was 1
+  race: 2.5,        // was 1.5x racers
+  coinFlip: 1,      // already exponential — see COINFLIP_BASE
+};
+
+/** CoinFlip uses pointCost * BASE^streak. Bigger base = bigger streak win. */
+export const COINFLIP_BASE = 3; // was 2 (doubles per round → triples per round)
+
+/** Wheel prize multiplier (applied to each segment.value) */
+export const WHEEL_PRIZE_MULTIPLIER = 2.5;
+
+/** Dice payout tiers (won + diff from target) */
+export const DICE_PAYOUTS = {
+  bigDiff: 5000,    // diff >= 4 (was 2000)
+  midDiff: 2500,    // diff >= 2 (was 1000)
+  smallDiff: 1200,  // close call (was 500)
+  /** 3-dice multi-die bonus */
+  threeDiceBonus: 1.3,
+};
+
+/** Instant scratch-style threshold for "big win" recordFullWin */
+export const INSTANT_FULL_WIN_THRESHOLD = 1000;
+
