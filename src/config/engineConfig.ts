@@ -60,10 +60,13 @@ export const GAME_ENGINE_OVERRIDES: Record<string, string> = {
   // High-Low card game
   "hi-lo": "highlow",
   "poker-rush": "highlow",
-  "blackjack": "highlow",
+  "blackjack": "blackjack",
   "baccarat": "highlow",
   "red-black": "highlow",
   "royal-flush": "highlow",
+  // New engines
+  "limbo": "limbo",
+  "sic-bo": "sicbo",
   // Catcher (falling items)
   "pac-gold": "catcher",
   "tetris-cash": "catcher",

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { loadPayoutOverrides } from "@/config/payouts";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -33,6 +34,7 @@ import TermsOfService from "./pages/TermsOfService";
 import Settings from "./pages/Settings";
 import TransactionHistory from "./pages/TransactionHistory";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminPayouts from "./pages/AdminPayouts";
 import Withdraw from "./pages/Withdraw";
 import Leaderboard from "./pages/Leaderboard";
 import DynamicGame from "./pages/DynamicGame";
@@ -84,6 +86,7 @@ const AppRoutes = () => {
         <Route path="/settings" element={<Settings />} />
         <Route path="/transactions" element={<TransactionHistory />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/payouts" element={<AdminPayouts />} />
         <Route path="/withdraw" element={<Withdraw />} />
         <Route path="/withdraw/success" element={<WithdrawalSuccess />} />
         <Route path="/unsubscribe" element={<Unsubscribe />} />
@@ -95,6 +98,7 @@ const AppRoutes = () => {
 };
 
 const App = () => {
+  useEffect(() => { loadPayoutOverrides(); }, []);
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
