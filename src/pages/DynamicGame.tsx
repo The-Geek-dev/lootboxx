@@ -34,6 +34,9 @@ import RouletteEngine from "@/components/engines/RouletteEngine";
 import KenoEngine from "@/components/engines/KenoEngine";
 import MemoryMatchEngine from "@/components/engines/MemoryMatchEngine";
 import RockPaperScissorsEngine from "@/components/engines/RockPaperScissorsEngine";
+import BlackjackEngine from "@/components/engines/BlackjackEngine";
+import LimboEngine from "@/components/engines/LimboEngine";
+import SicBoEngine from "@/components/engines/SicBoEngine";
 import { useEffect } from "react";
 
 const DynamicGame = () => {
@@ -142,6 +145,12 @@ const DynamicGame = () => {
         const teams = getSportsTeams(game.id);
         return <SportsEngine {...baseProps} teams={teams} />;
       }
+      case "blackjack":
+        return <BlackjackEngine {...baseProps} />;
+      case "limbo":
+        return <LimboEngine {...baseProps} />;
+      case "sicbo":
+        return <SicBoEngine {...baseProps} />;
       default:
         return <InstantEngine {...baseProps} />;
     }
