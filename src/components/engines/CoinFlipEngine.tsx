@@ -8,7 +8,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
-import { COINFLIP_BASE } from "@/config/payouts";
+import { COINFLIP } from "@/config/payouts";
 import GameBackground from "./GameBackground";
 import BetControls from "./BetControls";
 
@@ -37,7 +37,7 @@ const CoinFlipEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
   const [result, setResult] = useState<string | null>(null);
   const [isFlipping, setIsFlipping] = useState(false);
 
-  const currentWin = () => Math.floor(pointCost * Math.pow(COINFLIP_BASE, streak));
+  const currentWin = () => Math.floor(pointCost * Math.pow(COINFLIP.base, streak));
 
   const startGame = async () => {
     if (xpLives <= 0) { toast({ title: "No XP lives! ⚡", variant: "destructive" }); return; }
@@ -60,7 +60,7 @@ const CoinFlipEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
     if (guess === outcome) {
       const newStreak = streak + 1;
       setStreak(newStreak);
-      setResult(`${sides[outcome]} Correct! Streak: ${newStreak} (₦${Math.floor(pointCost * Math.pow(COINFLIP_BASE, newStreak)).toLocaleString()})`);
+      setResult(`${sides[outcome]} Correct! Streak: ${newStreak} (₦${Math.floor(pointCost * Math.pow(COINFLIP.base, newStreak)).toLocaleString()})`);
       setState("won");
     } else {
       setState("lost");
