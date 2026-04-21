@@ -9,7 +9,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
-import { CARDS_PER_STREAK } from "@/config/payouts";
+import { CARDS } from "@/config/payouts";
 
 interface Props {
   gameId: string;
