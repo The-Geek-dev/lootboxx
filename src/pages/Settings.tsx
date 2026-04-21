@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Settings as SettingsIcon, User, ArrowLeft, Volume2, VolumeX, Moon, Sun, Palette, Save, LogOut } from "lucide-react";
+import { Settings as SettingsIcon, User, ArrowLeft, Volume2, VolumeX, Moon, Sun, Palette, Save, LogOut, Bell, BellOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import AppSidebar from "@/components/AppSidebar";
 import TwoFactorSetup from "@/components/TwoFactorSetup";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { NOTIFICATION_SOUND_KEY, isNotificationSoundEnabled, playNotificationSound } from "@/hooks/useNotifications";
 
 const Settings = () => {
   const navigate = useNavigate();
