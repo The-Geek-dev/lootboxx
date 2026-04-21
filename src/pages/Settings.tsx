@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Settings as SettingsIcon, User, ArrowLeft, Volume2, VolumeX, Moon, Sun, Palette, Save, LogOut } from "lucide-react";
+import { Settings as SettingsIcon, User, ArrowLeft, Volume2, VolumeX, Moon, Sun, Palette, Save, LogOut, Bell, BellOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import AppSidebar from "@/components/AppSidebar";
 import TwoFactorSetup from "@/components/TwoFactorSetup";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { NOTIFICATION_SOUND_KEY, isNotificationSoundEnabled, playNotificationSound } from "@/hooks/useNotifications";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -31,6 +32,16 @@ const Settings = () => {
   const [darkMode, setDarkMode] = useState(() => {
     try { return localStorage.getItem("lootboxx_theme") !== "light"; } catch { return true; }
   });
+  const [notifSound, setNotifSound] = useState(() => isNotificationSoundEnabled());
+
+  const toggleNotifSound = (val: boolean) => {
+    setNotifSound(val);
+    try { localStorage.setItem(NOTIFICATION_SOUND_KEY, String(val)); } catch {}
+    if (val) {
+      // Preview the chime when turning on
+      playNotificationSound();
+    }
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -184,6 +195,17 @@ const Settings = () => {
                     </div>
                   </div>
                   <Switch checked={marqueMuted} onCheckedChange={toggleMarquee} />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {notifSound ? <Bell className="w-5 h-5 text-primary" /> : <BellOff className="w-5 h-5 text-muted-foreground" />}
+                    <div>
+                      <p className="font-medium text-sm">Notification Chime</p>
+                      <p className="text-xs text-muted-foreground">Play a sound when a new notification arrives</p>
+                    </div>
+                  </div>
+                  <Switch checked={notifSound} onCheckedChange={toggleNotifSound} />
                 </div>
 
                 <div className="flex items-center justify-between">

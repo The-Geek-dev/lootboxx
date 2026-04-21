@@ -44,7 +44,14 @@ if (typeof window !== "undefined") {
   window.addEventListener("keydown", handler);
 }
 
+export const NOTIFICATION_SOUND_KEY = "lootboxx_notif_sound";
+
+export const isNotificationSoundEnabled = () => {
+  try { return localStorage.getItem(NOTIFICATION_SOUND_KEY) !== "false"; } catch { return true; }
+};
+
 export const playNotificationSound = () => {
+  if (!isNotificationSoundEnabled()) return;
   const ctx = getAudioCtx();
   if (!ctx) return;
   // Pleasant two-tone chime
