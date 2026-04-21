@@ -1,14 +1,21 @@
 /**
  * Centralized payout configuration for ALL game engines.
- * Tune game economics from this single file.
+ * Values can be overridden live via the admin Payout Tuner page,
+ * which writes to the `payout_overrides` table. On app boot,
+ * `loadPayoutOverrides()` is called and patches these objects in place.
+ *
+ * IMPORTANT: All exports are objects (no exported primitives) so that
+ * mutations made by the loader are visible to every importer at call time.
+ *
  * All values are in Naira (₦).
  */
+
+import { supabase } from "@/integrations/supabase/client";
 
 // ============================================================
 // SLOT-STYLE GAMES
 // ============================================================
 
-/** Lucky Slots (src/pages/LuckySlots.tsx) — 3-reel emoji slot */
 export const LUCKY_SLOTS = {
   combos: {
     "💎💎💎": 15000,
@@ -21,27 +28,20 @@ export const LUCKY_SLOTS = {
   twoMatch: 300,
 };
 
-/** SlotsEngine (advanced multi-reel) — fallback payouts when no theme override */
 export const SLOTS_ENGINE = {
-  /** 1 pair on the reels */
   onePair: 300,
-  /** 2 pairs on the reels */
   twoPair: 800,
 };
 
 // ============================================================
 // SCORE-BASED ARCADE GAMES
-// (Reaction, QuickMath, Catcher, MatchThree)
 // ============================================================
 
 export interface ScoreTier {
-  /** Minimum score to qualify */
   minScore: number;
-  /** Naira payout */
   payout: number;
 }
 
-/** Reaction-style games (tap targets) */
 export const REACTION_TIERS: ScoreTier[] = [
   { minScore: 200, payout: 8000 },
   { minScore: 150, payout: 5000 },
@@ -50,7 +50,6 @@ export const REACTION_TIERS: ScoreTier[] = [
   { minScore: 20, payout: 500 },
 ];
 
-/** QuickMath / Catcher / MatchThree (4-tier score games) */
 export const SCORE_4_TIERS: ScoreTier[] = [
   { minScore: 300, payout: 8000 },
   { minScore: 200, payout: 5000 },
@@ -58,7 +57,6 @@ export const SCORE_4_TIERS: ScoreTier[] = [
   { minScore: 50, payout: 1000 },
 ];
 
-/** QuickMath uses slightly different breakpoints (100/150/200) */
 export const QUICK_MATH_TIERS: ScoreTier[] = [
   { minScore: 200, payout: 8000 },
   { minScore: 150, payout: 5000 },
@@ -66,7 +64,6 @@ export const QUICK_MATH_TIERS: ScoreTier[] = [
   { minScore: 50, payout: 1000 },
 ];
 
-/** Helper: returns the payout for a given score using a tier table */
 export const getTierPayout = (score: number, tiers: ScoreTier[]): number => {
   for (const t of tiers) if (score >= t.minScore) return t.payout;
   return 0;
@@ -76,7 +73,6 @@ export const getTierPayout = (score: number, tiers: ScoreTier[]): number => {
 // STREAK / PROGRESSION GAMES
 // ============================================================
 
-/** HighLow streak payouts */
 export const HIGHLOW_STREAK_TIERS: ScoreTier[] = [
   { minScore: 10, payout: 12000 },
   { minScore: 7, payout: 7000 },
@@ -85,91 +81,156 @@ export const HIGHLOW_STREAK_TIERS: ScoreTier[] = [
   { minScore: 1, payout: 500 },
 ];
 
-/** Cards (Hi-Lo card streak) — payout per streak step */
-export const CARDS_PER_STREAK = 350;
+/** Cards (Hi-Lo card streak) — payout per streak step. Wrapped so the value is mutable across imports. */
+export const CARDS = { perStreak: 350 };
 
 // ============================================================
 // LOTTERY / NUMBER PICK
 // ============================================================
 
-/** Lottery payout by exact number of matches (index = match count) */
 export const LOTTERY_PAYOUTS = [0, 300, 1500, 7000, 20000, 50000, 100000];
 
-/** NumberPick payouts by match count relative to pickCount */
 export const NUMBER_PICK = {
-  full: 12000,           // matches >= pickCount
-  oneOff: 5000,          // matches >= pickCount - 1
-  twoOff: 1500,          // matches >= pickCount - 2
-  twoMatch: 500,         // matches >= 2
+  full: 12000,
+  oneOff: 5000,
+  twoOff: 1500,
+  twoMatch: 500,
 };
 
 // ============================================================
 // SPORTS PREDICTION
 // ============================================================
 
-/** Sports betting payouts based on goal-difference (margin of victory) */
 export const SPORTS_PAYOUTS = {
-  bigMargin: 8000,    // |s1 - s2| >= 3
-  midMargin: 4000,    // |s1 - s2| >= 2
-  smallMargin: 2000,  // close win
+  bigMargin: 8000,
+  midMargin: 4000,
+  smallMargin: 2000,
 };
 
 // ============================================================
 // ARCADE (memory-match style)
 // ============================================================
 
-/** ArcadeEngine match-ratio payouts */
 export const ARCADE_PAYOUTS = {
-  perfect: 5000,      // ratio >= 1
-  half: 1500,         // ratio >= 0.5
-  partial: 500,       // ratio > 0
-  /** Bonus when fully solving the largest (16-tile) board */
+  perfect: 5000,
+  half: 1500,
+  partial: 500,
   perfect16: 8000,
 };
 
 // ============================================================
-// MULTIPLIER-BASED GAMES (Mines, Crash, Plinko, Tower, Roulette,
-// Keno, RPS, MemoryMatch, ScratchCard, CoinFlip, Race, Dice, Wheel, Instant)
-//
-// These games already compute a per-round multiplier `mult` based on
-// difficulty (probability, mines hit, crash point, picks, etc.).
-// We only scale the FINAL cash-out — difficulty stays untouched.
+// MULTIPLIER-BASED GAMES
 // ============================================================
 
-/**
- * Final payout coefficient applied AFTER difficulty-based multiplier.
- * Formula: winnings = floor(pointCost * mult * PAYOUT_COEF[game])
- * Bumping these gives bigger wins without making any game easier.
- */
 export const PAYOUT_COEF = {
-  mines: 4,         // was 2
-  crash: 4,         // was 2
-  plinko: 4,        // was 2
-  tower: 4,         // was 2
-  scratchCard: 4,   // was 2
-  roulette: 2.2,    // was 1
-  keno: 2.2,        // was 1
-  rps: 2.5,         // was 1
-  memoryMatch: 2.5, // was 1
-  race: 2.5,        // was 1.5x racers
-  coinFlip: 1,      // already exponential — see COINFLIP_BASE
+  mines: 4,
+  crash: 4,
+  plinko: 4,
+  tower: 4,
+  scratchCard: 4,
+  roulette: 2.2,
+  keno: 2.2,
+  rps: 2.5,
+  memoryMatch: 2.5,
+  race: 2.5,
+  coinFlip: 1,
+  blackjack: 2,
+  limbo: 1,
+  sicbo: 2,
 };
 
-/** CoinFlip uses pointCost * BASE^streak. Bigger base = bigger streak win. */
-export const COINFLIP_BASE = 3; // was 2 (doubles per round → triples per round)
+/** CoinFlip uses pointCost * BASE^streak. Wrapped so it stays mutable. */
+export const COINFLIP = { base: 3 };
 
-/** Wheel prize multiplier (applied to each segment.value) */
-export const WHEEL_PRIZE_MULTIPLIER = 2.5;
+export const WHEEL = { prizeMultiplier: 2.5 };
 
-/** Dice payout tiers (won + diff from target) */
 export const DICE_PAYOUTS = {
-  bigDiff: 5000,    // diff >= 4 (was 2000)
-  midDiff: 2500,    // diff >= 2 (was 1000)
-  smallDiff: 1200,  // close call (was 500)
-  /** 3-dice multi-die bonus */
+  bigDiff: 5000,
+  midDiff: 2500,
+  smallDiff: 1200,
   threeDiceBonus: 1.3,
 };
 
-/** Instant scratch-style threshold for "big win" recordFullWin */
-export const INSTANT_FULL_WIN_THRESHOLD = 1000;
+export const INSTANT = { fullWinThreshold: 1000 };
 
+// ============================================================
+// Back-compat re-exports (older engines may import these names)
+// ============================================================
+export const COINFLIP_BASE = COINFLIP.base; // legacy primitive — kept for old imports
+export const WHEEL_PRIZE_MULTIPLIER = WHEEL.prizeMultiplier;
+export const CARDS_PER_STREAK = CARDS.perStreak;
+export const INSTANT_FULL_WIN_THRESHOLD = INSTANT.fullWinThreshold;
+
+// ============================================================
+// Live override loader (admin Payout Tuner)
+// ============================================================
+
+/** Map of override key → mutable target object */
+const OVERRIDE_TARGETS: Record<string, any> = {
+  LUCKY_SLOTS,
+  SLOTS_ENGINE,
+  REACTION_TIERS,
+  SCORE_4_TIERS,
+  QUICK_MATH_TIERS,
+  HIGHLOW_STREAK_TIERS,
+  CARDS,
+  LOTTERY_PAYOUTS,
+  NUMBER_PICK,
+  SPORTS_PAYOUTS,
+  ARCADE_PAYOUTS,
+  PAYOUT_COEF,
+  COINFLIP,
+  WHEEL,
+  DICE_PAYOUTS,
+  INSTANT,
+};
+
+/** Snapshot of the original (code-default) values, for "Reset to default" */
+export const PAYOUT_DEFAULTS: Record<string, any> = JSON.parse(
+  JSON.stringify(OVERRIDE_TARGETS)
+);
+
+/** Mutate a target in place so existing references see the new values */
+function applyOverride(key: string, value: any) {
+  const target = OVERRIDE_TARGETS[key];
+  if (!target) return;
+  if (Array.isArray(target) && Array.isArray(value)) {
+    target.length = 0;
+    for (const v of value) target.push(v);
+  } else if (typeof target === "object" && typeof value === "object") {
+    // Replace keys with override values
+    for (const k of Object.keys(target)) delete target[k];
+    Object.assign(target, value);
+  }
+}
+
+let loaded = false;
+
+/** Load all overrides from the DB and patch the in-memory objects. Safe to call multiple times. */
+export async function loadPayoutOverrides(force = false): Promise<void> {
+  if (loaded && !force) return;
+  try {
+    const { data, error } = await supabase
+      .from("payout_overrides")
+      .select("key, value");
+    if (error) {
+      console.warn("[payouts] override load failed:", error.message);
+      return;
+    }
+    for (const row of data ?? []) applyOverride(row.key, row.value);
+    loaded = true;
+  } catch (e) {
+    console.warn("[payouts] override load exception:", e);
+  }
+}
+
+/** Returns a clone of the current (possibly overridden) value for a key */
+export function getCurrentPayout(key: string): any {
+  const t = OVERRIDE_TARGETS[key];
+  return t ? JSON.parse(JSON.stringify(t)) : null;
+}
+
+/** Returns the list of all tunable keys */
+export function getPayoutKeys(): string[] {
+  return Object.keys(OVERRIDE_TARGETS);
+}
