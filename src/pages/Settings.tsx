@@ -199,6 +199,17 @@ const Settings = () => {
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
+                    {notifSound ? <Bell className="w-5 h-5 text-primary" /> : <BellOff className="w-5 h-5 text-muted-foreground" />}
+                    <div>
+                      <p className="font-medium text-sm">Notification Chime</p>
+                      <p className="text-xs text-muted-foreground">Play a sound when a new notification arrives</p>
+                    </div>
+                  </div>
+                  <Switch checked={notifSound} onCheckedChange={toggleNotifSound} />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
                     {darkMode ? <Moon className="w-5 h-5 text-primary" /> : <Sun className="w-5 h-5 text-yellow-500" />}
                     <div>
                       <p className="font-medium text-sm">Dark Mode</p>
