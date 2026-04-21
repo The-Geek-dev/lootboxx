@@ -32,6 +32,16 @@ const Settings = () => {
   const [darkMode, setDarkMode] = useState(() => {
     try { return localStorage.getItem("lootboxx_theme") !== "light"; } catch { return true; }
   });
+  const [notifSound, setNotifSound] = useState(() => isNotificationSoundEnabled());
+
+  const toggleNotifSound = (val: boolean) => {
+    setNotifSound(val);
+    try { localStorage.setItem(NOTIFICATION_SOUND_KEY, String(val)); } catch {}
+    if (val) {
+      // Preview the chime when turning on
+      playNotificationSound();
+    }
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
