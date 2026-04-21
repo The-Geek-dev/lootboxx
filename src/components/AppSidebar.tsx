@@ -124,20 +124,36 @@ const AppSidebar = () => {
               );
             })}
             {isAdmin && (
-              <Link
-                to="/admin"
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
-                  location.pathname === "/admin"
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                  !open && "justify-center px-0"
-                )}
-                title={!open ? "Admin" : undefined}
-              >
-                <Shield className="w-4 h-4 shrink-0" />
-                {open && <span>Admin</span>}
-              </Link>
+              <>
+                <Link
+                  to="/admin"
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
+                    location.pathname === "/admin"
+                      ? "bg-primary/10 text-primary font-medium"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                    !open && "justify-center px-0"
+                  )}
+                  title={!open ? "Admin" : undefined}
+                >
+                  <Shield className="w-4 h-4 shrink-0" />
+                  {open && <span>Admin</span>}
+                </Link>
+                <Link
+                  to="/admin/payouts"
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
+                    location.pathname === "/admin/payouts"
+                      ? "bg-primary/10 text-primary font-medium"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                    !open && "justify-center px-0"
+                  )}
+                  title={!open ? "Payout Tuner" : undefined}
+                >
+                  <Coins className="w-4 h-4 shrink-0" />
+                  {open && <span>Payouts</span>}
+                </Link>
+              </>
             )}
           </div>
         </nav>

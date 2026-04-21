@@ -139,6 +139,7 @@ export const allGames: GameItem[] = [
   { id: "moon-lander", name: "Moon Lander", emoji: "\u{1F315}", category: ["crash"], path: "/games/play/moon-lander", isPlayable: true, color: "from-gray-500 to-yellow-300", pointCost: 25 },
   { id: "dice-master", name: "Dice Master", emoji: "\u{1F3AF}", category: ["dice"], path: "/games/play/dice-master", isPlayable: true, color: "from-green-500 to-yellow-400", pointCost: 20 },
   { id: "rock-paper-scissors", name: "Rock Paper Scissors", emoji: "\u270A", category: ["instant", "arcade", "popular"], path: "/games/play/rock-paper-scissors", isPlayable: true, color: "from-red-500 to-gray-700", pointCost: 25 },
+  { id: "limbo", name: "Limbo", emoji: "\u{1F680}", category: ["top", "instant", "popular", "vip"], path: "/games/play/limbo", isPlayable: true, color: "from-indigo-500 to-violet-500", isVip: true, pointCost: 50 },
 ];
 
 export const categories: { key: GameCategory; label: string; emoji: string }[] = [
