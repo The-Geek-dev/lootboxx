@@ -118,7 +118,7 @@ const PenaltyShootoutEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT
       <GameBackground type="sports" overlay="medium" className="mb-4">
         <div className="p-4 sm:p-6">
           {/* Goal */}
-          <div className="relative mx-auto max-w-sm aspect-[2/1] border-4 border-foreground/30 rounded-lg bg-gradient-to-b from-green-900/40 to-green-950/60 mb-4">
+          <div className="relative mx-auto max-w-sm aspect-[2/1] border-4 border-foreground/30 rounded-lg bg-gradient-to-b from-card/40 to-background/60 mb-4">
             {/* Keeper */}
             <motion.div
               className="absolute text-4xl"
@@ -171,7 +171,7 @@ const PenaltyShootoutEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT
 
       <div className="flex justify-between items-center mb-3 px-2 text-sm">
         <span className="text-muted-foreground">Streak: <span className="font-bold text-foreground">{streak}</span> / 5</span>
-        <span className="text-muted-foreground">Pending: <span className="font-bold text-green-400">₦{pendingWin.toLocaleString()}</span></span>
+        <span className="text-muted-foreground">Pending: <span className="font-bold text-primary">₦{pendingWin.toLocaleString()}</span></span>
       </div>
 
       <AnimatePresence>

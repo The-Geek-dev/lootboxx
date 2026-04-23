@@ -110,7 +110,7 @@ const PachinkoEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME 
           {/* Ball */}
           {ballPath && (
             <motion.div
-              className="absolute w-4 h-4 rounded-full bg-pink-400 shadow-lg shadow-pink-400/50"
+              className="absolute w-4 h-4 rounded-full bg-primary shadow-lg shadow-primary/50"
               animate={{
                 top: `${(ballPath.row / ROWS) * 80 + 5}%`,
                 left: `${(ballPath.col / SLOTS) * 100 + (100 / SLOTS) / 2}%`,
@@ -125,7 +125,7 @@ const PachinkoEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME 
               <div
                 key={i}
                 className={`flex-1 text-center text-xs font-bold py-1.5 border-t-2 ${
-                  finalSlot === i ? "border-pink-400 bg-pink-400/20 text-pink-400" : "border-foreground/20 text-foreground/60"
+                  finalSlot === i ? "border-primary bg-primary/20 text-primary" : "border-foreground/20 text-foreground/60"
                 }`}
               >
                 ×{m}
