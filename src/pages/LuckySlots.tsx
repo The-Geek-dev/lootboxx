@@ -59,13 +59,16 @@ const LuckySlots = () => {
         ];
         setReels(finalReels);
         const combo = finalReels.join("");
-        let payout = PAYOUTS[combo] || 0;
+        const bigPayout = PAYOUTS[combo] || 0;
         const twoMatch = finalReels[0] === finalReels[1] || finalReels[1] === finalReels[2] || finalReels[0] === finalReels[2];
-        const smallWin = twoMatch ? LUCKY_SLOTS.twoMatch : 0;
-        let totalWin = payout || smallWin;
-        if (totalWin > 0) {
-          totalWin = adjustWinAmount(totalWin);
-          if (payout > 0 && canFullyWin()) recordFullWin();
+        let totalWin = 0;
+        if (bigPayout > 0) {
+          // Big jackpot combos go through win restrictions
+          totalWin = adjustWinAmount(bigPayout);
+          if (canFullyWin()) recordFullWin();
+        } else if (twoMatch) {
+          // Small consolation prize is always paid flat — no restriction reduction
+          totalWin = LUCKY_SLOTS.twoMatch;
         }
         if (totalWin > 0) { updateBalance(totalWin); setResult(`🎉 You won ₦${totalWin.toLocaleString()}!`); }
         else { setResult("No match. Try again!"); }
