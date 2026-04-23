@@ -191,7 +191,7 @@ const Dashboard = () => {
                   </>
                 ) : (
                   <>
-                    <p className="font-semibold text-sm">Coupon: <span className="text-primary">{couponInfo.days}d {couponInfo.hours}h remaining</span></p>
+                    <p className="font-semibold text-sm">Coupon expires in: <span className="text-primary font-mono">{couponInfo.days}d {String(couponInfo.hours).padStart(2,"0")}h {String(couponInfo.minutes).padStart(2,"0")}m {String(couponInfo.seconds).padStart(2,"0")}s</span></p>
                     <p className="text-xs text-muted-foreground">Renew for ₦2,000/week to extend access</p>
                   </>
                 )}
