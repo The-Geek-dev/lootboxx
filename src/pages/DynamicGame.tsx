@@ -37,6 +37,9 @@ import RockPaperScissorsEngine from "@/components/engines/RockPaperScissorsEngin
 import BlackjackEngine from "@/components/engines/BlackjackEngine";
 import LimboEngine from "@/components/engines/LimboEngine";
 import SicBoEngine from "@/components/engines/SicBoEngine";
+import BaccaratEngine from "@/components/engines/BaccaratEngine";
+import PachinkoEngine from "@/components/engines/PachinkoEngine";
+import PenaltyShootoutEngine from "@/components/engines/PenaltyShootoutEngine";
 import { useEffect } from "react";
 
 const DynamicGame = () => {
@@ -151,6 +154,12 @@ const DynamicGame = () => {
         return <LimboEngine {...baseProps} />;
       case "sicbo":
         return <SicBoEngine {...baseProps} />;
+      case "baccarat":
+        return <BaccaratEngine {...baseProps} />;
+      case "pachinko":
+        return <PachinkoEngine {...baseProps} />;
+      case "penaltyshoot":
+        return <PenaltyShootoutEngine {...baseProps} />;
       default:
         return <InstantEngine {...baseProps} />;
     }
