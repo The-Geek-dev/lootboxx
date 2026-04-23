@@ -140,6 +140,8 @@ export const allGames: GameItem[] = [
   { id: "dice-master", name: "Dice Master", emoji: "\u{1F3AF}", category: ["dice"], path: "/games/play/dice-master", isPlayable: true, color: "from-green-500 to-yellow-400", pointCost: 20 },
   { id: "rock-paper-scissors", name: "Rock Paper Scissors", emoji: "\u270A", category: ["instant", "arcade", "popular"], path: "/games/play/rock-paper-scissors", isPlayable: true, color: "from-red-500 to-gray-700", pointCost: 25 },
   { id: "limbo", name: "Limbo", emoji: "\u{1F680}", category: ["top", "instant", "popular", "vip"], path: "/games/play/limbo", isPlayable: true, color: "from-indigo-500 to-violet-500", isVip: true, pointCost: 50 },
+  { id: "pachinko", name: "Pachinko", emoji: "\u{1F3F0}", category: ["top", "popular", "instant"], path: "/games/play/pachinko", isPlayable: true, color: "from-pink-500 to-purple-500", pointCost: 30 },
+  { id: "penalty-shootout", name: "Penalty Shootout", emoji: "\u{1F945}", category: ["top", "popular", "sports"], path: "/games/play/penalty-shootout", isPlayable: true, color: "from-green-500 to-emerald-500", pointCost: 25 },
 ];
 
 export const categories: { key: GameCategory; label: string; emoji: string }[] = [
