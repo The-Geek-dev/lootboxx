@@ -85,13 +85,33 @@ const Dashboard = () => {
       setIsLoading(false);
     };
 
-    checkAuth();
+    let walletChannel: ReturnType<typeof supabase.channel> | null = null;
+
+    checkAuth().then(async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      walletChannel = supabase
+        .channel(`wallet-${session.user.id}`)
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "user_wallets", filter: `user_id=eq.${session.user.id}` },
+          (payload: any) => {
+            const next = payload.new?.coupon_expires_at ?? null;
+            setCouponExpiresAt(next);
+            if (payload.new?.points != null) setPoints(Number(payload.new.points));
+          }
+        )
+        .subscribe();
+    });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) navigate("/login");
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      if (walletChannel) supabase.removeChannel(walletChannel);
+    };
   }, [navigate]);
 
   if (!isAuthorized || isChecking || isLoading) return (
