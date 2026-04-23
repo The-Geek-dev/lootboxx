@@ -28,17 +28,24 @@ const Dashboard = () => {
   const [points, setPoints] = useState(0);
   const [couponExpiresAt, setCouponExpiresAt] = useState<string | null>(null);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
 
   const couponInfo = useMemo(() => {
-    if (!couponExpiresAt) return { days: 0, hours: 0, expired: true };
-    const exp = new Date(couponExpiresAt);
-    const now = new Date();
-    if (exp <= now) return { days: 0, hours: 0, expired: true };
-    const diffMs = exp.getTime() - now.getTime();
+    if (!couponExpiresAt) return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true };
+    const exp = new Date(couponExpiresAt).getTime();
+    if (exp <= now) return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true };
+    const diffMs = exp - now;
     const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    return { days, hours, expired: false };
-  }, [couponExpiresAt]);
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+    return { days, hours, minutes, seconds, expired: false };
+  }, [couponExpiresAt, now]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -184,7 +191,7 @@ const Dashboard = () => {
                   </>
                 ) : (
                   <>
-                    <p className="font-semibold text-sm">Coupon: <span className="text-primary">{couponInfo.days}d {couponInfo.hours}h remaining</span></p>
+                    <p className="font-semibold text-sm">Coupon expires in: <span className="text-primary font-mono">{couponInfo.days}d {String(couponInfo.hours).padStart(2,"0")}h {String(couponInfo.minutes).padStart(2,"0")}m {String(couponInfo.seconds).padStart(2,"0")}s</span></p>
                     <p className="text-xs text-muted-foreground">Renew for ₦2,000/week to extend access</p>
                   </>
                 )}

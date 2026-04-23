@@ -24,6 +24,17 @@ export const useDepositGate = () => {
         return;
       }
 
+      // Admins bypass deposit/coupon gate entirely
+      const { data: isAdmin } = await supabase.rpc("has_role", {
+        _user_id: session.user.id,
+        _role: "admin",
+      });
+      if (isAdmin) {
+        setIsAuthorized(true);
+        setIsChecking(false);
+        return;
+      }
+
       // Post-launch: check if user has activated wallet
       const { data: wallet } = await supabase
         .from("user_wallets")
