@@ -86,22 +86,35 @@ const Dashboard = () => {
     };
 
     let walletChannel: ReturnType<typeof supabase.channel> | null = null;
+    const debug = typeof window !== "undefined" && localStorage.getItem("lootboxx_debug_wallet") === "1";
+    const dlog = (...args: any[]) => debug && console.log("[wallet-realtime]", ...args);
 
     checkAuth().then(async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
+      dlog("subscribing for user", session.user.id);
       walletChannel = supabase
         .channel(`wallet-${session.user.id}`)
         .on(
           "postgres_changes",
           { event: "UPDATE", schema: "public", table: "user_wallets", filter: `user_id=eq.${session.user.id}` },
           (payload: any) => {
+            dlog("UPDATE payload", {
+              old_coupon: payload.old?.coupon_expires_at,
+              new_coupon: payload.new?.coupon_expires_at,
+              old_points: payload.old?.points,
+              new_points: payload.new?.points,
+              commit_ts: payload.commit_timestamp,
+              full: payload,
+            });
             const next = payload.new?.coupon_expires_at ?? null;
             setCouponExpiresAt(next);
             if (payload.new?.points != null) setPoints(Number(payload.new.points));
           }
         )
-        .subscribe();
+        .subscribe((status, err) => {
+          dlog("subscription status:", status, err ?? "");
+        });
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
