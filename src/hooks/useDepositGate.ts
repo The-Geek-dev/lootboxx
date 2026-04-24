@@ -43,11 +43,15 @@ export const useDepositGate = () => {
         .single();
 
       if (wallet?.is_activated) {
-        // Check if coupon is still valid
+        // If coupon is still valid, grant access
         if (wallet.coupon_expires_at && new Date(wallet.coupon_expires_at) > new Date()) {
           setIsAuthorized(true);
+        } else if (!wallet.coupon_expires_at) {
+          // Activated but coupon_expires_at temporarily missing (e.g. webhook lag).
+          // Grant access — confirmed payment takes priority over the timestamp.
+          setIsAuthorized(true);
         } else {
-          // Coupon expired, redirect to deposit for renewal
+          // Coupon explicitly expired, redirect to deposit for renewal
           navigate("/deposit");
           return;
         }
