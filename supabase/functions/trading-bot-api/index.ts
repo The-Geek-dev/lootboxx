@@ -80,7 +80,7 @@ serve(async (req) => {
         status: "active",
         user_id: userId,
         bot: {
-          name: "SQUANCH Trading Bot",
+          name: "LootBoxx Trading Bot",
           version: "1.0.0",
           strategy: "Aggressive Growth",
           risk_level: "Medium",

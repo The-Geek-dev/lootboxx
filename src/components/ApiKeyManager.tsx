@@ -183,7 +183,7 @@ const ApiKeyManager = ({ userId }: ApiKeyManagerProps) => {
       </div>
 
       <p className="text-gray-400 text-sm mb-6">
-        Use API keys to access the SQUANCH Trading Bot API programmatically.
+        Use API keys to access the LootBoxx API programmatically.
       </p>
 
       {isLoading ? (
