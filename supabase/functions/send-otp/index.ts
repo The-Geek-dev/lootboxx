@@ -129,7 +129,7 @@ serve(async (req) => {
         <body>
           <div class="container">
             <div class="logo">
-              <h1 style="color: #8B5CF6;">SQUANCH</h1>
+              <h1 style="color: #8B5CF6;">LootBoxx</h1>
             </div>
             <p class="text">Your verification code is:</p>
             <div class="code">${otp}</div>
