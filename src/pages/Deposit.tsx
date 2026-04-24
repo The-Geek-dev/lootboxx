@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
-import { Rocket, CreditCard, Smartphone, Building2, CheckCircle2, Loader2 } from "lucide-react";
+import { Rocket, CreditCard, Smartphone, Building2, CheckCircle2, Loader2, RefreshCw, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
