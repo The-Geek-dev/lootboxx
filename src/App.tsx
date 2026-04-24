@@ -40,6 +40,7 @@ import Leaderboard from "./pages/Leaderboard";
 import DynamicGame from "./pages/DynamicGame";
 import WithdrawalSuccess from "./pages/WithdrawalSuccess";
 import Unsubscribe from "./pages/Unsubscribe";
+import CouponRenewalBanner from "@/components/CouponRenewalBanner";
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
@@ -60,6 +61,7 @@ const AppRoutes = () => {
   return (
     <>
       <LoadingScreen isLoading={isLoading} />
+      <CouponRenewalBanner />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/about" element={<About />} />
