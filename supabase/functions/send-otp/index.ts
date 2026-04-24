@@ -110,9 +110,9 @@ serve(async (req) => {
 
     // Send OTP email
     const { error: emailError } = await resend.emails.send({
-      from: "SQUANCH Security <onboarding@resend.dev>",
+      from: "LootBoxx Security <onboarding@resend.dev>",
       to: [email],
-      subject: "Your SQUANCH Verification Code",
+      subject: "Your LootBoxx Verification Code",
       html: `
         <!DOCTYPE html>
         <html>
