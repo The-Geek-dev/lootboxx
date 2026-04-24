@@ -3,11 +3,11 @@ import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
-import { Rocket, CreditCard, Smartphone, Building2 } from "lucide-react";
+import { Rocket, CreditCard, Smartphone, Building2, CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useLaunchStatus } from "@/hooks/useLaunchStatus";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -37,10 +37,14 @@ const ComingSoonView = () => (
 
 const LiveDepositView = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedTier, setSelectedTier] = useState<typeof DEPOSIT_TIERS[0] | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<"flutterwave">("flutterwave");
   const [loading, setLoading] = useState(false);
   const [isActivated, setIsActivated] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [verifyResult, setVerifyResult] = useState<null | { success: boolean; message: string; depositType?: string }>(null);
 
   useEffect(() => {
     const checkActivation = async () => {
@@ -54,6 +58,59 @@ const LiveDepositView = () => {
       if (wallet?.is_activated) setIsActivated(true);
     };
     checkActivation();
+  }, []);
+
+  // Handle Flutterwave redirect callback (?status=...&tx_ref=...&transaction_id=...)
+  useEffect(() => {
+    const status = searchParams.get("status");
+    const transactionId = searchParams.get("transaction_id");
+    const txRef = searchParams.get("tx_ref");
+
+    if (!status || !transactionId) return;
+
+    if (status === "cancelled" || status === "failed") {
+      toast({ title: "Payment cancelled", description: "Your payment was not completed.", variant: "destructive" });
+      setSearchParams({}, { replace: true });
+      return;
+    }
+
+    const verify = async () => {
+      setVerifying(true);
+      try {
+        const { data, error } = await supabase.functions.invoke("flutterwave-verify", {
+          body: { transaction_id: transactionId, tx_ref: txRef },
+        });
+        if (error) throw error;
+
+        if (data?.success) {
+          setVerifyResult({
+            success: true,
+            message: `₦${Number(data.totalCredit).toLocaleString()} credited to your wallet.`,
+            depositType: data.depositType,
+          });
+          setIsActivated(true);
+          toast({ title: "Payment confirmed! 🎉", description: "Your wallet has been credited." });
+        } else {
+          setVerifyResult({ success: false, message: data?.error || "Verification failed" });
+          toast({ title: "Verification failed", description: data?.error || "Please contact support.", variant: "destructive" });
+        }
+      } catch (err: any) {
+        const msg = err?.message || "";
+        if (msg.includes("already processed")) {
+          setVerifyResult({ success: true, message: "Payment already confirmed. You're good to go!" });
+          setIsActivated(true);
+        } else {
+          setVerifyResult({ success: false, message: msg || "Verification error" });
+          toast({ title: "Error verifying payment", description: msg, variant: "destructive" });
+        }
+      } finally {
+        setVerifying(false);
+        setSearchParams({}, { replace: true });
+      }
+    };
+
+    verify();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const availableTiers = DEPOSIT_TIERS.filter(
@@ -98,6 +155,30 @@ const LiveDepositView = () => {
       setLoading(false);
     }
   };
+
+  if (verifying) {
+    return (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center max-w-md mx-auto">
+        <Loader2 className="w-12 h-12 mx-auto mb-4 text-primary animate-spin" />
+        <h1 className="text-2xl font-bold mb-2">Confirming your payment…</h1>
+        <p className="text-muted-foreground">Please wait while we verify the transaction with Flutterwave.</p>
+      </motion.div>
+    );
+  }
+
+  if (verifyResult?.success) {
+    return (
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md mx-auto">
+        <CheckCircle2 className="w-16 h-16 mx-auto mb-4 text-primary" />
+        <h1 className="text-3xl font-bold mb-2">Payment Successful! 🎉</h1>
+        <p className="text-muted-foreground mb-6">{verifyResult.message}</p>
+        <div className="flex gap-3 justify-center">
+          <Button className="button-gradient" onClick={() => navigate("/games")}>Go to Games</Button>
+          <Button variant="outline" onClick={() => { setVerifyResult(null); }}>Make Another Deposit</Button>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto">
