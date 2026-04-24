@@ -45,6 +45,17 @@ const LiveDepositView = () => {
   const [isActivated, setIsActivated] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [verifyResult, setVerifyResult] = useState<null | { success: boolean; message: string; depositType?: string }>(null);
+  const [failedTier, setFailedTier] = useState<typeof DEPOSIT_TIERS[0] | null>(null);
+  const [polling, setPolling] = useState(false);
+  const [pollSecondsLeft, setPollSecondsLeft] = useState(0);
+  const pollTimerRef = useRef<number | null>(null);
+
+  // Persist last attempted tier so we can retry after a failed/cancelled redirect
+  useEffect(() => {
+    if (selectedTier) {
+      try { sessionStorage.setItem("lb_last_tier", JSON.stringify(selectedTier)); } catch {}
+    }
+  }, [selectedTier]);
 
   useEffect(() => {
     const checkActivation = async () => {
@@ -60,19 +71,81 @@ const LiveDepositView = () => {
     checkActivation();
   }, []);
 
+  // Polling fallback: re-check wallet activation/coupon for up to 60s after verification
+  const startActivationPolling = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    setPolling(true);
+    setPollSecondsLeft(60);
+    let attempts = 0;
+    const maxAttempts = 30; // 30 * 2s = 60s
+
+    if (pollTimerRef.current) window.clearInterval(pollTimerRef.current);
+    pollTimerRef.current = window.setInterval(() => {
+      setPollSecondsLeft((s) => Math.max(0, s - 2));
+    }, 2000);
+
+    const poll = async (): Promise<void> => {
+      attempts++;
+      const { data: wallet } = await supabase
+        .from("user_wallets")
+        .select("is_activated, coupon_expires_at")
+        .eq("user_id", session.user.id)
+        .single();
+
+      const hasActiveCoupon =
+        wallet?.is_activated &&
+        wallet?.coupon_expires_at &&
+        new Date(wallet.coupon_expires_at) > new Date();
+
+      if (hasActiveCoupon) {
+        setIsActivated(true);
+        setPolling(false);
+        if (pollTimerRef.current) window.clearInterval(pollTimerRef.current);
+        return;
+      }
+
+      if (attempts >= maxAttempts) {
+        setPolling(false);
+        if (pollTimerRef.current) window.clearInterval(pollTimerRef.current);
+        return;
+      }
+
+      await new Promise((r) => setTimeout(r, 2000));
+      return poll();
+    };
+
+    poll();
+  };
+
+  useEffect(() => {
+    return () => {
+      if (pollTimerRef.current) window.clearInterval(pollTimerRef.current);
+    };
+  }, []);
+
   // Handle Flutterwave redirect callback (?status=...&tx_ref=...&transaction_id=...)
   useEffect(() => {
     const status = searchParams.get("status");
     const transactionId = searchParams.get("transaction_id");
     const txRef = searchParams.get("tx_ref");
 
-    if (!status || !transactionId) return;
+    // Try to recover the tier the user was paying for
+    let recoveredTier: typeof DEPOSIT_TIERS[0] | null = null;
+    try {
+      const raw = sessionStorage.getItem("lb_last_tier");
+      if (raw) recoveredTier = JSON.parse(raw);
+    } catch {}
 
-    if (status === "cancelled" || status === "failed") {
-      toast({ title: "Payment cancelled", description: "Your payment was not completed.", variant: "destructive" });
+    if (status === "cancelled" || status === "failed" || (status && !transactionId)) {
+      setFailedTier(recoveredTier);
+      toast({ title: "Payment not completed", description: "Your payment was cancelled or failed. You can retry below.", variant: "destructive" });
       setSearchParams({}, { replace: true });
       return;
     }
+
+    if (!status || !transactionId) return;
 
     const verify = async () => {
       setVerifying(true);
@@ -90,8 +163,12 @@ const LiveDepositView = () => {
           });
           setIsActivated(true);
           toast({ title: "Payment confirmed! 🎉", description: "Your wallet has been credited." });
+          try { sessionStorage.removeItem("lb_last_tier"); } catch {}
+          // Start polling fallback to ensure activation flag is visible
+          startActivationPolling();
         } else {
           setVerifyResult({ success: false, message: data?.error || "Verification failed" });
+          setFailedTier(recoveredTier);
           toast({ title: "Verification failed", description: data?.error || "Please contact support.", variant: "destructive" });
         }
       } catch (err: any) {
@@ -99,8 +176,11 @@ const LiveDepositView = () => {
         if (msg.includes("already processed")) {
           setVerifyResult({ success: true, message: "Payment already confirmed. You're good to go!" });
           setIsActivated(true);
+          try { sessionStorage.removeItem("lb_last_tier"); } catch {}
+          startActivationPolling();
         } else {
           setVerifyResult({ success: false, message: msg || "Verification error" });
+          setFailedTier(recoveredTier);
           toast({ title: "Error verifying payment", description: msg, variant: "destructive" });
         }
       } finally {
@@ -117,8 +197,9 @@ const LiveDepositView = () => {
     (tier) => !(tier.type === "activation" && isActivated)
   );
 
-  const handleDeposit = async () => {
-    if (!selectedTier) return;
+  const handleDeposit = async (tierOverride?: typeof DEPOSIT_TIERS[0]) => {
+    const tier = tierOverride || selectedTier;
+    if (!tier) return;
     setLoading(true);
 
     try {
@@ -128,16 +209,18 @@ const LiveDepositView = () => {
         return;
       }
 
+      try { sessionStorage.setItem("lb_last_tier", JSON.stringify(tier)); } catch {}
+
       const fnName = "flutterwave-initialize";
       const { data, error } = await supabase.functions.invoke(fnName, {
         body: {
-          amount: selectedTier.amount,
+          amount: tier.amount,
           email: session.user.email,
           metadata: {
             user_id: session.user.id,
-            deposit_type: selectedTier.type,
-            bonus: selectedTier.bonus,
-            points_reward: selectedTier.points,
+            deposit_type: tier.type,
+            bonus: tier.bonus,
+            points_reward: tier.points,
             callback_url: window.location.origin + "/deposit?status=success",
           },
         },
@@ -166,12 +249,44 @@ const LiveDepositView = () => {
     );
   }
 
+  // Failed/cancelled view with retry button
+  if (failedTier && !verifyResult?.success) {
+    return (
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md mx-auto">
+        <XCircle className="w-16 h-16 mx-auto mb-4 text-destructive" />
+        <h1 className="text-3xl font-bold mb-2">Payment Not Completed</h1>
+        <p className="text-muted-foreground mb-2">
+          Your <span className="font-semibold text-foreground">{failedTier.label}</span> payment of{" "}
+          <span className="font-semibold text-foreground">₦{failedTier.amount.toLocaleString()}</span> was not completed.
+        </p>
+        <p className="text-sm text-muted-foreground mb-6">No money was charged. You can retry instantly below.</p>
+        <div className="flex gap-3 justify-center flex-wrap">
+          <Button className="button-gradient" onClick={() => handleDeposit(failedTier)} disabled={loading}>
+            {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
+            Retry Payment
+          </Button>
+          <Button variant="outline" onClick={() => { setFailedTier(null); setVerifyResult(null); }}>
+            Choose Different Plan
+          </Button>
+        </div>
+      </motion.div>
+    );
+  }
+
   if (verifyResult?.success) {
     return (
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md mx-auto">
         <CheckCircle2 className="w-16 h-16 mx-auto mb-4 text-primary" />
         <h1 className="text-3xl font-bold mb-2">Payment Successful! 🎉</h1>
-        <p className="text-muted-foreground mb-6">{verifyResult.message}</p>
+        <p className="text-muted-foreground mb-4">{verifyResult.message}</p>
+        {polling && (
+          <div className="flex items-center justify-center gap-2 mb-6 p-3 rounded-lg bg-muted/30 border border-border">
+            <Loader2 className="w-4 h-4 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">
+              Syncing access… {pollSecondsLeft}s
+            </p>
+          </div>
+        )}
         <div className="flex gap-3 justify-center">
           <Button className="button-gradient" onClick={() => navigate("/games")}>Go to Games</Button>
           <Button variant="outline" onClick={() => { setVerifyResult(null); }}>Make Another Deposit</Button>
