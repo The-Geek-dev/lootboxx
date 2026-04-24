@@ -8,112 +8,112 @@ import { Star, Quote, BadgeCheck } from "lucide-react";
 
 const testimonials = [
   {
-    name: "Michael Chen",
-    role: "Professional Trader",
+    name: "Chinedu Okafor",
+    role: "Lagos Player",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    content: "The real-time market data and advanced trading features have significantly improved my trading performance. The platform's security measures give me peace of mind.",
+    content: "I cashed out ₦45,000 last weekend from Lucky Slots and Spin Wheel combined. Withdrawal hit my bank in minutes — LootBoxx is the real deal!",
     rating: 5,
     verified: true,
-    tradingVolume: "$2.5M+"
+    totalWon: "₦120K+"
   },
   {
-    name: "Sarah Johnson",
-    role: "Crypto Fund Manager",
+    name: "Aisha Bello",
+    role: "Abuja Player",
     image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
-    content: "SQUANCH's institutional-grade tools have transformed our trading strategy. The API integration and automated features have saved us countless hours.",
+    content: "The Trivia Quiz is my favorite. I play every evening after work and the points add up fast. Already redeemed twice this month.",
     rating: 5,
     verified: true,
-    tradingVolume: "$10M+"
+    totalWon: "₦68K+"
   },
   {
-    name: "David Wilson",
-    role: "Early Crypto Investor",
+    name: "Tunde Adeleke",
+    role: "Ibadan Player",
     image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-    content: "The customer support is exceptional, and the platform's intuitive design made getting started with crypto trading seamless. A game-changer for both beginners and pros.",
+    content: "I was sceptical at first about the ₦7,000 activation, but I've made it back 5x already. Customer support replied to my issue within an hour too.",
     rating: 5,
     verified: true,
-    tradingVolume: "$500K+"
+    totalWon: "₦35K+"
   },
   {
-    name: "Emily Zhang",
-    role: "DeFi Developer",
+    name: "Ngozi Eze",
+    role: "Port Harcourt Player",
     image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-    content: "We've seen remarkable improvements in our trading efficiency since switching to SQUANCH. The smart order routing and liquidity aggregation are particularly impressive.",
+    content: "The Mines and Crash games are addictive in a good way. I love that the daily win limits keep me disciplined — no chasing losses here.",
     rating: 5,
     verified: true,
-    tradingVolume: "$5M+"
+    totalWon: "₦92K+"
   },
   {
-    name: "James Rodriguez",
-    role: "Crypto Security Expert",
+    name: "Emeka Nwosu",
+    role: "Enugu Player",
     image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
-    content: "The security features are robust and the regular updates keep us ahead of emerging threats. It's exactly what the crypto industry needed.",
+    content: "Won ₦15,000 from the weekly raffle on my second try! The weekend withdrawal window is fast and reliable. LootBoxx pays for sure.",
     rating: 5,
     verified: true,
-    tradingVolume: "$1M+"
+    totalWon: "₦41K+"
   },
   {
-    name: "Lisa Thompson",
-    role: "Portfolio Manager",
+    name: "Folake Adeyemi",
+    role: "Lagos Player",
     image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
-    content: "The platform's ability to handle complex trading strategies while maintaining simplicity in its interface is remarkable. It's been invaluable for our portfolio management.",
+    content: "Referred 6 friends and got ₦12,000 in referral bonuses. The dashboard makes it so easy to track everything I've won and withdrawn.",
     rating: 5,
     verified: true,
-    tradingVolume: "$8M+"
+    totalWon: "₦78K+"
   },
   {
-    name: "Alex Martinez",
-    role: "Day Trader",
+    name: "Ibrahim Musa",
+    role: "Kano Player",
     image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face",
-    content: "I've tried many trading bots, but SQUANCH stands out with its accuracy and reliability. The AI predictions have been consistently profitable for my portfolio.",
+    content: "The Plinko and Pachinko engines are smooth — no lag even on my budget phone. And the cyberpunk theme looks beautiful at night.",
     rating: 5,
     verified: true,
-    tradingVolume: "$750K+"
+    totalWon: "₦27K+"
   },
   {
-    name: "Rachel Kim",
-    role: "Blockchain Analyst",
+    name: "Blessing Okonkwo",
+    role: "Owerri Player",
     image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face",
-    content: "The technical analysis tools and market insights provided by SQUANCH are unparalleled. It's become an essential part of my daily trading routine.",
+    content: "I love the variety — over 20 games to choose from. Penalty Shootout is my new obsession. Multipliers keep climbing every round.",
     rating: 5,
     verified: true,
-    tradingVolume: "$1.2M+"
+    totalWon: "₦52K+"
   },
   {
-    name: "Thomas Anderson",
-    role: "Hedge Fund Analyst",
+    name: "Segun Adebayo",
+    role: "Akure Player",
     image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop&crop=face",
-    content: "SQUANCH has revolutionized how we approach algorithmic trading. The machine learning models are incredibly accurate and have consistently outperformed our expectations.",
+    content: "Hit a ₦20,000 win on Baccarat last week. The card animations feel like a real casino. Renewal is only ₦2,000 — totally worth it.",
     rating: 5,
     verified: true,
-    tradingVolume: "$15M+"
+    totalWon: "₦88K+"
   },
   {
-    name: "Maria Garcia",
-    role: "Crypto Educator",
+    name: "Halima Yusuf",
+    role: "Kaduna Player",
     image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face",
-    content: "I recommend SQUANCH to all my students. The learning curve is minimal, yet the platform offers professional-grade features that grow with you.",
+    content: "I tell all my friends about LootBoxx. The XP lives system makes you take each game seriously. Best entertainment app for Nigerians.",
     rating: 5,
     verified: true,
-    tradingVolume: "$300K+"
+    totalWon: "₦19K+"
   },
   {
-    name: "Kevin O'Brien",
-    role: "Quantitative Trader",
+    name: "Daniel Ojo",
+    role: "Benin Player",
     image: "https://images.unsplash.com/photo-1463453091185-61582044d556?w=150&h=150&fit=crop&crop=face",
-    content: "The backtesting capabilities and historical data access have been crucial for developing our trading algorithms. SQUANCH delivers enterprise-level tools.",
+    content: "The transaction history page shows every kobo. Zero hidden fees beyond the 5% withdrawal cut. Transparent and trustworthy platform.",
     rating: 5,
     verified: true,
-    tradingVolume: "$4M+"
+    totalWon: "₦64K+"
   },
   {
-    name: "Sophia Lee",
-    role: "Venture Capitalist",
+    name: "Chiamaka Obi",
+    role: "Asaba Player",
     image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&crop=face",
-    content: "After evaluating dozens of trading platforms, SQUANCH stood out for its innovation and reliability. We've invested in several crypto startups, but this platform truly delivers.",
+    content: "Started with the ₦7K activation, now I withdraw every weekend. The treasure chest mascot makes me smile every time I open the app.",
     rating: 5,
     verified: true,
-    tradingVolume: "$25M+"
+    totalWon: "₦105K+"
   }
 ];
 
@@ -131,10 +131,10 @@ const Testimonials = () => {
             className="text-center mb-16"
           >
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              <span className="text-gradient text-glow">Trusted by Traders</span>
+              <span className="text-gradient text-glow">Trusted by Players</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Join thousands of satisfied traders who have transformed their crypto trading experience with SQUANCH
+              Join thousands of Nigerian players winning real cash on LootBoxx every day
             </p>
           </motion.div>
 
@@ -148,7 +148,7 @@ const Testimonials = () => {
               >
                 <Card className="h-full bg-black/40 backdrop-blur-xl border-white/10 hover:border-primary/50 transition-all duration-300 p-6 relative overflow-hidden group">
                   <Quote className="absolute top-4 right-4 w-8 h-8 text-primary/20 group-hover:text-primary/40 transition-colors" />
-                  
+
                   <div className="flex items-center gap-4 mb-4">
                     <Avatar className="h-14 w-14 ring-2 ring-primary/20">
                       <AvatarImage src={testimonial.image} />
@@ -174,7 +174,7 @@ const Testimonials = () => {
                       ))}
                     </div>
                     <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">
-                      Volume: {testimonial.tradingVolume}
+                      Won: {testimonial.totalWon}
                     </span>
                   </div>
 
@@ -195,7 +195,7 @@ const Testimonials = () => {
             <div className="glass rounded-xl p-8 max-w-2xl mx-auto">
               <h3 className="text-2xl font-bold mb-4 text-gradient">Ready to Join Them?</h3>
               <p className="text-muted-foreground mb-6">
-                Start your journey with SQUANCH today and experience the power of AI-driven crypto trading.
+                Sign up on LootBoxx today, activate your account, and start winning real cash from your favorite games.
               </p>
               <a
                 href="/signup"
