@@ -156,6 +156,30 @@ const LiveDepositView = () => {
     }
   };
 
+  if (verifying) {
+    return (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center max-w-md mx-auto">
+        <Loader2 className="w-12 h-12 mx-auto mb-4 text-primary animate-spin" />
+        <h1 className="text-2xl font-bold mb-2">Confirming your payment…</h1>
+        <p className="text-muted-foreground">Please wait while we verify the transaction with Flutterwave.</p>
+      </motion.div>
+    );
+  }
+
+  if (verifyResult?.success) {
+    return (
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md mx-auto">
+        <CheckCircle2 className="w-16 h-16 mx-auto mb-4 text-primary" />
+        <h1 className="text-3xl font-bold mb-2">Payment Successful! 🎉</h1>
+        <p className="text-muted-foreground mb-6">{verifyResult.message}</p>
+        <div className="flex gap-3 justify-center">
+          <Button className="button-gradient" onClick={() => navigate("/games")}>Go to Games</Button>
+          <Button variant="outline" onClick={() => { setVerifyResult(null); }}>Make Another Deposit</Button>
+        </div>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto">
       <h1 className="text-3xl font-bold text-center mb-2">💰 Deposit Funds</h1>
