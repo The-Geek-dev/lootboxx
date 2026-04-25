@@ -50,6 +50,89 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_conversations: {
+        Row: {
+          admin_unread_count: number
+          ai_paused: boolean
+          created_at: string
+          guest_email: string | null
+          guest_name: string | null
+          guest_token: string | null
+          id: string
+          last_message_at: string
+          last_message_preview: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+          user_unread_count: number
+        }
+        Insert: {
+          admin_unread_count?: number
+          ai_paused?: boolean
+          created_at?: string
+          guest_email?: string | null
+          guest_name?: string | null
+          guest_token?: string | null
+          id?: string
+          last_message_at?: string
+          last_message_preview?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          user_unread_count?: number
+        }
+        Update: {
+          admin_unread_count?: number
+          ai_paused?: boolean
+          created_at?: string
+          guest_email?: string | null
+          guest_name?: string | null
+          guest_token?: string | null
+          id?: string
+          last_message_at?: string
+          last_message_preview?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          user_unread_count?: number
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          sender_id: string | null
+          sender_role: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          sender_id?: string | null
+          sender_role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          sender_id?: string | null
+          sender_role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_win_tracking: {
         Row: {
           created_at: string

@@ -7,6 +7,7 @@ import Navigation from "@/components/Navigation";
 import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
 import MascotBackground from "@/components/MascotBackground";
+import LiveChatWidget from "@/components/LiveChatWidget";
 import { useToast } from "@/hooks/use-toast";
 
 const Contact = () => {
@@ -74,6 +75,7 @@ const Contact = () => {
         </motion.div>
       </div>
       <Footer />
+      <LiveChatWidget />
     </div>
   );
 };

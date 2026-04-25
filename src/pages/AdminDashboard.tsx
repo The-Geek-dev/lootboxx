@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import EmailLogPanel from "@/components/admin/EmailLogPanel";
+import AdminChatPanel from "@/components/admin/AdminChatPanel";
 import SendManualReceiptPanel from "@/components/admin/SendManualReceiptPanel";
 
 const AdminDashboard = () => {
@@ -343,7 +344,7 @@ const AdminDashboard = () => {
           </div>
 
           <Tabs defaultValue="users" className="space-y-6">
-            <TabsList className="grid grid-cols-3 sm:grid-cols-9 w-full max-w-5xl">
+            <TabsList className="grid grid-cols-3 sm:grid-cols-10 w-full max-w-5xl">
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="deposits">Deposits</TabsTrigger>
               <TabsTrigger value="games">Games</TabsTrigger>
@@ -353,6 +354,7 @@ const AdminDashboard = () => {
               <TabsTrigger value="points">Points</TabsTrigger>
               <TabsTrigger value="game-ctrl">Game Ctrl</TabsTrigger>
               <TabsTrigger value="emails">Emails</TabsTrigger>
+              <TabsTrigger value="chat">Chat</TabsTrigger>
             </TabsList>
 
             {/* USERS TAB */}
@@ -1043,6 +1045,10 @@ const AdminDashboard = () => {
                   return res?.logs || [];
                 }}
               />
+            </TabsContent>
+
+            <TabsContent value="chat">
+              <AdminChatPanel />
             </TabsContent>
           </Tabs>
         </motion.div>
