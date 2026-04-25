@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Settings as SettingsIcon, User, ArrowLeft, Volume2, VolumeX, Moon, Sun, Palette, Save, LogOut, Bell, BellOff } from "lucide-react";
+import { Settings as SettingsIcon, User, ArrowLeft, Volume2, VolumeX, Moon, Sun, Palette, Save, LogOut, Bell, BellOff, Smile } from "lucide-react";
+import AvatarPicker from "@/components/AvatarPicker";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,8 @@ const Settings = () => {
   const [editName, setEditName] = useState("");
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [avatarId, setAvatarId] = useState<string | null>(null);
+  const [savingAvatar, setSavingAvatar] = useState(false);
 
   // Preferences
   const [marqueMuted, setMarqueeMuted] = useState(() => {
@@ -53,13 +56,14 @@ const Settings = () => {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("full_name")
+        .select("full_name, avatar_id")
         .eq("user_id", session.user.id)
         .maybeSingle();
 
       if (profile) {
         setUserName(profile.full_name);
         setEditName(profile.full_name);
+        setAvatarId((profile as any).avatar_id ?? null);
       }
 
       const { data: twoFaSettings } = await supabase
@@ -95,6 +99,22 @@ const Settings = () => {
       toast({ title: "Profile updated!" });
     }
     setIsSaving(false);
+  };
+
+  const saveAvatar = async (newAvatarId: string) => {
+    setSavingAvatar(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ avatar_id: newAvatarId } as any)
+      .eq("user_id", userId);
+
+    if (error) {
+      toast({ title: "Failed to update avatar", description: error.message, variant: "destructive" });
+    } else {
+      setAvatarId(newAvatarId);
+      toast({ title: "Avatar updated!" });
+    }
+    setSavingAvatar(false);
   };
 
   const toggleMarquee = (val: boolean) => {
@@ -177,6 +197,19 @@ const Settings = () => {
                   {isSaving ? "Saving..." : "Save Changes"}
                 </Button>
               </div>
+            </Card>
+
+            {/* Avatar Picker */}
+            <Card className="p-6 bg-card lg:col-span-2">
+              <div className="flex items-center gap-3 mb-5">
+                <Smile className="w-6 h-6 text-primary" />
+                <h3 className="text-xl font-semibold">Avatar</h3>
+              </div>
+              <AvatarPicker
+                currentAvatarId={avatarId}
+                onSave={saveAvatar}
+                saving={savingAvatar}
+              />
             </Card>
 
             {/* Preferences */}
