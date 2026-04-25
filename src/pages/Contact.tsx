@@ -36,7 +36,7 @@ const Contact = () => {
               <Mail className="w-10 h-10 text-primary mb-4" />
               <h3 className="text-xl font-semibold mb-2">Email Us</h3>
               <p className="text-gray-400 mb-4">Get in touch via email for detailed inquiries</p>
-              <a href="mailto:support@lootboxx.app" className="text-primary hover:underline">support@lootboxx.app</a>
+              <a href="mailto:lootboxxsupport@gmail.com" className="text-primary hover:underline whitespace-pre-line">lootboxxsupport@gmail.com{"\n\n"}</a>
             </motion.div>
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} className="glass glass-hover rounded-xl p-6">
               <MessageSquare className="w-10 h-10 text-primary mb-4" />
