@@ -5,6 +5,7 @@ import Navigation from "@/components/Navigation";
 import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
 import MascotBackground from "@/components/MascotBackground";
+import LiveChatWidget from "@/components/LiveChatWidget";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -272,6 +273,7 @@ const FAQ = () => {
         </motion.div>
       </div>
       <Footer />
+      <LiveChatWidget />
     </div>
   );
 };
