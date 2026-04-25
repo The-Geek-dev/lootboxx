@@ -147,16 +147,32 @@ const AppSidebar = () => {
                 <Link
                   to="/admin"
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
+                    "relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
                     location.pathname === "/admin"
                       ? "bg-primary/10 text-primary font-medium"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     !open && "justify-center px-0"
                   )}
-                  title={!open ? "Admin" : undefined}
+                  title={!open ? `Admin${unreadChats > 0 ? ` (${unreadChats} new)` : ""}` : undefined}
                 >
-                  <Shield className="w-4 h-4 shrink-0" />
-                  {open && <span>Admin</span>}
+                  <div className="relative">
+                    <Shield className="w-4 h-4 shrink-0" />
+                    {unreadChats > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-[16px] px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
+                        {unreadChats > 9 ? "9+" : unreadChats}
+                      </span>
+                    )}
+                  </div>
+                  {open && (
+                    <span className="flex items-center gap-2">
+                      Admin
+                      {unreadChats > 0 && (
+                        <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
+                          {unreadChats > 9 ? "9+" : unreadChats}
+                        </span>
+                      )}
+                    </span>
+                  )}
                 </Link>
                 <Link
                   to="/admin/payouts"
