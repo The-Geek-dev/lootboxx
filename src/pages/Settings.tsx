@@ -199,6 +199,19 @@ const Settings = () => {
               </div>
             </Card>
 
+            {/* Avatar Picker */}
+            <Card className="p-6 bg-card lg:col-span-2">
+              <div className="flex items-center gap-3 mb-5">
+                <Smile className="w-6 h-6 text-primary" />
+                <h3 className="text-xl font-semibold">Avatar</h3>
+              </div>
+              <AvatarPicker
+                currentAvatarId={avatarId}
+                onSave={saveAvatar}
+                saving={savingAvatar}
+              />
+            </Card>
+
             {/* Preferences */}
             <Card className="p-6 bg-card">
               <div className="flex items-center gap-3 mb-5">
