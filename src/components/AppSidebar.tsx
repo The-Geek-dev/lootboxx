@@ -37,6 +37,7 @@ const AppSidebar = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [unreadChats, setUnreadChats] = useState(0);
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -50,6 +51,24 @@ const AppSidebar = () => {
       setIsAdmin(!!data);
     });
   }, []);
+
+  // Poll unread chat count for admins
+  useEffect(() => {
+    if (!isAdmin) return;
+    const fetchUnread = async () => {
+      const { data } = await supabase
+        .from("chat_conversations")
+        .select("admin_unread_count");
+      const total = (data || []).reduce((sum, r: any) => sum + (r.admin_unread_count || 0), 0);
+      setUnreadChats(total);
+    };
+    fetchUnread();
+    const channel = supabase
+      .channel("sidebar-chat-unread")
+      .on("postgres_changes", { event: "*", schema: "public", table: "chat_conversations" }, fetchUnread)
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [isAdmin]);
 
   // Close sidebar on route change (mobile)
   useEffect(() => {
