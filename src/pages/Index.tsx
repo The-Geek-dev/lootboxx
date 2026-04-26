@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Gamepad2, Gift } from "lucide-react";
-import WaitlistForm from "@/components/WaitlistForm";
+
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
 import AppSidebar from "@/components/AppSidebar";
@@ -152,27 +152,6 @@ const Index = () => {
         <MascotBackground position="left" />
         <TestimonialsSection />
       </div>
-
-      {/* CTA Section */}
-      <section className="container px-4 py-20 relative bg-black overflow-hidden">
-        <MascotBackground variant="watermark" corner="top-left" />
-        <div 
-          className="absolute inset-0 opacity-40"
-          style={{
-            backgroundImage: 'url("/lovable-uploads/21f3edfb-62b5-4e35-9d03-7339d803b980.png")',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="bg-[#0A0A0A]/80 backdrop-blur-lg border border-white/10 rounded-2xl p-8 md:p-12 relative z-10"
-        >
-          <WaitlistForm />
-        </motion.div>
-      </section>
 
       {/* Footer */}
       <div className="bg-black">
