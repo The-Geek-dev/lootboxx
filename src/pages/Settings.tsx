@@ -26,6 +26,7 @@ const Settings = () => {
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [avatarId, setAvatarId] = useState<string | null>(null);
+  const [customAvatarUrl, setCustomAvatarUrl] = useState<string | null>(null);
   const [savingAvatar, setSavingAvatar] = useState(false);
 
   // Preferences
@@ -56,7 +57,7 @@ const Settings = () => {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("full_name, avatar_id")
+        .select("full_name, avatar_id, custom_avatar_url")
         .eq("user_id", session.user.id)
         .maybeSingle();
 
@@ -64,6 +65,7 @@ const Settings = () => {
         setUserName(profile.full_name);
         setEditName(profile.full_name);
         setAvatarId((profile as any).avatar_id ?? null);
+        setCustomAvatarUrl((profile as any).custom_avatar_url ?? null);
       }
 
       const { data: twoFaSettings } = await supabase
@@ -113,6 +115,21 @@ const Settings = () => {
     } else {
       setAvatarId(newAvatarId);
       toast({ title: "Avatar updated!" });
+    }
+    setSavingAvatar(false);
+  };
+
+  const saveCustomAvatarUrl = async (url: string | null) => {
+    setSavingAvatar(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ custom_avatar_url: url } as any)
+      .eq("user_id", userId);
+
+    if (error) {
+      toast({ title: "Failed to save photo", description: error.message, variant: "destructive" });
+    } else {
+      setCustomAvatarUrl(url);
     }
     setSavingAvatar(false);
   };
@@ -206,8 +223,11 @@ const Settings = () => {
                 <h3 className="text-xl font-semibold">Avatar</h3>
               </div>
               <AvatarPicker
+                userId={userId}
                 currentAvatarId={avatarId}
-                onSave={saveAvatar}
+                currentCustomUrl={customAvatarUrl}
+                onSavePreset={saveAvatar}
+                onSaveCustomUrl={saveCustomAvatarUrl}
                 saving={savingAvatar}
               />
             </Card>

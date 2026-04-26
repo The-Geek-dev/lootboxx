@@ -13,7 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const DEPOSIT_TIERS = [
-  { label: "Activation", amount: 7000, bonus: 1000, points: 500, type: "activation", description: "One-time account activation" },
+  { label: "Activation", amount: 7000, bonus: 1000, points: 1000, type: "activation", description: "One-time account activation" },
   { label: "Weekly Renewal", amount: 2000, bonus: 200, points: 150, type: "renewal", description: "Renew your weekly access" },
   { label: "Top-up ₦5,000", amount: 5000, bonus: 500, points: 300, type: "topup", description: "Add funds to your wallet" },
   { label: "Top-up ₦10,000", amount: 10000, bonus: 1500, points: 700, type: "topup", description: "Best value top-up" },

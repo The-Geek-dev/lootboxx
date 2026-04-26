@@ -33,7 +33,13 @@ export const AVATAR_PRESETS: AvatarPreset[] = [
 
 export const DEFAULT_AVATAR_ID = "bot-neon";
 
-export function getAvatarUrl(avatarId?: string | null): string {
+export function getAvatarUrl(
+  avatarId?: string | null,
+  customUrl?: string | null
+): string {
+  // Custom uploaded image takes priority
+  if (customUrl && customUrl.trim()) return customUrl;
+
   const preset =
     AVATAR_PRESETS.find((a) => a.id === avatarId) ??
     AVATAR_PRESETS.find((a) => a.id === DEFAULT_AVATAR_ID)!;
