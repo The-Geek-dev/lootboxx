@@ -164,7 +164,9 @@ const TransactionHistory = () => {
                     </p>
                   </div>
                   <p className={`font-bold whitespace-nowrap ${getAmountColor(tx.type)}`}>
-                    {tx.type === "game_loss" ? "-" : "+"}₦{tx.amount.toLocaleString()}
+                    {tx.type === "game_loss"
+                      ? `-${tx.amount.toLocaleString()} pts`
+                      : `+₦${tx.amount.toLocaleString()}`}
                   </p>
                 </Card>
               ))}
