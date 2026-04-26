@@ -832,6 +832,7 @@ export type Database = {
       contribute_to_jackpot:
         | { Args: { contribution: number }; Returns: Json }
         | { Args: { contribution: number; player_id: string }; Returns: Json }
+      convert_points_to_cash: { Args: never; Returns: Json }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
