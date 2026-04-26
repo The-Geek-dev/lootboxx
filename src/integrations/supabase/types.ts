@@ -819,6 +819,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_game_result: {
+        Args: {
+          p_game_type: string
+          p_point_cost: number
+          p_result?: Json
+          p_win_amount: number
+        }
+        Returns: Json
+      }
       buy_xp_refill: { Args: never; Returns: boolean }
       contribute_to_jackpot:
         | { Args: { contribution: number }; Returns: Json }
