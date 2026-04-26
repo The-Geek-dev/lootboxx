@@ -152,24 +152,44 @@ const TransactionHistory = () => {
             </Card>
           ) : (
             <div className="space-y-3">
-              {filtered.map((tx) => (
-                <Card key={tx.id} className="glass p-4 flex items-center gap-4">
-                  <div className="shrink-0">{getIcon(tx.type)}</div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{tx.description}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(tx.created_at).toLocaleDateString("en-NG", {
-                        year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
-                      })}
-                    </p>
-                  </div>
-                  <p className={`font-bold whitespace-nowrap ${getAmountColor(tx.type)}`}>
-                    {tx.type === "game_loss"
-                      ? `-${tx.amount.toLocaleString()} pts`
-                      : `+₦${tx.amount.toLocaleString()}`}
-                  </p>
-                </Card>
-              ))}
+              {filtered.map((tx) => {
+                const isPoints = tx.type === "game_loss";
+                const sign = isPoints ? "-" : "+";
+                const value = isPoints
+                  ? `${sign}${tx.amount.toLocaleString()}`
+                  : `${sign}₦${tx.amount.toLocaleString()}`;
+                return (
+                  <Card key={tx.id} className="glass p-4 flex items-center gap-4">
+                    <div className="shrink-0">{getIcon(tx.type)}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-medium truncate">{tx.description}</p>
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                            isPoints
+                              ? "bg-primary/15 text-primary border-primary/30"
+                              : "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                          }`}
+                          aria-label={isPoints ? "Points" : "Naira"}
+                        >
+                          {isPoints ? "PTS" : "₦ NGN"}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(tx.created_at).toLocaleDateString("en-NG", {
+                          year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
+                    <div className="text-right whitespace-nowrap">
+                      <p className={`font-bold ${getAmountColor(tx.type)}`}>{value}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
+                        {isPoints ? "points" : "naira"}
+                      </p>
+                    </div>
+                  </Card>
+                );
+              })}
             </div>
           )}
         </motion.div>
