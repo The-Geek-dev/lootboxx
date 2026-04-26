@@ -24,74 +24,35 @@ export const usePoints = () => {
 
   useEffect(() => { fetchPoints(); }, []);
 
+  // Optimistic local update — server-side credits/deductions are handled by RPCs
+  // (apply_game_result for gameplay, convert_points_to_cash for conversions, edge functions for deposits)
   const addPoints = async (amount: number) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return false;
-
-    const newPoints = points + amount;
-    const { error } = await supabase
-      .from("user_wallets")
-      .update({ points: newPoints })
-      .eq("user_id", session.user.id);
-
-    if (!error) {
-      setPoints(newPoints);
-      return true;
-    }
-    return false;
+    setPoints((p) => Math.max(0, p + amount));
+    return true;
   };
 
+  // Optimistic local deduction. The actual point deduction is performed
+  // server-side inside apply_game_result when the game records its result.
   const spendPoints = async (amount: number): Promise<boolean> => {
     if (points < amount) return false;
-
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return false;
-
-    const newPoints = points - amount;
-    const { error } = await supabase
-      .from("user_wallets")
-      .update({ points: newPoints })
-      .eq("user_id", session.user.id);
-
-    if (!error) {
-      setPoints(newPoints);
-      return true;
-    }
-    return false;
+    setPoints((p) => p - amount);
+    return true;
   };
 
   const convertToCash = async (): Promise<{ success: boolean; cashAmount: number }> => {
     if (points < MIN_CONVERT_POINTS) return { success: false, cashAmount: 0 };
 
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return { success: false, cashAmount: 0 };
+    const { data, error } = await supabase.rpc("convert_points_to_cash");
 
-    const batchesOf5k = Math.floor(points / MIN_CONVERT_POINTS);
-    const pointsToConvert = batchesOf5k * MIN_CONVERT_POINTS;
-    const cashAmount = pointsToConvert / POINTS_TO_CASH_RATE;
-    const remainingPoints = points - pointsToConvert;
-
-    const { data: wallet } = await supabase
-      .from("user_wallets")
-      .select("balance")
-      .eq("user_id", session.user.id)
-      .single();
-
-    if (!wallet) return { success: false, cashAmount: 0 };
-
-    const { error } = await supabase
-      .from("user_wallets")
-      .update({
-        points: remainingPoints,
-        balance: Number(wallet.balance) + cashAmount,
-      })
-      .eq("user_id", session.user.id);
-
-    if (!error) {
-      setPoints(remainingPoints);
-      return { success: true, cashAmount };
+    if (error || !data || !(data as any).success) {
+      console.error("convert_points_to_cash failed:", error);
+      await fetchPoints();
+      return { success: false, cashAmount: 0 };
     }
-    return { success: false, cashAmount: 0 };
+
+    const result = data as any;
+    setPoints(Number(result.points_remaining ?? 0));
+    return { success: true, cashAmount: Number(result.cash_amount ?? 0) };
   };
 
   return {

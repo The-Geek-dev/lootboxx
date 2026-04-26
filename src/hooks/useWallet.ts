@@ -18,51 +18,46 @@ export const useWallet = () => {
     if (data) {
       setBalance(Number(data.balance));
     } else {
-      // Create wallet if not exists
       await supabase.from("user_wallets").insert({ user_id: session.user.id });
       setBalance(0);
     }
     setLoading(false);
   };
 
+  // Local optimistic update only — server-side credits happen via apply_game_result RPC
   const updateBalance = async (amount: number) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return false;
-
-    const newBalance = balance + amount;
-    if (newBalance < 0) return false;
-
-    const { error } = await supabase
-      .from("user_wallets")
-      .update({ balance: newBalance })
-      .eq("user_id", session.user.id);
-
-    if (!error) {
-      setBalance(newBalance);
-      return true;
-    }
-    return false;
+    setBalance((b) => Math.max(0, b + amount));
+    return true;
   };
 
-  const recordGameResult = async (gameType: string, betAmount: number, winAmount: number, result: object) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
+  // Records the game result server-side: deducts points, credits balance, inserts game_results
+  const recordGameResult = async (
+    gameType: string,
+    pointCost: number,
+    winAmount: number,
+    result: object,
+  ) => {
+    const { data, error } = await supabase.rpc("apply_game_result", {
+      p_game_type: gameType,
+      p_point_cost: pointCost,
+      p_win_amount: winAmount,
+      p_result: result as any,
+    });
 
-    await supabase.from("game_results").insert([{
-      user_id: session.user.id,
-      game_type: gameType,
-      bet_amount: betAmount,
-      win_amount: winAmount,
-      result: result as any,
-    }]);
-
-    // Update wallet totals
-    if (winAmount > 0) {
-      await supabase
-        .from("user_wallets")
-        .update({ total_won: balance + winAmount })
-        .eq("user_id", session.user.id);
+    if (error) {
+      console.error("apply_game_result failed:", error);
+      // Re-sync from server to undo optimistic UI
+      await fetchBalance();
+      return { success: false, error };
     }
+
+    // Sync from RPC response
+    if (data && typeof (data as any).balance === "number") {
+      setBalance(Number((data as any).balance));
+    } else {
+      await fetchBalance();
+    }
+    return { success: true, data };
   };
 
   useEffect(() => {
