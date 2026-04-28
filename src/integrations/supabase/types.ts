@@ -160,6 +160,63 @@ export type Database = {
         }
         Relationships: []
       }
+      deposit_receipts: {
+        Row: {
+          ai_notes: string | null
+          amount: number
+          bonus: number
+          created_at: string
+          deposit_type: string
+          extracted_account: string | null
+          extracted_amount: number | null
+          extracted_recipient: string | null
+          id: string
+          points_reward: number
+          receipt_url: string
+          rejection_reason: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_notes?: string | null
+          amount: number
+          bonus?: number
+          created_at?: string
+          deposit_type: string
+          extracted_account?: string | null
+          extracted_amount?: number | null
+          extracted_recipient?: string | null
+          id?: string
+          points_reward?: number
+          receipt_url: string
+          rejection_reason?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_notes?: string | null
+          amount?: number
+          bonus?: number
+          created_at?: string
+          deposit_type?: string
+          extracted_account?: string | null
+          extracted_amount?: number | null
+          extracted_recipient?: string | null
+          id?: string
+          points_reward?: number
+          receipt_url?: string
+          rejection_reason?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       deposits: {
         Row: {
           amount: number
@@ -833,6 +890,16 @@ export type Database = {
         | { Args: { contribution: number }; Returns: Json }
         | { Args: { contribution: number; player_id: string }; Returns: Json }
       convert_points_to_cash: { Args: never; Returns: Json }
+      credit_verified_deposit: {
+        Args: {
+          p_amount: number
+          p_bonus: number
+          p_deposit_type: string
+          p_points: number
+          p_user_id: string
+        }
+        Returns: Json
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
