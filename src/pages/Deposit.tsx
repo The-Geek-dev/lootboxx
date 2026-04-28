@@ -181,7 +181,7 @@ const LiveDepositView = () => {
 
       if (verifyErr) throw verifyErr;
 
-      const status = verifyData?.status as Step | undefined;
+      const status = verifyData?.status as string | undefined;
       const message = verifyData?.message as string | undefined;
       setResultMsg(message || "");
 
