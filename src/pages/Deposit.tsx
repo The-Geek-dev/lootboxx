@@ -35,7 +35,8 @@ const DEPOSIT_TIERS = [
 ];
 
 type Tier = (typeof DEPOSIT_TIERS)[number];
-type Step = "select" | "transfer" | "verifying" | "success" | "rejected" | "manual_review";
+type Step = "select" | "method" | "transfer" | "verifying" | "success" | "rejected" | "manual_review";
+type PayMethod = "squad" | "manual";
 
 const ComingSoonView = () => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md mx-auto">
@@ -88,6 +89,7 @@ const LiveDepositView = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [resultMsg, setResultMsg] = useState<string>("");
+  const [paying, setPaying] = useState(false);
 
   useEffect(() => {
     const checkActivation = async () => {
@@ -119,7 +121,61 @@ const LiveDepositView = () => {
 
   const handlePickTier = (tier: Tier) => {
     setSelectedTier(tier);
-    setStep("transfer");
+    setStep("method");
+  };
+
+  // On mount, if URL has ?reference= from Squad redirect, auto-verify
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("reference") || params.get("transaction_ref");
+    if (!ref) return;
+    (async () => {
+      setStep("verifying");
+      try {
+        const { data, error } = await supabase.functions.invoke("squad-verify", {
+          body: { transaction_ref: ref },
+        });
+        if (error) throw error;
+        if (data?.success) {
+          setResultMsg("Your wallet has been credited.");
+          setStep("success");
+          setIsActivated(true);
+        } else {
+          setResultMsg(data?.message || "Payment was not completed.");
+          setStep("rejected");
+        }
+      } catch (e: any) {
+        setResultMsg(e.message || "Verification failed");
+        setStep("rejected");
+      } finally {
+        // Clean URL
+        window.history.replaceState({}, "", "/deposit");
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const startSquadPayment = async () => {
+    if (!selectedTier) return;
+    setPaying(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("squad-initialize", {
+        body: {
+          amount: selectedTier.amount,
+          deposit_type: selectedTier.type,
+          bonus: selectedTier.bonus,
+          points_reward: selectedTier.points,
+          callback_url: `${window.location.origin}/deposit`,
+        },
+      });
+      if (error) throw error;
+      if (!data?.checkout_url) throw new Error("No checkout URL returned");
+      window.location.href = data.checkout_url;
+    } catch (e: any) {
+      console.error(e);
+      toast({ title: "Could not start payment", description: e.message, variant: "destructive" });
+      setPaying(false);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -270,6 +326,51 @@ const LiveDepositView = () => {
           <Button className="button-gradient" onClick={() => navigate("/")}>Back to Home</Button>
           <Button variant="outline" onClick={resetFlow}>Submit Another</Button>
         </div>
+      </motion.div>
+    );
+  }
+
+  if (step === "method" && selectedTier) {
+    return (
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-xl mx-auto w-full">
+        <Button variant="ghost" size="sm" onClick={resetFlow} className="mb-3">
+          <ArrowLeft className="w-4 h-4 mr-1" /> Back
+        </Button>
+        <h1 className="text-2xl font-bold mb-1">Pay ₦{selectedTier.amount.toLocaleString()}</h1>
+        <p className="text-muted-foreground text-sm mb-5">Choose how you'd like to pay.</p>
+
+        <Card
+          onClick={() => !paying && startSquadPayment()}
+          className="p-4 mb-3 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-all"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-bold text-foreground">Pay with Card / Bank / USSD</h3>
+                <span className="text-[10px] font-bold bg-primary/20 text-primary px-2 py-0.5 rounded-full">RECOMMENDED</span>
+              </div>
+              <p className="text-sm text-muted-foreground">Instant — wallet credits automatically.</p>
+            </div>
+            {paying ? (
+              <Loader2 className="w-5 h-5 animate-spin text-primary shrink-0" />
+            ) : (
+              <Rocket className="w-5 h-5 text-primary shrink-0" />
+            )}
+          </div>
+        </Card>
+
+        <Card
+          onClick={() => setStep("transfer")}
+          className="p-4 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-all"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <h3 className="font-bold text-foreground">Manual Bank Transfer</h3>
+              <p className="text-sm text-muted-foreground">Backup option — transfer & upload receipt.</p>
+            </div>
+            <Building2 className="w-5 h-5 text-muted-foreground shrink-0" />
+          </div>
+        </Card>
       </motion.div>
     );
   }
