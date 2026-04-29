@@ -23,12 +23,12 @@ Deno.serve(async (req) => {
     const userClient = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: authHeader } },
     });
-    const { data: claims, error: claimsErr } = await userClient.auth.getClaims(
-      authHeader.replace("Bearer ", ""),
-    );
-    if (claimsErr || !claims?.claims?.sub) return json({ error: "Unauthorized" }, 401);
-    const userId = claims.claims.sub as string;
-    const email = (claims.claims.email as string) ?? "user@lootboxx.live";
+    const { data: userData, error: userErr } = await userClient.auth.getUser();
+    if (userErr || !userData?.user?.id) {
+      return json({ error: "Unauthorized", details: userErr?.message }, 401);
+    }
+    const userId = userData.user.id;
+    const email = userData.user.email ?? "user@lootboxx.live";
 
     const body = await req.json();
     const { amount, deposit_type, bonus, points_reward, callback_url } = body ?? {};
