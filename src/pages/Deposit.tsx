@@ -35,7 +35,8 @@ const DEPOSIT_TIERS = [
 ];
 
 type Tier = (typeof DEPOSIT_TIERS)[number];
-type Step = "select" | "transfer" | "verifying" | "success" | "rejected" | "manual_review";
+type Step = "select" | "method" | "transfer" | "verifying" | "success" | "rejected" | "manual_review";
+type PayMethod = "squad" | "manual";
 
 const ComingSoonView = () => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md mx-auto">
@@ -88,6 +89,7 @@ const LiveDepositView = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [resultMsg, setResultMsg] = useState<string>("");
+  const [paying, setPaying] = useState(false);
 
   useEffect(() => {
     const checkActivation = async () => {
@@ -119,7 +121,61 @@ const LiveDepositView = () => {
 
   const handlePickTier = (tier: Tier) => {
     setSelectedTier(tier);
-    setStep("transfer");
+    setStep("method");
+  };
+
+  // On mount, if URL has ?reference= from Squad redirect, auto-verify
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("reference") || params.get("transaction_ref");
+    if (!ref) return;
+    (async () => {
+      setStep("verifying");
+      try {
+        const { data, error } = await supabase.functions.invoke("squad-verify", {
+          body: { transaction_ref: ref },
+        });
+        if (error) throw error;
+        if (data?.success) {
+          setResultMsg("Your wallet has been credited.");
+          setStep("success");
+          setIsActivated(true);
+        } else {
+          setResultMsg(data?.message || "Payment was not completed.");
+          setStep("rejected");
+        }
+      } catch (e: any) {
+        setResultMsg(e.message || "Verification failed");
+        setStep("rejected");
+      } finally {
+        // Clean URL
+        window.history.replaceState({}, "", "/deposit");
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const startSquadPayment = async () => {
+    if (!selectedTier) return;
+    setPaying(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("squad-initialize", {
+        body: {
+          amount: selectedTier.amount,
+          deposit_type: selectedTier.type,
+          bonus: selectedTier.bonus,
+          points_reward: selectedTier.points,
+          callback_url: `${window.location.origin}/deposit`,
+        },
+      });
+      if (error) throw error;
+      if (!data?.checkout_url) throw new Error("No checkout URL returned");
+      window.location.href = data.checkout_url;
+    } catch (e: any) {
+      console.error(e);
+      toast({ title: "Could not start payment", description: e.message, variant: "destructive" });
+      setPaying(false);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
