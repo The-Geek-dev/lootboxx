@@ -330,6 +330,51 @@ const LiveDepositView = () => {
     );
   }
 
+  if (step === "method" && selectedTier) {
+    return (
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-xl mx-auto w-full">
+        <Button variant="ghost" size="sm" onClick={resetFlow} className="mb-3">
+          <ArrowLeft className="w-4 h-4 mr-1" /> Back
+        </Button>
+        <h1 className="text-2xl font-bold mb-1">Pay ₦{selectedTier.amount.toLocaleString()}</h1>
+        <p className="text-muted-foreground text-sm mb-5">Choose how you'd like to pay.</p>
+
+        <Card
+          onClick={() => !paying && startSquadPayment()}
+          className="p-4 mb-3 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-all"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-bold text-foreground">Pay with Card / Bank / USSD</h3>
+                <span className="text-[10px] font-bold bg-primary/20 text-primary px-2 py-0.5 rounded-full">RECOMMENDED</span>
+              </div>
+              <p className="text-sm text-muted-foreground">Instant — wallet credits automatically.</p>
+            </div>
+            {paying ? (
+              <Loader2 className="w-5 h-5 animate-spin text-primary shrink-0" />
+            ) : (
+              <Rocket className="w-5 h-5 text-primary shrink-0" />
+            )}
+          </div>
+        </Card>
+
+        <Card
+          onClick={() => setStep("transfer")}
+          className="p-4 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-all"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <h3 className="font-bold text-foreground">Manual Bank Transfer</h3>
+              <p className="text-sm text-muted-foreground">Backup option — transfer & upload receipt.</p>
+            </div>
+            <Building2 className="w-5 h-5 text-muted-foreground shrink-0" />
+          </div>
+        </Card>
+      </motion.div>
+    );
+  }
+
   if (step === "transfer" && selectedTier) {
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto w-full">
