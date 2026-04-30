@@ -20,7 +20,7 @@ const QUESTION_COUNT = 5;
 const TIME_PER_QUESTION = 6;
 
 const TriviaQuiz = () => {
-  const { isAuthorized, isChecking } = useDepositGate();
+  const { isAuthorized, isChecking, needsActivation, activationReason } = useDepositGate();
   const { updateBalance, recordGameResult } = useWallet();
   const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
