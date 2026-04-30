@@ -90,8 +90,9 @@ export const Scene1Intro: React.FC = () => {
 
       <CaptionTrack
         cues={[
-          { start: 0.2, end: 2.6, text: "Welcome to LootBoxx." },
-          { start: 2.6, end: 5.6, text: "Here's a quick tour of the platform." },
+          { start: 0.2, end: 3.5, text: "Welcome to LootBoxx — Nigeria's smartest play and win platform." },
+          { start: 3.5, end: 6.8, text: "In 90 seconds, see everything from sign up to cash out." },
+          { start: 6.8, end: 10.0, text: "Make we begin!" },
         ]}
       />
     </AbsoluteFill>

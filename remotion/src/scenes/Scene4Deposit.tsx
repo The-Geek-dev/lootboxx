@@ -9,9 +9,7 @@ import { Cursor } from "../components/Cursor";
 const { fontFamily } = loadFont("normal", { weights: ["400", "600", "700", "800"], subsets: ["latin"] });
 
 const TIERS = [
-  { amount: "₦7,000", label: "Activation", desc: "One-time unlock" },
-  { amount: "₦15,000", label: "Standard", desc: "Most popular", featured: true },
-  { amount: "₦30,000", label: "Premium", desc: "Best value" },
+  { amount: "₦7,000", label: "Activation Fee", desc: "One-time · unlocks everything", featured: true },
 ];
 
 export const Scene4Deposit: React.FC = () => {
