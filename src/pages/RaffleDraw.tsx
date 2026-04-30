@@ -9,6 +9,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { Ticket, Clock, Trophy } from "lucide-react";
 import { useDepositGate } from "@/hooks/useDepositGate";
+import ActivationGate from "@/components/ActivationGate";
 import GamePageLayout from "@/components/GamePageLayout";
 
 const TICKET_COST = 50;
@@ -16,7 +17,7 @@ const PRIZE_POOL = 25000;
 const DRAW_INTERVAL_MINUTES = 30;
 
 const RaffleDraw = () => {
-  const { isAuthorized, isChecking } = useDepositGate();
+  const { isAuthorized, isChecking, needsActivation, activationReason } = useDepositGate();
   const { updateBalance, recordGameResult } = useWallet();
   const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
@@ -51,6 +52,8 @@ const RaffleDraw = () => {
       </div>
     </div>
   );
+
+  if (needsActivation) return <ActivationGate reason={activationReason} title={activationReason === "expired" ? "Renew to Enter" : "Activate to Enter"} />;
 
   const buyTickets = async () => {
     if (xpLives <= 0) { toast({ title: "No XP lives left! ⚡", description: "Wait for refill or buy with points.", variant: "destructive" }); return; }

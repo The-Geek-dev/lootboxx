@@ -9,6 +9,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { Brain, CheckCircle, XCircle, Clock } from "lucide-react";
 import { useDepositGate } from "@/hooks/useDepositGate";
+import ActivationGate from "@/components/ActivationGate";
 import GamePageLayout from "@/components/GamePageLayout";
 import { pickUniqueQuestions, markSeen, TriviaQuestion } from "@/config/triviaQuestions";
 
@@ -19,7 +20,7 @@ const QUESTION_COUNT = 5;
 const TIME_PER_QUESTION = 6;
 
 const TriviaQuiz = () => {
-  const { isAuthorized, isChecking } = useDepositGate();
+  const { isAuthorized, isChecking, needsActivation, activationReason } = useDepositGate();
   const { updateBalance, recordGameResult } = useWallet();
   const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
@@ -117,6 +118,8 @@ const TriviaQuiz = () => {
       </div>
     </div>
   );
+
+  if (needsActivation) return <ActivationGate reason={activationReason} title={activationReason === "expired" ? "Renew to Play" : "Activate to Play"} />;
 
   const question = questions[currentQ];
   const timerPct = (timeLeft / TIME_PER_QUESTION) * 100;

@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { useDepositGate } from "@/hooks/useDepositGate";
+import ActivationGate from "@/components/ActivationGate";
 import GamePageLayout from "@/components/GamePageLayout";
 import { LUCKY_SLOTS } from "@/config/payouts";
 
@@ -17,7 +18,7 @@ const BET_COST = 20;
 const PAYOUTS = LUCKY_SLOTS.combos;
 
 const LuckySlots = () => {
-  const { isAuthorized, isChecking } = useDepositGate();
+  const { isAuthorized, isChecking, needsActivation, activationReason } = useDepositGate();
   const { updateBalance, recordGameResult } = useWallet();
   const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
@@ -86,6 +87,8 @@ const LuckySlots = () => {
       </div>
     </div>
   );
+
+  if (needsActivation) return <ActivationGate reason={activationReason} title={activationReason === "expired" ? "Renew to Spin" : "Activate to Spin"} />;
 
   return (
     <GamePageLayout>
