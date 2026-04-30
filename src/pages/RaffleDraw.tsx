@@ -9,6 +9,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { Ticket, Clock, Trophy } from "lucide-react";
 import { useDepositGate } from "@/hooks/useDepositGate";
+import ActivationGate from "@/components/ActivationGate";
 import GamePageLayout from "@/components/GamePageLayout";
 
 const TICKET_COST = 50;
