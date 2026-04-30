@@ -145,7 +145,7 @@ export const Scene4Deposit: React.FC = () => {
               boxShadow: `0 0 30px ${COLORS.primaryGlow}`,
             }}
           >
-            🔒 Pay with Flutterwave
+            🔒 Pay ₦7,000 with Paystack
           </div>
         </div>
 
@@ -180,8 +180,8 @@ export const Scene4Deposit: React.FC = () => {
             >
               ✓
             </div>
-            <div style={{ color: COLORS.text, fontSize: 32, fontWeight: 800 }}>Deposit successful!</div>
-            <div style={{ color: COLORS.textDim, fontSize: 18 }}>₦15,000 added to your wallet</div>
+            <div style={{ color: COLORS.text, fontSize: 32, fontWeight: 800 }}>Account activated! 🎉</div>
+            <div style={{ color: COLORS.textDim, fontSize: 18 }}>You can now play any game on LootBoxx</div>
           </div>
         )}
       </BrowserChrome>
@@ -189,9 +189,9 @@ export const Scene4Deposit: React.FC = () => {
       <Cursor path={cursorPath} legDuration={20} clickFrame={120} />
       <CaptionTrack
         cues={[
-          { start: 0.2, end: 2.6, text: "Head to Deposit to top up your wallet." },
-          { start: 2.6, end: 5.0, text: "Pick a tier — start with seven thousand to activate." },
-          { start: 5.0, end: 7.3, text: "Pay securely through Flutterwave." },
+          { start: 0.2, end: 4.0, text: "Head to Deposit. New users see one option — the ₦7,000 activation fee." },
+          { start: 4.0, end: 8.0, text: "Pay it once with Paystack." },
+          { start: 8.0, end: 12.0, text: "Your account dey live forever." },
         ]}
       />
     </AbsoluteFill>
