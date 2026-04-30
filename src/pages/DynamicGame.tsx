@@ -46,7 +46,7 @@ import { useEffect } from "react";
 const DynamicGame = () => {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
-  const { isAuthorized, isChecking } = useDepositGate();
+  const { isAuthorized, isChecking, needsActivation, activationReason } = useDepositGate();
 
   const game = allGames.find((g) => g.id === gameId);
 
@@ -62,6 +62,8 @@ const DynamicGame = () => {
       </div>
     </div>
   );
+
+  if (needsActivation) return <ActivationGate reason={activationReason} title={activationReason === "expired" ? "Renew to Play" : "Activate to Play"} />;
 
   if (!game) return null;
 
