@@ -16,12 +16,12 @@ export const Scene4Deposit: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Cursor: nav → Standard tier → Pay button
+  // Cursor: nav → tier card → Pay button
   const cursorPath = [
     { x: 1100, y: 80 },
     { x: 740, y: 88 },   // Deposit nav
     { x: 740, y: 88 },
-    { x: 640, y: 360 },  // Standard tier
+    { x: 640, y: 360 },  // Tier card (centered)
     { x: 640, y: 360 },
     { x: 640, y: 540 },  // Pay button
   ];
