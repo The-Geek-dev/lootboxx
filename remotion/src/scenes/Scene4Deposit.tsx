@@ -9,28 +9,26 @@ import { Cursor } from "../components/Cursor";
 const { fontFamily } = loadFont("normal", { weights: ["400", "600", "700", "800"], subsets: ["latin"] });
 
 const TIERS = [
-  { amount: "₦7,000", label: "Activation", desc: "One-time unlock" },
-  { amount: "₦15,000", label: "Standard", desc: "Most popular", featured: true },
-  { amount: "₦30,000", label: "Premium", desc: "Best value" },
+  { amount: "₦7,000", label: "Activation Fee", desc: "One-time · unlocks everything", featured: true },
 ];
 
 export const Scene4Deposit: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Cursor: nav → Standard tier → Pay button
+  // Cursor: nav → tier card → Pay button
   const cursorPath = [
     { x: 1100, y: 80 },
     { x: 740, y: 88 },   // Deposit nav
     { x: 740, y: 88 },
-    { x: 640, y: 360 },  // Standard tier
+    { x: 640, y: 360 },  // Tier card (centered)
     { x: 640, y: 360 },
     { x: 640, y: 540 },  // Pay button
   ];
 
   const tierSpring = (i: number) => spring({ frame: frame - 30 - i * 5, fps, config: { damping: 18, stiffness: 180 } });
 
-  const selectedTier = frame >= 80 ? 1 : -1;
+  const selectedTier = frame >= 80 ? 0 : -1;
 
   // Success overlay after pay
   const paid = frame >= 130;
@@ -147,7 +145,7 @@ export const Scene4Deposit: React.FC = () => {
               boxShadow: `0 0 30px ${COLORS.primaryGlow}`,
             }}
           >
-            🔒 Pay with Flutterwave
+            🔒 Pay ₦7,000 with Paystack
           </div>
         </div>
 
@@ -182,8 +180,8 @@ export const Scene4Deposit: React.FC = () => {
             >
               ✓
             </div>
-            <div style={{ color: COLORS.text, fontSize: 32, fontWeight: 800 }}>Deposit successful!</div>
-            <div style={{ color: COLORS.textDim, fontSize: 18 }}>₦15,000 added to your wallet</div>
+            <div style={{ color: COLORS.text, fontSize: 32, fontWeight: 800 }}>Account activated! 🎉</div>
+            <div style={{ color: COLORS.textDim, fontSize: 18 }}>You can now play any game on LootBoxx</div>
           </div>
         )}
       </BrowserChrome>
@@ -191,9 +189,9 @@ export const Scene4Deposit: React.FC = () => {
       <Cursor path={cursorPath} legDuration={20} clickFrame={120} />
       <CaptionTrack
         cues={[
-          { start: 0.2, end: 2.6, text: "Head to Deposit to top up your wallet." },
-          { start: 2.6, end: 5.0, text: "Pick a tier — start with seven thousand to activate." },
-          { start: 5.0, end: 7.3, text: "Pay securely through Flutterwave." },
+          { start: 0.2, end: 4.0, text: "Head to Deposit. New users see one option — the ₦7,000 activation fee." },
+          { start: 4.0, end: 8.0, text: "Pay it once with Paystack." },
+          { start: 8.0, end: 12.0, text: "Your account dey live forever." },
         ]}
       />
     </AbsoluteFill>

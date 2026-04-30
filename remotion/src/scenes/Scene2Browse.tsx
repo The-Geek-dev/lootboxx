@@ -134,9 +134,9 @@ export const Scene2Browse: React.FC = () => {
       <Cursor path={cursorPath} legDuration={25} clickFrame={75} />
       <CaptionTrack
         cues={[
-          { start: 0.2, end: 3.0, text: "Open the Games tab to browse the library." },
-          { start: 3.0, end: 6.0, text: "Pick from slots, dice, crash, mines and more." },
-          { start: 6.0, end: 8.8, text: "Each game costs just 20 points to play." },
+          { start: 0.2, end: 3.5, text: "Once activated, the games hub opens up." },
+          { start: 3.5, end: 7.5, text: "Browse 16+ games — slots, dice, crash, mines, wheel." },
+          { start: 7.5, end: 10.5, text: "Each game costs only 20 points to play." },
         ]}
       />
     </AbsoluteFill>

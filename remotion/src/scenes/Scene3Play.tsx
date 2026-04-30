@@ -189,9 +189,9 @@ export const Scene3Play: React.FC = () => {
       <Cursor path={cursorPath} legDuration={15} clickFrame={15} />
       <CaptionTrack
         cues={[
-          { start: 0.2, end: 2.8, text: "Tap spin and watch the reels roll." },
-          { start: 2.8, end: 5.4, text: "Match three symbols to win real cash." },
-          { start: 5.4, end: 7.8, text: "Winnings land straight in your wallet." },
+          { start: 0.2, end: 3.0, text: "Pick any game, place your bet, and spin." },
+          { start: 3.0, end: 6.5, text: "Match the symbols and win real cash." },
+          { start: 6.5, end: 9.0, text: "Straight to your wallet — no wahala." },
         ]}
       />
     </AbsoluteFill>

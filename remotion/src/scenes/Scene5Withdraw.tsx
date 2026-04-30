@@ -19,19 +19,21 @@ export const Scene5Withdraw: React.FC = () => {
     { x: 640, y: 540 }, // request button
   ];
 
-  // Typing animation for amount
+  // Typing animation for amount (slower, starts later)
   const amountStr = "20,000";
-  const charsToShow = Math.max(0, Math.min(amountStr.length, Math.floor((frame - 10) / 4)));
+  const typeStart = 30;
+  const charsToShow = Math.max(0, Math.min(amountStr.length, Math.floor((frame - typeStart) / 6)));
   const typed = amountStr.slice(0, charsToShow);
 
   const cardSpring = spring({ frame, fps, config: { damping: 18, stiffness: 160 } });
   const cardY = interpolate(cardSpring, [0, 1], [30, 0]);
 
-  const submitted = frame >= 90;
-  const submitSpring = spring({ frame: frame - 90, fps, config: { damping: 14, stiffness: 160 } });
+  const submitFrame = 320;
+  const submitted = frame >= submitFrame;
+  const submitSpring = spring({ frame: frame - submitFrame, fps, config: { damping: 14, stiffness: 160 } });
 
   // Outro after withdraw success
-  const outro = frame >= 135;
+  const outro = frame >= 420;
 
   return (
     <AbsoluteFill style={{ fontFamily: `${fontFamily}, "Noto Color Emoji"`, background: COLORS.bg }}>
@@ -94,7 +96,7 @@ export const Scene5Withdraw: React.FC = () => {
                   height: 64,
                   background: "#000",
                   borderRadius: 12,
-                  border: `2px solid ${frame >= 10 && frame < 80 ? COLORS.primary : COLORS.border}`,
+                  border: `2px solid ${frame >= typeStart && frame < typeStart + 80 ? COLORS.primary : COLORS.border}`,
                   display: "flex",
                   alignItems: "center",
                   padding: "0 20px",
@@ -104,7 +106,7 @@ export const Scene5Withdraw: React.FC = () => {
                 }}
               >
                 {typed}
-                {frame >= 10 && frame < 80 && Math.floor(frame / 8) % 2 === 0 && (
+                {frame >= typeStart && frame < typeStart + 80 && Math.floor(frame / 8) % 2 === 0 && (
                   <span style={{ color: COLORS.primary, marginLeft: 2 }}>|</span>
                 )}
               </div>
@@ -189,7 +191,7 @@ export const Scene5Withdraw: React.FC = () => {
           <div
             style={{
               fontSize: 100,
-              transform: `scale(${interpolate(spring({ frame: frame - 135, fps, config: { damping: 12, stiffness: 150 } }), [0, 1], [0.4, 1])})`,
+              transform: `scale(${interpolate(spring({ frame: frame - 420, fps, config: { damping: 12, stiffness: 150 } }), [0, 1], [0.4, 1])})`,
               filter: `drop-shadow(0 0 40px ${COLORS.primaryGlow})`,
             }}
           >
@@ -204,13 +206,13 @@ export const Scene5Withdraw: React.FC = () => {
         </AbsoluteFill>
       )}
 
-      {!outro && <Cursor path={cursorPath} legDuration={40} clickFrame={88} />}
+      {!outro && <Cursor path={cursorPath} legDuration={150} clickFrame={submitFrame - 8} />}
       <CaptionTrack
         cues={[
-          { start: 0.2, end: 2.8, text: "Ready to cash out? Open the Withdraw page." },
-          { start: 2.8, end: 5.4, text: "Enter the amount and your bank details." },
-          { start: 5.4, end: 7.8, text: "Withdrawals run weekends, 5 to 7 PM WAT." },
-          { start: 7.8, end: 10.8, text: "That's it — sign up, play, and start winning!" },
+          { start: 0.2, end: 4.0, text: "Open Withdraw on a weekend, between 6 and 7 PM." },
+          { start: 4.0, end: 8.0, text: "Enter the amount and your bank details." },
+          { start: 8.0, end: 12.0, text: "Submit — admin processes it quickly." },
+          { start: 12.0, end: 17.5, text: "That's LootBoxx — sign up, activate, play, and win!" },
         ]}
       />
     </AbsoluteFill>
