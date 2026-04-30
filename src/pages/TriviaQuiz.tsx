@@ -9,6 +9,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { Brain, CheckCircle, XCircle, Clock } from "lucide-react";
 import { useDepositGate } from "@/hooks/useDepositGate";
+import ActivationGate from "@/components/ActivationGate";
 import GamePageLayout from "@/components/GamePageLayout";
 import { pickUniqueQuestions, markSeen, TriviaQuestion } from "@/config/triviaQuestions";
 
