@@ -119,6 +119,8 @@ const TriviaQuiz = () => {
     </div>
   );
 
+  if (needsActivation) return <ActivationGate reason={activationReason} title={activationReason === "expired" ? "Renew to Play" : "Activate to Play"} />;
+
   const question = questions[currentQ];
   const timerPct = (timeLeft / TIME_PER_QUESTION) * 100;
 
