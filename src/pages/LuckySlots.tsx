@@ -8,6 +8,7 @@ import { useXpLives } from "@/hooks/useXpLives";
 import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { useDepositGate } from "@/hooks/useDepositGate";
+import ActivationGate from "@/components/ActivationGate";
 import GamePageLayout from "@/components/GamePageLayout";
 import { LUCKY_SLOTS } from "@/config/payouts";
 
