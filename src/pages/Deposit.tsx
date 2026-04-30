@@ -67,9 +67,9 @@ const LiveDepositView = () => {
     checkActivation();
   }, []);
 
-  const availableTiers = DEPOSIT_TIERS.filter(
-    (t) => !(t.type === "activation" && isActivated),
-  );
+  const availableTiers = isActivated
+    ? DEPOSIT_TIERS.filter((t) => t.type !== "activation")
+    : DEPOSIT_TIERS.filter((t) => t.type === "activation");
 
   const handlePickTier = (tier: Tier) => {
     setSelectedTier(tier);
