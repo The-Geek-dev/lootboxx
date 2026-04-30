@@ -8,6 +8,7 @@ import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useDepositGate } from "@/hooks/useDepositGate";
+import ActivationGate from "@/components/ActivationGate";
 import GamePageLayout from "@/components/GamePageLayout";
 
 const SEGMENTS = [
