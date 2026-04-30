@@ -8,6 +8,8 @@ export const useDepositGate = () => {
   const { isLaunched } = useLaunchStatus();
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
+  const [needsActivation, setNeedsActivation] = useState(false);
+  const [activationReason, setActivationReason] = useState<"new" | "expired" | null>(null);
 
   useEffect(() => {
     const check = async () => {
@@ -17,48 +19,44 @@ export const useDepositGate = () => {
         return;
       }
 
+      // All authenticated users may browse the site freely.
+      setIsAuthorized(true);
+
       if (!isLaunched) {
-        // Pre-launch: allow all authenticated users to browse games
-        setIsAuthorized(true);
+        setNeedsActivation(false);
         setIsChecking(false);
         return;
       }
 
-      // Admins bypass deposit/coupon gate entirely
+      // Admins bypass activation entirely
       const { data: isAdmin } = await supabase.rpc("has_role", {
         _user_id: session.user.id,
         _role: "admin",
       });
       if (isAdmin) {
-        setIsAuthorized(true);
+        setNeedsActivation(false);
         setIsChecking(false);
         return;
       }
 
-      // Post-launch: check if user has activated wallet
       const { data: wallet } = await supabase
         .from("user_wallets")
         .select("is_activated, coupon_expires_at")
         .eq("user_id", session.user.id)
         .single();
 
-      if (wallet?.is_activated) {
-        // If coupon is still valid, grant access
-        if (wallet.coupon_expires_at && new Date(wallet.coupon_expires_at) > new Date()) {
-          setIsAuthorized(true);
-        } else if (!wallet.coupon_expires_at) {
-          // Activated but coupon_expires_at temporarily missing (e.g. webhook lag).
-          // Grant access — confirmed payment takes priority over the timestamp.
-          setIsAuthorized(true);
-        } else {
-          // Coupon explicitly expired, redirect to deposit for renewal
-          navigate("/deposit");
-          return;
-        }
+      if (!wallet?.is_activated) {
+        setNeedsActivation(true);
+        setActivationReason("new");
+      } else if (
+        wallet.coupon_expires_at &&
+        new Date(wallet.coupon_expires_at) <= new Date()
+      ) {
+        setNeedsActivation(true);
+        setActivationReason("expired");
       } else {
-        // Not activated, redirect to deposit
-        navigate("/deposit");
-        return;
+        setNeedsActivation(false);
+        setActivationReason(null);
       }
 
       setIsChecking(false);
@@ -67,5 +65,5 @@ export const useDepositGate = () => {
     check();
   }, [navigate, isLaunched]);
 
-  return { isAuthorized, isChecking };
+  return { isAuthorized, isChecking, needsActivation, activationReason };
 };
