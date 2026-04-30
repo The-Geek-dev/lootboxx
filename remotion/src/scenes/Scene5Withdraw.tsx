@@ -191,7 +191,7 @@ export const Scene5Withdraw: React.FC = () => {
           <div
             style={{
               fontSize: 100,
-              transform: `scale(${interpolate(spring({ frame: frame - 135, fps, config: { damping: 12, stiffness: 150 } }), [0, 1], [0.4, 1])})`,
+              transform: `scale(${interpolate(spring({ frame: frame - 420, fps, config: { damping: 12, stiffness: 150 } }), [0, 1], [0.4, 1])})`,
               filter: `drop-shadow(0 0 40px ${COLORS.primaryGlow})`,
             }}
           >
@@ -206,7 +206,7 @@ export const Scene5Withdraw: React.FC = () => {
         </AbsoluteFill>
       )}
 
-      {!outro && <Cursor path={cursorPath} legDuration={40} clickFrame={88} />}
+      {!outro && <Cursor path={cursorPath} legDuration={150} clickFrame={submitFrame - 8} />}
       <CaptionTrack
         cues={[
           { start: 0.2, end: 4.0, text: "Open Withdraw on a weekend, between 6 and 7 PM." },
