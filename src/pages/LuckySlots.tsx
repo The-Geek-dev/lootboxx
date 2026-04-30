@@ -18,7 +18,7 @@ const BET_COST = 20;
 const PAYOUTS = LUCKY_SLOTS.combos;
 
 const LuckySlots = () => {
-  const { isAuthorized, isChecking } = useDepositGate();
+  const { isAuthorized, isChecking, needsActivation, activationReason } = useDepositGate();
   const { updateBalance, recordGameResult } = useWallet();
   const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
