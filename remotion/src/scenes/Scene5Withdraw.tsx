@@ -19,19 +19,21 @@ export const Scene5Withdraw: React.FC = () => {
     { x: 640, y: 540 }, // request button
   ];
 
-  // Typing animation for amount
+  // Typing animation for amount (slower, starts later)
   const amountStr = "20,000";
-  const charsToShow = Math.max(0, Math.min(amountStr.length, Math.floor((frame - 10) / 4)));
+  const typeStart = 30;
+  const charsToShow = Math.max(0, Math.min(amountStr.length, Math.floor((frame - typeStart) / 6)));
   const typed = amountStr.slice(0, charsToShow);
 
   const cardSpring = spring({ frame, fps, config: { damping: 18, stiffness: 160 } });
   const cardY = interpolate(cardSpring, [0, 1], [30, 0]);
 
-  const submitted = frame >= 90;
-  const submitSpring = spring({ frame: frame - 90, fps, config: { damping: 14, stiffness: 160 } });
+  const submitFrame = 320;
+  const submitted = frame >= submitFrame;
+  const submitSpring = spring({ frame: frame - submitFrame, fps, config: { damping: 14, stiffness: 160 } });
 
   // Outro after withdraw success
-  const outro = frame >= 135;
+  const outro = frame >= 420;
 
   return (
     <AbsoluteFill style={{ fontFamily: `${fontFamily}, "Noto Color Emoji"`, background: COLORS.bg }}>
