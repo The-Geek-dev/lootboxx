@@ -88,6 +88,8 @@ const LuckySlots = () => {
     </div>
   );
 
+  if (needsActivation) return <ActivationGate reason={activationReason} title={activationReason === "expired" ? "Renew to Spin" : "Activate to Spin"} />;
+
   return (
     <GamePageLayout>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
