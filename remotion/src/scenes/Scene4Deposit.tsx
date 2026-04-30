@@ -28,7 +28,7 @@ export const Scene4Deposit: React.FC = () => {
 
   const tierSpring = (i: number) => spring({ frame: frame - 30 - i * 5, fps, config: { damping: 18, stiffness: 180 } });
 
-  const selectedTier = frame >= 80 ? 1 : -1;
+  const selectedTier = frame >= 80 ? 0 : -1;
 
   // Success overlay after pay
   const paid = frame >= 130;
