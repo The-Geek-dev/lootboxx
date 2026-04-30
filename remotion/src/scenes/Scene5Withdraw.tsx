@@ -207,10 +207,10 @@ export const Scene5Withdraw: React.FC = () => {
       {!outro && <Cursor path={cursorPath} legDuration={40} clickFrame={88} />}
       <CaptionTrack
         cues={[
-          { start: 0.2, end: 2.8, text: "Ready to cash out? Open the Withdraw page." },
-          { start: 2.8, end: 5.4, text: "Enter the amount and your bank details." },
-          { start: 5.4, end: 7.8, text: "Withdrawals run weekends, 5 to 7 PM WAT." },
-          { start: 7.8, end: 10.8, text: "That's it — sign up, play, and start winning!" },
+          { start: 0.2, end: 4.0, text: "Open Withdraw on a weekend, between 6 and 7 PM." },
+          { start: 4.0, end: 8.0, text: "Enter the amount and your bank details." },
+          { start: 8.0, end: 12.0, text: "Submit — admin processes it quickly." },
+          { start: 12.0, end: 17.5, text: "That's LootBoxx — sign up, activate, play, and win!" },
         ]}
       />
     </AbsoluteFill>
