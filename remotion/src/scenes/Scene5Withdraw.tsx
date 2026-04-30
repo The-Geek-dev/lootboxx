@@ -96,7 +96,7 @@ export const Scene5Withdraw: React.FC = () => {
                   height: 64,
                   background: "#000",
                   borderRadius: 12,
-                  border: `2px solid ${frame >= 10 && frame < 80 ? COLORS.primary : COLORS.border}`,
+                  border: `2px solid ${frame >= typeStart && frame < typeStart + 80 ? COLORS.primary : COLORS.border}`,
                   display: "flex",
                   alignItems: "center",
                   padding: "0 20px",
@@ -106,7 +106,7 @@ export const Scene5Withdraw: React.FC = () => {
                 }}
               >
                 {typed}
-                {frame >= 10 && frame < 80 && Math.floor(frame / 8) % 2 === 0 && (
+                {frame >= typeStart && frame < typeStart + 80 && Math.floor(frame / 8) % 2 === 0 && (
                   <span style={{ color: COLORS.primary, marginLeft: 2 }}>|</span>
                 )}
               </div>
