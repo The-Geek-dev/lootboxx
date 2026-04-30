@@ -17,7 +17,7 @@ const PRIZE_POOL = 25000;
 const DRAW_INTERVAL_MINUTES = 30;
 
 const RaffleDraw = () => {
-  const { isAuthorized, isChecking } = useDepositGate();
+  const { isAuthorized, isChecking, needsActivation, activationReason } = useDepositGate();
   const { updateBalance, recordGameResult } = useWallet();
   const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
