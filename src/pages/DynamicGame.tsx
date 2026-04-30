@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useDepositGate } from "@/hooks/useDepositGate";
+import ActivationGate from "@/components/ActivationGate";
 import GamePageLayout from "@/components/GamePageLayout";
 import { allGames } from "@/config/gamesData";
 import { getGameTheme, getSportsTeams, getDiceConfig, getCrashVisuals } from "@/config/gameThemes";
