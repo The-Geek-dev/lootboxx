@@ -53,6 +53,8 @@ const RaffleDraw = () => {
     </div>
   );
 
+  if (needsActivation) return <ActivationGate reason={activationReason} title={activationReason === "expired" ? "Renew to Enter" : "Activate to Enter"} />;
+
   const buyTickets = async () => {
     if (xpLives <= 0) { toast({ title: "No XP lives left! ⚡", description: "Wait for refill or buy with points.", variant: "destructive" }); return; }
     const cost = ticketCount * TICKET_COST;
