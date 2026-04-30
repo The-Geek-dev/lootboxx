@@ -25,7 +25,7 @@ const SEGMENTS = [
 const SPIN_COST = 20;
 
 const SpinWheel = () => {
-  const { isAuthorized, isChecking } = useDepositGate();
+  const { isAuthorized, isChecking, needsActivation, activationReason } = useDepositGate();
   const { updateBalance, recordGameResult } = useWallet();
   const { points, spendPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
