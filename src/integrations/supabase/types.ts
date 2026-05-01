@@ -943,6 +943,10 @@ export type Database = {
         }
         Returns: number
       }
+      process_referral_signup: {
+        Args: { p_referral_code: string }
+        Returns: Json
+      }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
