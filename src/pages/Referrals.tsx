@@ -149,21 +149,38 @@ const Referrals = () => {
             </p>
           </Card>
 
-          {/* Referral Code */}
+          {/* Referral Code & Link */}
           <Card className="p-6 bg-card/50 mb-6">
             <h3 className="font-semibold mb-4 flex items-center gap-2">
               <Gift className="w-5 h-5 text-primary" />
               Your Referral Code
             </h3>
-            <div className="flex gap-3">
+            <div className="flex gap-3 mb-4">
               <div className="flex-1 bg-background rounded-lg p-4 text-center font-mono text-xl font-bold tracking-wider text-primary border border-primary/30">
                 {referralCode}
               </div>
-              <Button variant="outline" onClick={copyCode} className="px-4">
+              <Button variant="outline" onClick={copyCode} className="px-4" aria-label="Copy code">
                 <Copy className="w-5 h-5" />
               </Button>
             </div>
-            <Button className="button-gradient w-full mt-4" onClick={shareCode}>
+
+            <h3 className="font-semibold mb-2 flex items-center gap-2">
+              <Share2 className="w-4 h-4 text-primary" />
+              Your Referral Link
+            </h3>
+            <div className="flex gap-3 mb-4">
+              <div className="flex-1 bg-background rounded-lg p-3 text-xs sm:text-sm font-mono break-all border border-border/50 truncate">
+                {referralLink}
+              </div>
+              <Button variant="outline" onClick={copyLink} className="px-4" aria-label="Copy link">
+                <Copy className="w-5 h-5" />
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground mb-4">
+              Anyone who signs up through your link is automatically credited to you.
+            </p>
+
+            <Button className="button-gradient w-full" onClick={shareCode}>
               <Share2 className="w-4 h-4 mr-2" />
               Share with Friends
             </Button>
