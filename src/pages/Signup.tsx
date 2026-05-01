@@ -126,6 +126,23 @@ const Signup = () => {
               <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">Confirm Password</label>
               <Input id="confirmPassword" type="password" placeholder="••••••••" value={formData.confirmPassword} onChange={handleChange} required className="bg-background/50" />
             </div>
+            <div>
+              <label htmlFor="referralCode" className="block text-sm font-medium mb-2">
+                Referral Code <span className="text-gray-500 font-normal">(optional)</span>
+              </label>
+              <Input
+                id="referralCode"
+                type="text"
+                placeholder="LOOT-XXXXXX"
+                value={referralCode}
+                onChange={(e) => {
+                  const v = e.target.value.toUpperCase();
+                  setReferralCode(v);
+                  try { if (v) localStorage.setItem(REFERRAL_STORAGE_KEY, v); else localStorage.removeItem(REFERRAL_STORAGE_KEY); } catch {}
+                }}
+                className="bg-background/50 font-mono"
+              />
+            </div>
             <div className="text-sm text-gray-400">
               <label className="flex items-start gap-2 cursor-pointer">
                 <input type="checkbox" required className="mt-1 rounded" />
