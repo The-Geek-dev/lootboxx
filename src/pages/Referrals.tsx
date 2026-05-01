@@ -61,20 +61,29 @@ const Referrals = () => {
     init();
   }, [navigate]);
 
+  const referralLink = referralCode ? `${window.location.origin}/signup?ref=${referralCode}` : "";
+
   const copyCode = () => {
     navigator.clipboard.writeText(referralCode);
     toast({ title: "Copied!", description: "Referral code copied to clipboard." });
   };
 
+  const copyLink = () => {
+    if (!referralLink) return;
+    navigator.clipboard.writeText(referralLink);
+    toast({ title: "Link copied!", description: "Referral link copied to clipboard." });
+  };
+
   const shareCode = () => {
+    if (!referralLink) return;
     if (navigator.share) {
       navigator.share({
         title: "Join LootBoxx!",
         text: `Use my referral code ${referralCode} to join LootBoxx and get a ₦${REFERRAL_BONUS_CASH} bonus + ${REFERRAL_BONUS_POINTS} points!`,
-        url: window.location.origin,
+        url: referralLink,
       });
     } else {
-      copyCode();
+      copyLink();
     }
   };
 
