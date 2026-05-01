@@ -73,6 +73,7 @@ const Signup = () => {
       });
       if (signupError) { toast({ title: "Signup failed", description: "Registration failed. Please try again or use a different email.", variant: "destructive" }); return; }
       if (!authData.user) { toast({ title: "Signup failed", description: "Failed to create user account", variant: "destructive" }); return; }
+      if (authData.session) await processReferral();
       toast({ title: "Account created!", description: "Welcome to LootBoxx. Let's start playing!" });
       navigate("/dashboard");
     } catch (error) {
