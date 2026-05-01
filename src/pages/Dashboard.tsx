@@ -54,6 +54,22 @@ const Dashboard = () => {
 
       const userId = session.user.id;
 
+      // Claim any pending referral code (from OAuth/email-confirm signups)
+      try {
+        const pendingRef = localStorage.getItem("lootboxx_pending_referral");
+        if (pendingRef) {
+          const { data: alreadyReferred } = await supabase
+            .from("referrals")
+            .select("id")
+            .eq("referred_id", userId)
+            .limit(1);
+          if (!alreadyReferred || alreadyReferred.length === 0) {
+            await supabase.rpc("process_referral_signup", { p_referral_code: pendingRef });
+          }
+          localStorage.removeItem("lootboxx_pending_referral");
+        }
+      } catch {}
+
       // Create sign-in notification
       await supabase.from("notifications").insert({
         user_id: userId,
