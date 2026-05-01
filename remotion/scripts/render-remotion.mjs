@@ -2,6 +2,9 @@ import { bundle } from "@remotion/bundler";
 import { renderMedia, selectComposition, openBrowser } from "@remotion/renderer";
 import path from "path";
 import { fileURLToPath } from "url";
+import { execSync } from "child_process";
+import fs from "fs";
+import os from "os";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -27,18 +30,39 @@ const composition = await selectComposition({
   puppeteerInstance: browser,
 });
 
-const out = process.argv[2] || "/mnt/documents/lootboxx-tutorial.mp4";
-console.log(`Rendering to ${out}...`);
+const finalOut = process.argv[2] || "/mnt/documents/lootboxx-tutorial.mp4";
+const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "remotion-out-"));
+const videoOnly = path.join(tmpDir, "video.mp4");
+const audioOnly = path.join(tmpDir, "audio.wav");
+
+console.log(`Rendering muted video to ${videoOnly}...`);
 await renderMedia({
   composition,
   serveUrl: bundled,
   codec: "h264",
-  audioCodec: "aac",
-  outputLocation: out,
+  outputLocation: videoOnly,
   puppeteerInstance: browser,
-  muted: false,
+  muted: true,
+  concurrency: 1,
+});
+
+console.log(`Rendering audio-only to ${audioOnly}...`);
+await renderMedia({
+  composition,
+  serveUrl: bundled,
+  codec: "wav",
+  outputLocation: audioOnly,
+  puppeteerInstance: browser,
   concurrency: 1,
 });
 
 await browser.close({ silent: false });
+
+console.log(`Muxing video + audio (native AAC) -> ${finalOut}...`);
+fs.mkdirSync(path.dirname(finalOut), { recursive: true });
+execSync(
+  `ffmpeg -y -i "${videoOnly}" -i "${audioOnly}" -c:v copy -c:a aac -b:a 192k -shortest "${finalOut}"`,
+  { stdio: "inherit" }
+);
+
 console.log("Done!");
