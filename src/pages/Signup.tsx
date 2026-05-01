@@ -3,22 +3,52 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import lootboxxLogo from "@/assets/lootbox-logo.png";
+
+const REFERRAL_STORAGE_KEY = "lootboxx_pending_referral";
 
 const Signup = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [referralCode, setReferralCode] = useState<string>("");
   const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
 
   useEffect(() => {
+    // Capture ref code from URL or localStorage
+    const urlRef = searchParams.get("ref");
+    if (urlRef) {
+      const cleaned = urlRef.trim().toUpperCase();
+      setReferralCode(cleaned);
+      try { localStorage.setItem(REFERRAL_STORAGE_KEY, cleaned); } catch {}
+    } else {
+      try {
+        const stored = localStorage.getItem(REFERRAL_STORAGE_KEY);
+        if (stored) setReferralCode(stored);
+      } catch {}
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) navigate("/dashboard");
     });
-  }, [navigate]);
+  }, [navigate, searchParams]);
+
+  const processReferral = async () => {
+    const code = referralCode || (() => {
+      try { return localStorage.getItem(REFERRAL_STORAGE_KEY) || ""; } catch { return ""; }
+    })();
+    if (!code) return;
+    try {
+      await supabase.rpc("process_referral_signup", { p_referral_code: code });
+      try { localStorage.removeItem(REFERRAL_STORAGE_KEY); } catch {}
+    } catch (e) {
+      // Silent — referral is best-effort
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
