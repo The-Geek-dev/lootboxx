@@ -1,47 +1,79 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Star } from "lucide-react";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Card } from "./ui/card";
 
 const testimonials = [
   {
-    name: "Michael Chen",
-    role: "Daily Player",
-    image: "https://avatars.githubusercontent.com/u/1234567?v=4",
-    content: "LootBoxx is incredibly fun! I've won multiple raffle prizes and the spin-the-wheel game keeps me coming back every day. The referral bonuses are a great bonus too!"
+    name: "Chinedu Okafor",
+    role: "Daily Player • Lagos",
+    initials: "CO",
+    rating: 5,
+    content: "LootBoxx don change my weekend plans! I play spin-the-wheel and trivia every evening, and I've cashed out twice already. Withdrawals on Saturday were smooth.",
   },
   {
-    name: "Sarah Johnson",
-    role: "Top Winner",
-    image: "https://avatars.githubusercontent.com/u/2345678?v=4",
-    content: "I started with a small deposit and the games are so engaging. The trivia challenges are my favorite — I've earned amazing rewards just by answering questions!"
+    name: "Aisha Bello",
+    role: "Top Winner • Abuja",
+    initials: "AB",
+    rating: 5,
+    content: "I activated with ₦7,000 and within two weeks I'd recovered it and more. The raffle draws are my favourite — won ₦25,000 last month. Legit platform!",
   },
   {
-    name: "David Wilson",
-    role: "Referred 50+ Friends",
-    image: "https://avatars.githubusercontent.com/u/3456789?v=4",
-    content: "The referral program is unbeatable. I've invited my friends and we all earn bonuses together. The platform is smooth and payouts are reliable."
+    name: "Tunde Adebayo",
+    role: "Referred 30+ Friends • Ibadan",
+    initials: "TA",
+    rating: 5,
+    content: "The referral system is sweet. Every five people that join through my link, I get a milestone bonus. I've made more from referrals than from games sef.",
   },
   {
-    name: "Emily Zhang",
-    role: "Raffle Enthusiast",
-    image: "https://avatars.githubusercontent.com/u/4567890?v=4",
-    content: "Won the grand raffle twice! The excitement of waiting for the draw is addictive. LootBoxx has the most fair and transparent gaming system I've seen."
+    name: "Ngozi Eze",
+    role: "Trivia Champion • Enugu",
+    initials: "NE",
+    rating: 4,
+    content: "I love the trivia quiz — questions are challenging but fair. Wish there were more categories, but the points add up fast and converting to cash is easy.",
   },
   {
-    name: "James Rodriguez",
-    role: "Trivia Champion",
-    image: "https://avatars.githubusercontent.com/u/5678901?v=4",
-    content: "As someone who loves trivia, this platform is a dream. The questions are challenging and the rewards are real. Can't recommend it enough!"
+    name: "Emeka Nwosu",
+    role: "Raffle Enthusiast • Port Harcourt",
+    initials: "EN",
+    rating: 5,
+    content: "Three raffle wins in two months! The platform feels fair and the WhatsApp support replied fast when I had a question about my coupon renewal.",
   },
   {
-    name: "Lisa Thompson",
-    role: "VIP Member",
-    image: "https://avatars.githubusercontent.com/u/6789012?v=4",
-    content: "The variety of games keeps things fresh. From raffles to spin-the-wheel to trivia — there's always something new to play and win."
-  }
+    name: "Funke Adeyemi",
+    role: "VIP Member • Lagos",
+    initials: "FA",
+    rating: 4,
+    content: "Variety of games keeps me coming back. From slots to roulette to instant scratch cards. Payouts hit my GTBank account same evening on weekend withdrawal window.",
+  },
+  {
+    name: "Ibrahim Suleiman",
+    role: "Weekend Player • Kano",
+    initials: "IS",
+    rating: 5,
+    content: "I only play Friday nights and weekends, but the daily reminders keep me engaged. Won ₦12,000 on lucky slots last Saturday — straight to my account.",
+  },
+  {
+    name: "Blessing Okoro",
+    role: "New Player • Benin City",
+    initials: "BO",
+    rating: 4,
+    content: "Signed up two weeks ago. The ₦7,000 activation felt steep at first but the welcome bonus and points convinced me. Already up ₦4,500. No regrets.",
+  },
 ];
+
+const StarRating = ({ rating }: { rating: number }) => (
+  <div className="flex gap-0.5 mb-3">
+    {Array.from({ length: 5 }).map((_, i) => (
+      <Star
+        key={i}
+        className={`w-4 h-4 ${i < rating ? "fill-yellow-400 text-yellow-400" : "text-white/20"}`}
+      />
+    ))}
+  </div>
+);
 
 const TestimonialsSection = () => {
   return (
@@ -54,49 +86,45 @@ const TestimonialsSection = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center mb-16"
         >
-          <h2 className="text-5xl font-normal mb-4">Trusted by Players</h2>
+          <h2 className="text-5xl font-normal mb-4">Trusted by Nigerians</h2>
           <p className="text-muted-foreground text-lg">
-            Join thousands of happy winners on LootBoxx
+            Real players, real wins across Nigeria
           </p>
         </motion.div>
 
         <div className="relative flex flex-col antialiased">
           <div className="relative flex overflow-hidden py-4">
             <div className="animate-marquee flex min-w-full shrink-0 items-stretch gap-8">
-              {testimonials.map((testimonial, index) => (
+              {testimonials.map((t, index) => (
                 <Card key={`${index}-1`} className="w-[400px] shrink-0 bg-black/40 backdrop-blur-xl border-white/5 hover:border-white/10 transition-all duration-300 p-8">
-                  <div className="flex items-center gap-4 mb-6">
+                  <div className="flex items-center gap-4 mb-4">
                     <Avatar className="h-12 w-12">
-                      <AvatarImage src={testimonial.image} />
-                      <AvatarFallback>{testimonial.name[0]}</AvatarFallback>
+                      <AvatarFallback className="bg-primary/20 text-primary font-semibold">{t.initials}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <h4 className="font-medium text-white/90">{testimonial.name}</h4>
-                      <p className="text-sm text-white/60">{testimonial.role}</p>
+                      <h4 className="font-medium text-white/90">{t.name}</h4>
+                      <p className="text-sm text-white/60">{t.role}</p>
                     </div>
                   </div>
-                  <p className="text-white/70 leading-relaxed">
-                    {testimonial.content}
-                  </p>
+                  <StarRating rating={t.rating} />
+                  <p className="text-white/70 leading-relaxed">{t.content}</p>
                 </Card>
               ))}
             </div>
             <div className="animate-marquee flex min-w-full shrink-0 items-stretch gap-8">
-              {testimonials.map((testimonial, index) => (
+              {testimonials.map((t, index) => (
                 <Card key={`${index}-2`} className="w-[400px] shrink-0 bg-black/40 backdrop-blur-xl border-white/5 hover:border-white/10 transition-all duration-300 p-8">
-                  <div className="flex items-center gap-4 mb-6">
+                  <div className="flex items-center gap-4 mb-4">
                     <Avatar className="h-12 w-12">
-                      <AvatarImage src={testimonial.image} />
-                      <AvatarFallback>{testimonial.name[0]}</AvatarFallback>
+                      <AvatarFallback className="bg-primary/20 text-primary font-semibold">{t.initials}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <h4 className="font-medium text-white/90">{testimonial.name}</h4>
-                      <p className="text-sm text-white/60">{testimonial.role}</p>
+                      <h4 className="font-medium text-white/90">{t.name}</h4>
+                      <p className="text-sm text-white/60">{t.role}</p>
                     </div>
                   </div>
-                  <p className="text-white/70 leading-relaxed">
-                    {testimonial.content}
-                  </p>
+                  <StarRating rating={t.rating} />
+                  <p className="text-white/70 leading-relaxed">{t.content}</p>
                 </Card>
               ))}
             </div>
