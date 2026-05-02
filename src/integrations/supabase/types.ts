@@ -244,6 +244,30 @@ export type Database = {
         }
         Relationships: []
       }
+      email_preferences: {
+        Row: {
+          created_at: string
+          nudge_emails_enabled: boolean
+          unsubscribe_token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          nudge_emails_enabled?: boolean
+          unsubscribe_token?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          nudge_emails_enabled?: boolean
+          unsubscribe_token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -759,9 +783,12 @@ export type Database = {
           balance: number
           coupon_expires_at: string | null
           created_at: string
+          current_streak: number
           id: string
           is_activated: boolean
+          last_play_date: string | null
           last_weekly_bonus_at: string | null
+          longest_streak: number
           points: number
           total_deposited: number
           total_referral_bonus: number
@@ -775,9 +802,12 @@ export type Database = {
           balance?: number
           coupon_expires_at?: string | null
           created_at?: string
+          current_streak?: number
           id?: string
           is_activated?: boolean
+          last_play_date?: string | null
           last_weekly_bonus_at?: string | null
+          longest_streak?: number
           points?: number
           total_deposited?: number
           total_referral_bonus?: number
@@ -791,9 +821,12 @@ export type Database = {
           balance?: number
           coupon_expires_at?: string | null
           created_at?: string
+          current_streak?: number
           id?: string
           is_activated?: boolean
+          last_play_date?: string | null
           last_weekly_bonus_at?: string | null
+          longest_streak?: number
           points?: number
           total_deposited?: number
           total_referral_bonus?: number
@@ -955,6 +988,7 @@ export type Database = {
           read_ct: number
         }[]
       }
+      record_play_streak: { Args: never; Returns: Json }
       validate_signup_token: {
         Args: { token_value: string; user_id: string }
         Returns: boolean
