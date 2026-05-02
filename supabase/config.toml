@@ -35,3 +35,6 @@ verify_jwt = false
 
 [functions.squad-webhook]
 verify_jwt = false
+
+[functions.nudge-unsubscribe]
+verify_jwt = false

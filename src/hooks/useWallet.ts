@@ -57,6 +57,15 @@ export const useWallet = () => {
     } else {
       await fetchBalance();
     }
+
+    // Update daily play streak (silent, fire-and-forget)
+    supabase.rpc("record_play_streak").then(({ data: streakData, error: streakErr }) => {
+      if (streakErr) console.warn("record_play_streak failed:", streakErr);
+      else if ((streakData as any)?.bonus_points) {
+        console.info(`Streak milestone! +${(streakData as any).bonus_points} pts`);
+      }
+    });
+
     return { success: true, data };
   };
 

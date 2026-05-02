@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Settings as SettingsIcon, User, ArrowLeft, Volume2, VolumeX, Moon, Sun, Palette, Save, LogOut, Bell, BellOff, Smile } from "lucide-react";
+import { Settings as SettingsIcon, User, ArrowLeft, Volume2, VolumeX, Moon, Sun, Palette, Save, LogOut, Bell, BellOff, Smile, Mail } from "lucide-react";
 import AvatarPicker from "@/components/AvatarPicker";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -37,6 +37,23 @@ const Settings = () => {
     try { return localStorage.getItem("lootboxx_theme") !== "light"; } catch { return true; }
   });
   const [notifSound, setNotifSound] = useState(() => isNotificationSoundEnabled());
+  const [nudgeEmails, setNudgeEmails] = useState(true);
+  const [savingPref, setSavingPref] = useState(false);
+
+  const toggleNudgeEmails = async (val: boolean) => {
+    setSavingPref(true);
+    setNudgeEmails(val);
+    const { error } = await supabase
+      .from("email_preferences")
+      .upsert({ user_id: userId, nudge_emails_enabled: val, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
+    if (error) {
+      setNudgeEmails(!val);
+      toast({ title: "Failed to update", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: val ? "Nudge emails enabled" : "Nudge emails disabled" });
+    }
+    setSavingPref(false);
+  };
 
   const toggleNotifSound = (val: boolean) => {
     setNotifSound(val);
@@ -75,6 +92,14 @@ const Settings = () => {
         .maybeSingle();
 
       if (twoFaSettings) setIs2FAEnabled(twoFaSettings.is_enabled);
+
+      const { data: pref } = await supabase
+        .from("email_preferences")
+        .select("nudge_emails_enabled")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+      if (pref) setNudgeEmails(pref.nudge_emails_enabled);
+
       setIsLoading(false);
     };
 
@@ -259,6 +284,17 @@ const Settings = () => {
                     </div>
                   </div>
                   <Switch checked={notifSound} onCheckedChange={toggleNotifSound} />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Mail className={`w-5 h-5 ${nudgeEmails ? "text-primary" : "text-muted-foreground"}`} />
+                    <div>
+                      <p className="font-medium text-sm">Daily Nudge Emails</p>
+                      <p className="text-xs text-muted-foreground">Get a daily email reminder to play, activate, or renew</p>
+                    </div>
+                  </div>
+                  <Switch checked={nudgeEmails} disabled={savingPref} onCheckedChange={toggleNudgeEmails} />
                 </div>
 
                 <div className="flex items-center justify-between">
