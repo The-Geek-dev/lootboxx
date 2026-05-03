@@ -143,8 +143,9 @@ const LiveWithdrawView = () => {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-lg mx-auto">
       <h1 className="text-3xl font-bold text-center mb-2">💸 Withdraw Funds</h1>
-      <p className="text-muted-foreground text-center mb-1">Available balance: <span className="font-bold text-foreground">₦{balance.toLocaleString()}</span></p>
-      <p className="text-xs text-muted-foreground text-center mb-6">Weekends only (Sat-Sun, 6-7 PM) • 5% processing fee</p>
+      <p className="text-muted-foreground text-center mb-1">Wallet balance: <span className="font-bold text-foreground">₦{balance.toLocaleString()}</span></p>
+      <p className="text-muted-foreground text-center mb-1">Withdrawable winnings: <span className="font-bold text-primary">₦{winnings.toLocaleString()}</span></p>
+      <p className="text-xs text-muted-foreground text-center mb-6">Only winnings (not deposits) are withdrawable • Sat-Sun, 6-7 PM • 5% fee</p>
 
       <Card className="p-6 space-y-4">
         <div>
