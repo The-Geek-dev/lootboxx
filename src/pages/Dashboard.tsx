@@ -87,7 +87,7 @@ const Dashboard = () => {
         supabase.from("profiles").select("full_name").eq("user_id", userId).single(),
         supabase.from("game_results").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(5),
         supabase.from("referrals").select("*").eq("referrer_id", userId),
-        supabase.from("user_wallets").select("total_won, total_referral_bonus, last_weekly_bonus_at, points, coupon_expires_at").eq("user_id", userId).single(),
+        supabase.from("user_wallets").select("total_won, total_referral_bonus, last_weekly_bonus_at, points, coupon_expires_at, current_streak, longest_streak, daily_bonus_points, daily_bonus_date").eq("user_id", userId).single(),
       ]);
 
       if (profileRes.data) setUserName(profileRes.data.full_name);
@@ -101,6 +101,26 @@ const Dashboard = () => {
         setLastBonusAt(walletRes.data.last_weekly_bonus_at as string | null);
         setPoints(Number(walletRes.data.points));
         setCouponExpiresAt((walletRes.data as any).coupon_expires_at ?? null);
+        setCurrentStreak(Number((walletRes.data as any).current_streak ?? 0));
+        setLongestStreak(Number((walletRes.data as any).longest_streak ?? 0));
+        setDailyBonus(Number((walletRes.data as any).daily_bonus_points ?? 0));
+        setDailyBonusDate((walletRes.data as any).daily_bonus_date ?? null);
+      }
+
+      // Fetch withdrawable winnings (game profits only)
+      const { data: winData } = await supabase.rpc("get_winnings_balance");
+      if (typeof winData === "number") setWinnings(Number(winData));
+
+      // Auto-claim daily 100-pt bonus (also expires unused bonus from yesterday)
+      const today = new Date().toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" });
+      const lastClaim = (walletRes.data as any)?.daily_bonus_date;
+      if (lastClaim !== today) {
+        const { data: claim } = await supabase.rpc("claim_daily_bonus");
+        if (claim && (claim as any).claimed) {
+          setPoints(Number((claim as any).points ?? 0));
+          setDailyBonus(Number((claim as any).daily_bonus ?? 100));
+          setDailyBonusDate(today);
+        }
       }
 
       setIsLoading(false);
