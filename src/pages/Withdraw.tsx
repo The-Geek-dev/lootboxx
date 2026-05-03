@@ -47,11 +47,11 @@ const LiveWithdrawView = () => {
   const minWithdraw = 1000;
   const fee = 0.05;
 
-  useState(() => {
+  useEffect(() => {
     supabase.rpc("get_winnings_balance").then(({ data }) => {
       if (typeof data === "number") setWinnings(Number(data));
     });
-  });
+  }, []);
 
   const handleWithdraw = async () => {
     const amt = Number(amount);
