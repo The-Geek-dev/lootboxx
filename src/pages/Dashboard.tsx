@@ -178,9 +178,9 @@ const Dashboard = () => {
   );
 
   const stats = [
-    { icon: Wallet, label: "Balance", value: `₦${balance.toLocaleString()}`, change: "Deposit", link: "/deposit" },
+    { icon: Wallet, label: "Winnings", value: `₦${winnings.toLocaleString()}`, change: "Withdraw", link: "/withdraw" },
     { icon: Coins, label: "Points", value: points.toLocaleString(), change: "Manage", link: "/points" },
-    { icon: Trophy, label: "Total Wins", value: String(totalWins), change: "Play now", link: "/games" },
+    { icon: Flame, label: "Streak", value: `${currentStreak}d`, change: `Best: ${longestStreak}d`, link: "/games" },
     { icon: Users, label: "Referrals", value: String(referralCount), change: "Invite", link: "/referrals" },
   ];
 
