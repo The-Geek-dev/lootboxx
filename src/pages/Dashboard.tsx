@@ -276,6 +276,37 @@ const Dashboard = () => {
             </div>
           </Card>
 
+          {/* Daily bonus + Streak */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+            <Card className="glass p-4 border-primary/30 bg-primary/5">
+              <div className="flex items-center gap-3">
+                <Gift className="w-6 h-6 text-primary shrink-0" />
+                <div className="flex-1">
+                  <p className="font-semibold text-sm">Daily Free Points</p>
+                  <p className="text-xs text-muted-foreground">
+                    {dailyBonus > 0
+                      ? `+${dailyBonus} pts today — use them before midnight or they expire!`
+                      : "You'll get 100 free points each day. Use them or lose them!"}
+                  </p>
+                </div>
+              </div>
+            </Card>
+            <Card className="glass p-4 border-accent/30 bg-accent/5">
+              <div className="flex items-center gap-3">
+                <Flame className="w-6 h-6 text-accent shrink-0" />
+                <div className="flex-1">
+                  <p className="font-semibold text-sm">🔥 {currentStreak}-day streak</p>
+                  <p className="text-xs text-muted-foreground">
+                    Longest: {longestStreak}d • Play daily for bonus points (100–10,000)
+                  </p>
+                </div>
+                <Button size="sm" variant="outline" asChild>
+                  <Link to="/games">Play</Link>
+                </Button>
+              </div>
+            </Card>
+          </div>
+
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
             {stats.map((stat, index) => (
               <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }}>
