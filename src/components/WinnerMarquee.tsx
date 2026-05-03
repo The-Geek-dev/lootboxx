@@ -1,5 +1,57 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useLaunchStatus } from "@/hooks/useLaunchStatus";
+
+// Lightweight Web Audio "coin/ding" effect — no asset needed
+function playCoinSound() {
+  try {
+    const AC: typeof AudioContext =
+      (window as any).AudioContext || (window as any).webkitAudioContext;
+    if (!AC) return;
+    const ctx = new AC();
+    const now = ctx.currentTime;
+
+    const tones = [880, 1320]; // two-note ding
+    tones.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(freq, now + i * 0.09);
+      gain.gain.setValueAtTime(0.0001, now + i * 0.09);
+      gain.gain.exponentialRampToValueAtTime(0.18, now + i * 0.09 + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.09 + 0.25);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now + i * 0.09);
+      osc.stop(now + i * 0.09 + 0.26);
+    });
+    setTimeout(() => ctx.close().catch(() => {}), 600);
+  } catch {
+    /* ignore */
+  }
+}
+
+function playSignupSound() {
+  try {
+    const AC: typeof AudioContext =
+      (window as any).AudioContext || (window as any).webkitAudioContext;
+    if (!AC) return;
+    const ctx = new AC();
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(660, now);
+    osc.frequency.linearRampToValueAtTime(990, now + 0.12);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.12, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.21);
+    setTimeout(() => ctx.close().catch(() => {}), 400);
+  } catch {
+    /* ignore */
+  }
+}
 
 const FIRST_NAMES = [
   "Chidi", "Amara", "Tunde", "Ngozi", "Emeka", "Fatima", "Yusuf", "Blessing",
