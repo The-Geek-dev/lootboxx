@@ -997,6 +997,15 @@ export type Database = {
         }[]
       }
       record_play_streak: { Args: never; Returns: Json }
+      request_withdrawal: {
+        Args: {
+          p_account_name: string
+          p_account_number: string
+          p_amount: number
+          p_bank_name: string
+        }
+        Returns: Json
+      }
       validate_signup_token: {
         Args: { token_value: string; user_id: string }
         Returns: boolean
