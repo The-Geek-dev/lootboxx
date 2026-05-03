@@ -173,10 +173,14 @@ const Points = () => {
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { title: "Activation Deposit", desc: "₦7,000 deposit", pts: "10,000 pts", icon: "💰" },
-                { title: "Weekly Renewal", desc: "₦2,000 renewal", pts: "3,000 pts", icon: "📅" },
-                { title: "Referrals", desc: "Per successful referral", pts: "200 pts", icon: "👥" },
-                { title: "5 Referral Milestone", desc: "Every 5 referrals", pts: "3,000 pts", icon: "🏆" },
+                { title: "Daily Free Bonus", desc: "Login each day", pts: "100 pts/day", icon: "🎁" },
+                { title: "Activation Deposit", desc: "₦7,000 one-time", pts: "1,000 pts", icon: "💰" },
+                { title: "Weekly Renewal", desc: "₦2,000 renewal", pts: "300 pts", icon: "📅" },
+                { title: "Top-up Deposit", desc: "Reload your wallet", pts: "100–500 pts", icon: "⬆️" },
+                { title: "Play Streak (3 days)", desc: "Play daily", pts: "100 pts", icon: "🔥" },
+                { title: "Play Streak (7 days)", desc: "Keep the streak alive", pts: "300 pts", icon: "🔥" },
+                { title: "Referral Signup", desc: "Per successful referral", pts: "200 pts", icon: "👥" },
+                { title: "5-Referral Milestone", desc: "Every 5 referrals", pts: "3,000 pts", icon: "🏆" },
               ].map((item) => (
                 <div key={item.title} className="bg-background/50 rounded-lg p-4 text-center">
                   <p className="text-2xl mb-2">{item.icon}</p>

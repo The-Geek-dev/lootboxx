@@ -324,13 +324,28 @@ Deno.serve(async (req) => {
           });
         }
 
+        // Guard: don't double-process status transitions
+        const prevStatus = (withdrawal as any).status;
+        if (prevStatus === newStatus) {
+          return new Response(
+            JSON.stringify({ success: true, message: `Withdrawal already ${newStatus}` }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+        if (prevStatus !== "pending") {
+          return new Response(
+            JSON.stringify({ error: `Withdrawal already ${prevStatus}, cannot change` }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
         // Update withdrawal status
         await serviceClient
           .from("withdrawals")
           .update({ status: newStatus, admin_note: admin_note || null })
           .eq("id", withdrawal_id);
 
-        // If rejected, refund the balance
+        // If rejected, refund the balance (the amount was debited at request time)
         if (newStatus === "rejected") {
           const { data: wallet } = await serviceClient
             .from("user_wallets")
@@ -344,6 +359,13 @@ Deno.serve(async (req) => {
               .update({ balance: Number(wallet.balance) + Number(withdrawal.amount) })
               .eq("id", wallet.id);
           }
+
+          await serviceClient.from("notifications").insert({
+            user_id: withdrawal.user_id,
+            title: "Withdrawal rejected",
+            message: `Your withdrawal of ₦${Number(withdrawal.amount).toLocaleString()} was rejected. Funds returned to your wallet.${admin_note ? ` Reason: ${admin_note}` : ""}`,
+            type: "withdrawal",
+          });
         }
 
         // If approved, send the receipt email

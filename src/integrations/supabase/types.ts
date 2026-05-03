@@ -784,6 +784,8 @@ export type Database = {
           coupon_expires_at: string | null
           created_at: string
           current_streak: number
+          daily_bonus_date: string | null
+          daily_bonus_points: number
           id: string
           is_activated: boolean
           last_play_date: string | null
@@ -803,6 +805,8 @@ export type Database = {
           coupon_expires_at?: string | null
           created_at?: string
           current_streak?: number
+          daily_bonus_date?: string | null
+          daily_bonus_points?: number
           id?: string
           is_activated?: boolean
           last_play_date?: string | null
@@ -822,6 +826,8 @@ export type Database = {
           coupon_expires_at?: string | null
           created_at?: string
           current_streak?: number
+          daily_bonus_date?: string | null
+          daily_bonus_points?: number
           id?: string
           is_activated?: boolean
           last_play_date?: string | null
@@ -919,6 +925,7 @@ export type Database = {
         Returns: Json
       }
       buy_xp_refill: { Args: never; Returns: boolean }
+      claim_daily_bonus: { Args: never; Returns: Json }
       contribute_to_jackpot:
         | { Args: { contribution: number }; Returns: Json }
         | { Args: { contribution: number; player_id: string }; Returns: Json }
@@ -960,6 +967,7 @@ export type Database = {
           win_rate_modifier: number
         }[]
       }
+      get_winnings_balance: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -989,6 +997,15 @@ export type Database = {
         }[]
       }
       record_play_streak: { Args: never; Returns: Json }
+      request_withdrawal: {
+        Args: {
+          p_account_name: string
+          p_account_number: string
+          p_amount: number
+          p_bank_name: string
+        }
+        Returns: Json
+      }
       validate_signup_token: {
         Args: { token_value: string; user_id: string }
         Returns: boolean

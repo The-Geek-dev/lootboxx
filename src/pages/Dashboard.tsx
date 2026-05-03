@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Wallet, Trophy, Gift, Users, Settings, Gamepad2, Clock, History, Coins, Bell, Zap, TrendingUp } from "lucide-react";
+import { Wallet, Trophy, Gift, Users, Settings, Gamepad2, Clock, History, Coins, Bell, Zap, TrendingUp, Flame } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import AppSidebar from "@/components/AppSidebar";
 import { Card } from "@/components/ui/card";
@@ -29,6 +29,11 @@ const Dashboard = () => {
   const [couponExpiresAt, setCouponExpiresAt] = useState<string | null>(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+  const [winnings, setWinnings] = useState(0);
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [longestStreak, setLongestStreak] = useState(0);
+  const [dailyBonus, setDailyBonus] = useState(0);
+  const [dailyBonusDate, setDailyBonusDate] = useState<string | null>(null);
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
@@ -82,7 +87,7 @@ const Dashboard = () => {
         supabase.from("profiles").select("full_name").eq("user_id", userId).single(),
         supabase.from("game_results").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(5),
         supabase.from("referrals").select("*").eq("referrer_id", userId),
-        supabase.from("user_wallets").select("total_won, total_referral_bonus, last_weekly_bonus_at, points, coupon_expires_at").eq("user_id", userId).single(),
+        supabase.from("user_wallets").select("total_won, total_referral_bonus, last_weekly_bonus_at, points, coupon_expires_at, current_streak, longest_streak, daily_bonus_points, daily_bonus_date").eq("user_id", userId).single(),
       ]);
 
       if (profileRes.data) setUserName(profileRes.data.full_name);
@@ -96,6 +101,26 @@ const Dashboard = () => {
         setLastBonusAt(walletRes.data.last_weekly_bonus_at as string | null);
         setPoints(Number(walletRes.data.points));
         setCouponExpiresAt((walletRes.data as any).coupon_expires_at ?? null);
+        setCurrentStreak(Number((walletRes.data as any).current_streak ?? 0));
+        setLongestStreak(Number((walletRes.data as any).longest_streak ?? 0));
+        setDailyBonus(Number((walletRes.data as any).daily_bonus_points ?? 0));
+        setDailyBonusDate((walletRes.data as any).daily_bonus_date ?? null);
+      }
+
+      // Fetch withdrawable winnings (game profits only)
+      const { data: winData } = await supabase.rpc("get_winnings_balance");
+      if (typeof winData === "number") setWinnings(Number(winData));
+
+      // Auto-claim daily 100-pt bonus (also expires unused bonus from yesterday)
+      const today = new Date().toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" });
+      const lastClaim = (walletRes.data as any)?.daily_bonus_date;
+      if (lastClaim !== today) {
+        const { data: claim } = await supabase.rpc("claim_daily_bonus");
+        if (claim && (claim as any).claimed) {
+          setPoints(Number((claim as any).points ?? 0));
+          setDailyBonus(Number((claim as any).daily_bonus ?? 100));
+          setDailyBonusDate(today);
+        }
       }
 
       setIsLoading(false);
@@ -153,9 +178,9 @@ const Dashboard = () => {
   );
 
   const stats = [
-    { icon: Wallet, label: "Balance", value: `₦${balance.toLocaleString()}`, change: "Deposit", link: "/deposit" },
+    { icon: Wallet, label: "Winnings", value: `₦${winnings.toLocaleString()}`, change: "Withdraw", link: "/withdraw" },
     { icon: Coins, label: "Points", value: points.toLocaleString(), change: "Manage", link: "/points" },
-    { icon: Trophy, label: "Total Wins", value: String(totalWins), change: "Play now", link: "/games" },
+    { icon: Flame, label: "Streak", value: `${currentStreak}d`, change: `Best: ${longestStreak}d`, link: "/games" },
     { icon: Users, label: "Referrals", value: String(referralCount), change: "Invite", link: "/referrals" },
   ];
 
@@ -250,6 +275,37 @@ const Dashboard = () => {
               </Button>
             </div>
           </Card>
+
+          {/* Daily bonus + Streak */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+            <Card className="glass p-4 border-primary/30 bg-primary/5">
+              <div className="flex items-center gap-3">
+                <Gift className="w-6 h-6 text-primary shrink-0" />
+                <div className="flex-1">
+                  <p className="font-semibold text-sm">Daily Free Points</p>
+                  <p className="text-xs text-muted-foreground">
+                    {dailyBonus > 0
+                      ? `+${dailyBonus} pts today — use them before midnight or they expire!`
+                      : "You'll get 100 free points each day. Use them or lose them!"}
+                  </p>
+                </div>
+              </div>
+            </Card>
+            <Card className="glass p-4 border-accent/30 bg-accent/5">
+              <div className="flex items-center gap-3">
+                <Flame className="w-6 h-6 text-accent shrink-0" />
+                <div className="flex-1">
+                  <p className="font-semibold text-sm">🔥 {currentStreak}-day streak</p>
+                  <p className="text-xs text-muted-foreground">
+                    Longest: {longestStreak}d • Play daily for bonus points (100–10,000)
+                  </p>
+                </div>
+                <Button size="sm" variant="outline" asChild>
+                  <Link to="/games">Play</Link>
+                </Button>
+              </div>
+            </Card>
+          </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
             {stats.map((stat, index) => (
