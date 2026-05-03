@@ -34,7 +34,7 @@ const ComingSoonView = () => (
 );
 
 const LiveWithdrawView = () => {
-  const { balance } = useWallet();
+  const { balance, fetchBalance } = useWallet();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [amount, setAmount] = useState("");
@@ -42,9 +42,16 @@ const LiveWithdrawView = () => {
   const [accountNumber, setAccountNumber] = useState("");
   const [accountName, setAccountName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [winnings, setWinnings] = useState<number>(0);
 
   const minWithdraw = 1000;
   const fee = 0.05;
+
+  useState(() => {
+    supabase.rpc("get_winnings_balance").then(({ data }) => {
+      if (typeof data === "number") setWinnings(Number(data));
+    });
+  });
 
   const handleWithdraw = async () => {
     const amt = Number(amount);
@@ -52,8 +59,8 @@ const LiveWithdrawView = () => {
       toast({ title: `Minimum withdrawal is ₦${minWithdraw.toLocaleString()}`, variant: "destructive" });
       return;
     }
-    if (amt > balance) {
-      toast({ title: "Insufficient balance", variant: "destructive" });
+    if (amt > winnings) {
+      toast({ title: "You can only withdraw your game winnings", description: `Available winnings: ₦${winnings.toLocaleString()}`, variant: "destructive" });
       return;
     }
     if (!bankName || !accountNumber || !accountName) {
@@ -79,23 +86,20 @@ const LiveWithdrawView = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      const { data: inserted, error } = await supabase
-        .from("withdrawals")
-        .insert({
-          user_id: session.user.id,
-          amount: amt,
-          bank_name: bankName,
-          account_number: accountNumber,
-          account_name: accountName,
-        })
-        .select()
-        .single();
+      const { data: rpcRes, error } = await supabase.rpc("request_withdrawal", {
+        p_amount: amt,
+        p_bank_name: bankName,
+        p_account_number: accountNumber,
+        p_account_name: accountName,
+      });
 
       if (error) throw error;
+      const insertedId = (rpcRes as any)?.id ?? crypto.randomUUID();
+      await fetchBalance();
 
       const feeAmount = Math.round(amt * fee * 100) / 100;
       const netAmount = Math.round((amt - feeAmount) * 100) / 100;
-      const reference = `LBX-WD-${(inserted?.id ?? crypto.randomUUID()).slice(0, 8).toUpperCase()}`;
+      const reference = `LBX-WD-${String(insertedId).slice(0, 8).toUpperCase()}`;
       const processedAt = new Date().toISOString();
       const recipientEmail = session.user.email ?? "";
 
@@ -118,7 +122,7 @@ const LiveWithdrawView = () => {
           body: {
             templateName: "withdrawal-receipt",
             recipientEmail,
-            idempotencyKey: `withdrawal-receipt-${inserted?.id ?? reference}`,
+            idempotencyKey: `withdrawal-receipt-${insertedId}`,
             templateData: details,
           },
         });
