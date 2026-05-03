@@ -131,9 +131,33 @@ const WinnerMarquee = () => {
     Array.from({ length: 8 }, generateEvent)
   );
 
+  const userInteractedRef = useRef(false);
+
+  useEffect(() => {
+    const onInteract = () => { userInteractedRef.current = true; };
+    window.addEventListener("pointerdown", onInteract, { once: true });
+    window.addEventListener("keydown", onInteract, { once: true });
+    return () => {
+      window.removeEventListener("pointerdown", onInteract);
+      window.removeEventListener("keydown", onInteract);
+    };
+  }, []);
+
   const addEvent = useCallback(() => {
     const ev = generateEvent();
     setEvents((prev) => [...prev.slice(1), ev]);
+
+    // Respect the user's mute preference from Settings
+    let muted = false;
+    try { muted = localStorage.getItem("lootboxx_muted") === "true"; } catch {}
+    if (muted || !userInteractedRef.current) return;
+
+    if (ev.isBigWin) {
+      playCoinSound();
+    } else if (ev.icon === "🎉" || ev.icon === "✅") {
+      // softer ping for sign-ups / activations
+      playSignupSound();
+    }
   }, [isLaunched]);
 
   useEffect(() => {
