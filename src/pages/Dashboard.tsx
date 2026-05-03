@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Wallet, Trophy, Gift, Users, Settings, Gamepad2, Clock, History, Coins, Bell, Zap, TrendingUp } from "lucide-react";
+import { Wallet, Trophy, Gift, Users, Settings, Gamepad2, Clock, History, Coins, Bell, Zap, TrendingUp, Flame } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import AppSidebar from "@/components/AppSidebar";
 import { Card } from "@/components/ui/card";
