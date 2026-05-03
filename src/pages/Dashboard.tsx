@@ -29,6 +29,11 @@ const Dashboard = () => {
   const [couponExpiresAt, setCouponExpiresAt] = useState<string | null>(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+  const [winnings, setWinnings] = useState(0);
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [longestStreak, setLongestStreak] = useState(0);
+  const [dailyBonus, setDailyBonus] = useState(0);
+  const [dailyBonusDate, setDailyBonusDate] = useState<string | null>(null);
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
