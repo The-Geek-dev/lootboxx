@@ -562,6 +562,39 @@ export type Database = {
         }
         Relationships: []
       }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       raffle_entries: {
         Row: {
           created_at: string
@@ -594,6 +627,7 @@ export type Database = {
       }
       referrals: {
         Row: {
+          activation_bonus_awarded: boolean
           bonus_amount: number
           created_at: string
           id: string
@@ -603,6 +637,7 @@ export type Database = {
           status: string
         }
         Insert: {
+          activation_bonus_awarded?: boolean
           bonus_amount?: number
           created_at?: string
           id?: string
@@ -612,6 +647,7 @@ export type Database = {
           status?: string
         }
         Update: {
+          activation_bonus_awarded?: boolean
           bonus_amount?: number
           created_at?: string
           id?: string
@@ -922,6 +958,10 @@ export type Database = {
           p_result?: Json
           p_win_amount: number
         }
+        Returns: Json
+      }
+      award_referral_activation_bonus: {
+        Args: { p_user_id: string }
         Returns: Json
       }
       buy_xp_refill: { Args: never; Returns: boolean }
