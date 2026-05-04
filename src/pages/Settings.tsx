@@ -14,6 +14,7 @@ import TwoFactorSetup from "@/components/TwoFactorSetup";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { NOTIFICATION_SOUND_KEY, isNotificationSoundEnabled, playNotificationSound } from "@/hooks/useNotifications";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -39,6 +40,20 @@ const Settings = () => {
   const [notifSound, setNotifSound] = useState(() => isNotificationSoundEnabled());
   const [nudgeEmails, setNudgeEmails] = useState(true);
   const [savingPref, setSavingPref] = useState(false);
+  const push = usePushNotifications();
+
+  const togglePush = async (val: boolean) => {
+    try {
+      if (val) await push.subscribe();
+      else await push.unsubscribe();
+      toast({
+        title: val ? "Push notifications enabled" : "Push notifications disabled",
+        description: val ? "You'll get alerts even when LootBoxx is closed." : "You'll only see in-app notifications.",
+      });
+    } catch (e: any) {
+      toast({ title: "Push setup failed", description: e?.message || "Try again", variant: "destructive" });
+    }
+  };
 
   const toggleNudgeEmails = async (val: boolean) => {
     setSavingPref(true);
@@ -306,6 +321,24 @@ const Settings = () => {
                     </div>
                   </div>
                   <Switch checked={darkMode} onCheckedChange={toggleTheme} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Bell className={`w-5 h-5 ${push.subscribed ? "text-primary" : "text-muted-foreground"}`} />
+                    <div>
+                      <p className="font-medium text-sm">Push Notifications</p>
+                      <p className="text-xs text-muted-foreground">
+                        {push.supported
+                          ? "Get alerts even when LootBoxx is closed (browser/Android)"
+                          : "Not supported on this browser"}
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={push.subscribed}
+                    disabled={!push.supported || push.busy}
+                    onCheckedChange={togglePush}
+                  />
                 </div>
               </div>
             </Card>

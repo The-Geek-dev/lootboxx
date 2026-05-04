@@ -38,3 +38,6 @@ verify_jwt = false
 
 [functions.nudge-unsubscribe]
 verify_jwt = false
+
+[functions.send-push]
+verify_jwt = false
