@@ -137,6 +137,11 @@ Deno.serve(async (req) => {
 
     await supabase.from("user_wallets").update(updates).eq("user_id", userId);
 
+    // Award referrer 250 points if this is the user's first activation
+    if (depositType === "activation" && !wallet.is_activated) {
+      await supabase.rpc("award_referral_activation_bonus", { p_user_id: userId });
+    }
+
     // Notify user
     await supabase.from("notifications").insert({
       user_id: userId,
