@@ -14,6 +14,7 @@ import TwoFactorSetup from "@/components/TwoFactorSetup";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { NOTIFICATION_SOUND_KEY, isNotificationSoundEnabled, playNotificationSound } from "@/hooks/useNotifications";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 const Settings = () => {
   const navigate = useNavigate();
