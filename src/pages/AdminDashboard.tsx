@@ -413,6 +413,7 @@ const AdminDashboard = () => {
                       <TableHead>Email</TableHead>
                       <TableHead>Balance</TableHead>
                       <TableHead>Deposited</TableHead>
+                      <TableHead>Lucky Hour</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Roles</TableHead>
                       <TableHead>Actions</TableHead>
@@ -425,6 +426,11 @@ const AdminDashboard = () => {
                         <TableCell className="text-muted-foreground text-xs">{u.email}</TableCell>
                         <TableCell>₦{Number(u.balance).toLocaleString()}</TableCell>
                         <TableCell>₦{Number(u.total_deposited).toLocaleString()}</TableCell>
+                        <TableCell className="text-xs">
+                          {u.win_window_hour !== null
+                            ? `${String(u.win_window_hour).padStart(2,"0")}:00 (${u.full_win_count_today}/${globalOdds.max_full_wins_per_day})`
+                            : <span className="text-muted-foreground">—</span>}
+                        </TableCell>
                         <TableCell>
                           <Badge variant={u.is_activated ? "default" : "secondary"}>
                             {u.is_activated ? "Active" : "Inactive"}
