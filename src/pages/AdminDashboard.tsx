@@ -39,6 +39,7 @@ import { Textarea } from "@/components/ui/textarea";
 import EmailLogPanel from "@/components/admin/EmailLogPanel";
 import AdminChatPanel from "@/components/admin/AdminChatPanel";
 import SendManualReceiptPanel from "@/components/admin/SendManualReceiptPanel";
+import NudgeEmailLogPanel from "@/components/admin/NudgeEmailLogPanel";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -1141,6 +1142,7 @@ const AdminDashboard = () => {
             {/* EMAILS TAB */}
             <TabsContent value="emails" className="space-y-6">
               <SendManualReceiptPanel adminCall={adminCall} />
+              <NudgeEmailLogPanel adminCall={adminCall} />
               <EmailLogPanel
                 fetchLogs={async () => {
                   const res = await adminCall("get_email_log");
