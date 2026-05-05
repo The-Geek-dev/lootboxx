@@ -415,6 +415,39 @@ export type Database = {
         }
         Relationships: []
       }
+      global_game_settings: {
+        Row: {
+          id: number
+          is_active: boolean
+          max_full_wins_per_day: number
+          payout_modifier: number
+          updated_at: string
+          updated_by: string | null
+          win_rate_modifier: number
+          win_window_radius_hours: number
+        }
+        Insert: {
+          id?: number
+          is_active?: boolean
+          max_full_wins_per_day?: number
+          payout_modifier?: number
+          updated_at?: string
+          updated_by?: string | null
+          win_rate_modifier?: number
+          win_window_radius_hours?: number
+        }
+        Update: {
+          id?: number
+          is_active?: boolean
+          max_full_wins_per_day?: number
+          payout_modifier?: number
+          updated_at?: string
+          updated_by?: string | null
+          win_rate_modifier?: number
+          win_window_radius_hours?: number
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -826,6 +859,9 @@ export type Database = {
           is_activated: boolean
           last_play_date: string | null
           last_weekly_bonus_at: string | null
+          locked_account_name: string | null
+          locked_account_number: string | null
+          locked_bank_name: string | null
           longest_streak: number
           points: number
           total_deposited: number
@@ -847,6 +883,9 @@ export type Database = {
           is_activated?: boolean
           last_play_date?: string | null
           last_weekly_bonus_at?: string | null
+          locked_account_name?: string | null
+          locked_account_number?: string | null
+          locked_bank_name?: string | null
           longest_streak?: number
           points?: number
           total_deposited?: number
@@ -868,6 +907,9 @@ export type Database = {
           is_activated?: boolean
           last_play_date?: string | null
           last_weekly_bonus_at?: string | null
+          locked_account_name?: string | null
+          locked_account_number?: string | null
+          locked_bank_name?: string | null
           longest_streak?: number
           points?: number
           total_deposited?: number
@@ -987,6 +1029,18 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      get_effective_game_settings: {
+        Args: never
+        Returns: {
+          difficulty_level: number
+          is_active: boolean
+          max_full_wins_per_day: number
+          payout_modifier: number
+          source: string
+          win_rate_modifier: number
+          win_window_radius_hours: number
+        }[]
       }
       get_leaderboard: {
         Args: { limit_count?: number }
