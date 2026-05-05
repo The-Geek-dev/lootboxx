@@ -43,6 +43,7 @@ const LiveWithdrawView = () => {
   const [accountName, setAccountName] = useState("");
   const [loading, setLoading] = useState(false);
   const [winnings, setWinnings] = useState<number>(0);
+  const [accountLocked, setAccountLocked] = useState(false);
 
   const minWithdraw = 1000;
   const fee = 0.05;
@@ -51,6 +52,21 @@ const LiveWithdrawView = () => {
     supabase.rpc("get_winnings_balance").then(({ data }) => {
       if (typeof data === "number") setWinnings(Number(data));
     });
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const { data } = await supabase
+        .from("user_wallets")
+        .select("locked_bank_name, locked_account_number, locked_account_name")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+      if (data?.locked_account_number) {
+        setBankName(data.locked_bank_name || "");
+        setAccountNumber(data.locked_account_number || "");
+        setAccountName(data.locked_account_name || "");
+        setAccountLocked(true);
+      }
+    })();
   }, []);
 
   const handleWithdraw = async () => {
