@@ -246,7 +246,7 @@ const AdminChatPanel = () => {
         </div>
 
         {/* Active conversation */}
-        <div className="md:col-span-2 flex flex-col">
+        <div className="md:col-span-2 flex flex-col min-h-0">
           {!active && (
             <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
               Select a conversation to view messages
