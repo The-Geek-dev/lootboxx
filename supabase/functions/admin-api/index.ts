@@ -450,6 +450,115 @@ Deno.serve(async (req) => {
         });
       }
 
+      case "get_nudge_email_log": {
+        // Pull recent daily-nudge sends from email_send_log
+        const { data: logs, error: logErr } = await serviceClient
+          .from("email_send_log")
+          .select("*")
+          .eq("template_name", "daily-nudge")
+          .order("created_at", { ascending: false })
+          .limit(2000);
+
+        if (logErr) {
+          return new Response(JSON.stringify({ error: logErr.message }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Deduplicate by message_id keeping the latest row per attempt
+        const seen = new Set<string>();
+        const attempts: any[] = [];
+        for (const row of logs || []) {
+          const key = row.message_id || row.id;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          attempts.push(row);
+        }
+
+        // Group by recipient_email
+        const byUser: Record<string, any> = {};
+        for (const a of attempts) {
+          const email = a.recipient_email;
+          if (!byUser[email]) {
+            byUser[email] = {
+              recipient_email: email,
+              total_attempts: 0,
+              sent: 0,
+              failed: 0,
+              suppressed: 0,
+              pending: 0,
+              last_status: null,
+              last_attempt_at: null,
+              last_error: null,
+              attempts: [] as any[],
+            };
+          }
+          const u = byUser[email];
+          u.total_attempts++;
+          if (a.status === "sent") u.sent++;
+          else if (a.status === "dlq" || a.status === "failed" || a.status === "bounced" || a.status === "complained") u.failed++;
+          else if (a.status === "suppressed") u.suppressed++;
+          else if (a.status === "pending") u.pending++;
+          if (!u.last_attempt_at || new Date(a.created_at) > new Date(u.last_attempt_at)) {
+            u.last_attempt_at = a.created_at;
+            u.last_status = a.status;
+            u.last_error = a.error_message;
+          }
+          u.attempts.push({
+            id: a.id,
+            message_id: a.message_id,
+            status: a.status,
+            error_message: a.error_message,
+            created_at: a.created_at,
+          });
+        }
+
+        const users = Object.values(byUser).sort((a: any, b: any) =>
+          new Date(b.last_attempt_at).getTime() - new Date(a.last_attempt_at).getTime()
+        );
+
+        return new Response(JSON.stringify({ users, total_attempts: attempts.length }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      case "resend_nudge_email": {
+        const { recipient_email, title, message, cta_label, cta_url } = params;
+        if (!recipient_email) {
+          return new Response(
+            JSON.stringify({ error: "recipient_email is required" }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const { error: invokeErr } = await serviceClient.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "daily-nudge",
+            recipientEmail: recipient_email,
+            idempotencyKey: `nudge-resend-${recipient_email}-${Date.now()}`,
+            templateData: {
+              title: title || "📬 A quick nudge from LootBoxx",
+              message: message || "We resent this so you wouldn't miss it. Open the app to keep your streak alive!",
+              ctaLabel: cta_label || "Open LootBoxx",
+              ctaUrl: cta_url || "https://lootboxx.live",
+            },
+          },
+        });
+
+        if (invokeErr) {
+          return new Response(
+            JSON.stringify({ error: invokeErr.message }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        return new Response(
+          JSON.stringify({ success: true, message: `Nudge resent to ${recipient_email}` }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       case "set_wallet_balance": {
         const { user_id: targetId, balance: newBalance } = params;
         
