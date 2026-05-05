@@ -722,6 +722,15 @@ const AdminDashboard = () => {
                               />
                             </div>
                           )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="mt-1 text-xs h-7"
+                            onClick={() => handleUnlockAccount(w.user_id)}
+                            title="Allow this user to use a different bank account on their next withdrawal"
+                          >
+                            Unlock account
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
