@@ -80,15 +80,15 @@ export const useWinRestrictions = () => {
 
   const canFullyWin = (): boolean => {
     if (!winData) return false;
-    // Admin override: win_rate_modifier of 0 means user can never fully win
+    const maxWins = adminSettings.max_full_wins_per_day;
+    const radius = adminSettings.win_window_radius_hours;
     if (adminSettings.is_active && adminSettings.win_rate_modifier <= 0) return false;
-    // Admin override: high win_rate_modifier (>=2) bypasses time/count restrictions
     if (adminSettings.is_active && adminSettings.win_rate_modifier >= 2) {
-      return winData.fullWinCount < MAX_FULL_WINS_PER_DAY * 3;
+      return winData.fullWinCount < maxWins * 3;
     }
     const currentHour = new Date().getHours();
-    const isInWindow = Math.abs(currentHour - winData.winWindowHour) <= 1; // ±1 hour window
-    return isInWindow && winData.fullWinCount < MAX_FULL_WINS_PER_DAY;
+    const isInWindow = Math.abs(currentHour - winData.winWindowHour) <= radius;
+    return isInWindow && winData.fullWinCount < maxWins;
   };
 
   const recordFullWin = async () => {
