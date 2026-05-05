@@ -42,6 +42,16 @@ const Settings = () => {
   const [savingPref, setSavingPref] = useState(false);
   const push = usePushNotifications();
 
+  // Auto-enable push notifications by default on first visit (if supported and not previously denied)
+  useEffect(() => {
+    if (!push.supported || push.busy || push.subscribed) return;
+    if (push.permission === "denied") return;
+    const key = "lootboxx_push_auto_prompted";
+    if (localStorage.getItem(key)) return;
+    localStorage.setItem(key, "1");
+    push.subscribe().catch(() => { /* ignore — user can toggle manually */ });
+  }, [push.supported, push.permission, push.subscribed, push.busy]);
+
   const togglePush = async (val: boolean) => {
     try {
       if (val) await push.subscribe();
