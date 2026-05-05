@@ -173,17 +173,22 @@ const LiveWithdrawView = () => {
             </p>
           )}
         </div>
+        {accountLocked && (
+          <p className="text-xs text-primary bg-primary/10 border border-primary/30 rounded p-2">
+            🔒 Your withdrawal account is locked for your security. Contact support to change it.
+          </p>
+        )}
         <div>
           <Label>Bank Name</Label>
-          <Input placeholder="e.g. GTBank, Access Bank" value={bankName} onChange={(e) => setBankName(e.target.value)} />
+          <Input placeholder="e.g. GTBank, Access Bank" value={bankName} onChange={(e) => setBankName(e.target.value)} disabled={accountLocked} />
         </div>
         <div>
           <Label>Account Number</Label>
-          <Input placeholder="10-digit account number" maxLength={10} value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} />
+          <Input placeholder="10-digit account number" maxLength={10} value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} disabled={accountLocked} />
         </div>
         <div>
           <Label>Account Name</Label>
-          <Input placeholder="Name on your bank account" value={accountName} onChange={(e) => setAccountName(e.target.value)} />
+          <Input placeholder="Name on your bank account" value={accountName} onChange={(e) => setAccountName(e.target.value)} disabled={accountLocked} />
         </div>
         <Button className="button-gradient w-full py-3" onClick={handleWithdraw} disabled={loading}>
           {loading ? "Submitting..." : "Submit Withdrawal"}
