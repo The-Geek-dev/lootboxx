@@ -144,8 +144,7 @@ Deno.serve(async (req) => {
         const { data: userRes } = await supabase.auth.admin.getUserById(w.user_id);
         const email = userRes?.user?.email;
         if (email) {
-          const unsubscribeUrl = `${SUPABASE_URL}/functions/v1/nudge-unsubscribe?token=${token}`;
-          await sendEmail(email, title, emailWrap(title, message, { label: ctaLabel, url: ctaUrl }, unsubscribeUrl));
+          await sendNudgeEmail(email, title, message, ctaLabel, ctaUrl, `nudge-${w.user_id}-${today}-${slot}`);
           emailed++;
         }
       }
