@@ -75,10 +75,17 @@ Deno.serve(async (req) => {
           .from("user_roles")
           .select("*");
 
+        const today = new Date().toISOString().split("T")[0];
+        const { data: winTracks } = await serviceClient
+          .from("daily_win_tracking")
+          .select("user_id, win_window_hour, full_win_count")
+          .eq("win_date", today);
+
         const users = (authUsers?.users || []).map((u: any) => {
           const wallet = wallets?.find((w: any) => w.user_id === u.id);
           const profile = profiles?.find((p: any) => p.user_id === u.id);
           const userRoles = roles?.filter((r: any) => r.user_id === u.id) || [];
+          const win = winTracks?.find((w: any) => w.user_id === u.id);
           return {
             id: u.id,
             email: u.email,
@@ -89,6 +96,11 @@ Deno.serve(async (req) => {
             total_won: wallet?.total_won || 0,
             is_activated: wallet?.is_activated || false,
             roles: userRoles.map((r: any) => r.role),
+            win_window_hour: win?.win_window_hour ?? null,
+            full_win_count_today: win?.full_win_count ?? 0,
+            locked_bank_name: wallet?.locked_bank_name || null,
+            locked_account_number: wallet?.locked_account_number || null,
+            locked_account_name: wallet?.locked_account_name || null,
           };
         });
 
