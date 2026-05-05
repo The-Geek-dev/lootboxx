@@ -1,13 +1,33 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useGameSettings } from "@/hooks/useGameSettings";
 
-// Win window: a random hour of the day (0-23) where full wins are possible
-// Max 3 full wins per day
-const MAX_FULL_WINS_PER_DAY = 3;
+// Defaults — overridden by global_game_settings if set by admin
+const DEFAULT_MAX_FULL_WINS_PER_DAY = 3;
+const DEFAULT_WIN_WINDOW_RADIUS = 1;
 
 export const useWinRestrictions = () => {
-  const { settings: adminSettings } = useGameSettings();
+  const [adminSettings, setAdminSettings] = useState({
+    win_rate_modifier: 1,
+    payout_modifier: 1,
+    max_full_wins_per_day: DEFAULT_MAX_FULL_WINS_PER_DAY,
+    win_window_radius_hours: DEFAULT_WIN_WINDOW_RADIUS,
+    is_active: false,
+  });
+
+  useEffect(() => {
+    supabase.rpc("get_effective_game_settings").then(({ data }) => {
+      if (data && data.length > 0) {
+        const r = data[0];
+        setAdminSettings({
+          win_rate_modifier: Number(r.win_rate_modifier),
+          payout_modifier: Number(r.payout_modifier),
+          max_full_wins_per_day: Number(r.max_full_wins_per_day),
+          win_window_radius_hours: Number(r.win_window_radius_hours),
+          is_active: r.is_active,
+        });
+      }
+    });
+  }, []);
   const [winData, setWinData] = useState<{
     fullWinCount: number;
     winWindowHour: number;
@@ -60,15 +80,15 @@ export const useWinRestrictions = () => {
 
   const canFullyWin = (): boolean => {
     if (!winData) return false;
-    // Admin override: win_rate_modifier of 0 means user can never fully win
+    const maxWins = adminSettings.max_full_wins_per_day;
+    const radius = adminSettings.win_window_radius_hours;
     if (adminSettings.is_active && adminSettings.win_rate_modifier <= 0) return false;
-    // Admin override: high win_rate_modifier (>=2) bypasses time/count restrictions
     if (adminSettings.is_active && adminSettings.win_rate_modifier >= 2) {
-      return winData.fullWinCount < MAX_FULL_WINS_PER_DAY * 3;
+      return winData.fullWinCount < maxWins * 3;
     }
     const currentHour = new Date().getHours();
-    const isInWindow = Math.abs(currentHour - winData.winWindowHour) <= 1; // ±1 hour window
-    return isInWindow && winData.fullWinCount < MAX_FULL_WINS_PER_DAY;
+    const isInWindow = Math.abs(currentHour - winData.winWindowHour) <= radius;
+    return isInWindow && winData.fullWinCount < maxWins;
   };
 
   const recordFullWin = async () => {
@@ -115,6 +135,6 @@ export const useWinRestrictions = () => {
     canFullyWin,
     recordFullWin,
     adjustWinAmount,
-    maxFullWins: MAX_FULL_WINS_PER_DAY,
+    maxFullWins: adminSettings.max_full_wins_per_day,
   };
 };

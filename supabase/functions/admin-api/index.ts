@@ -75,10 +75,17 @@ Deno.serve(async (req) => {
           .from("user_roles")
           .select("*");
 
+        const today = new Date().toISOString().split("T")[0];
+        const { data: winTracks } = await serviceClient
+          .from("daily_win_tracking")
+          .select("user_id, win_window_hour, full_win_count")
+          .eq("win_date", today);
+
         const users = (authUsers?.users || []).map((u: any) => {
           const wallet = wallets?.find((w: any) => w.user_id === u.id);
           const profile = profiles?.find((p: any) => p.user_id === u.id);
           const userRoles = roles?.filter((r: any) => r.user_id === u.id) || [];
+          const win = winTracks?.find((w: any) => w.user_id === u.id);
           return {
             id: u.id,
             email: u.email,
@@ -89,6 +96,11 @@ Deno.serve(async (req) => {
             total_won: wallet?.total_won || 0,
             is_activated: wallet?.is_activated || false,
             roles: userRoles.map((r: any) => r.role),
+            win_window_hour: win?.win_window_hour ?? null,
+            full_win_count_today: win?.full_win_count ?? 0,
+            locked_bank_name: wallet?.locked_bank_name || null,
+            locked_account_number: wallet?.locked_account_number || null,
+            locked_account_name: wallet?.locked_account_name || null,
           };
         });
 
@@ -669,6 +681,65 @@ Deno.serve(async (req) => {
             netAmount,
             feeAmount,
           }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      case "get_global_game_settings": {
+        const { data } = await serviceClient
+          .from("global_game_settings")
+          .select("*")
+          .eq("id", 1)
+          .maybeSingle();
+        return new Response(JSON.stringify({ settings: data }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      case "update_global_game_settings": {
+        const {
+          win_rate_modifier,
+          payout_modifier,
+          max_full_wins_per_day,
+          win_window_radius_hours,
+          is_active,
+        } = params;
+        const { error: gErr } = await serviceClient
+          .from("global_game_settings")
+          .upsert({
+            id: 1,
+            win_rate_modifier: Number(win_rate_modifier),
+            payout_modifier: Number(payout_modifier),
+            max_full_wins_per_day: Number(max_full_wins_per_day),
+            win_window_radius_hours: Number(win_window_radius_hours),
+            is_active: !!is_active,
+            updated_by: user.id,
+            updated_at: new Date().toISOString(),
+          });
+        if (gErr) {
+          return new Response(JSON.stringify({ error: gErr.message }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        return new Response(
+          JSON.stringify({ success: true, message: "Global game settings updated" }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      case "unlock_withdrawal_account": {
+        const { user_id: unlockId } = params;
+        await serviceClient
+          .from("user_wallets")
+          .update({
+            locked_bank_name: null,
+            locked_account_number: null,
+            locked_account_name: null,
+          })
+          .eq("user_id", unlockId);
+        return new Response(
+          JSON.stringify({ success: true, message: "Withdrawal account unlocked" }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }

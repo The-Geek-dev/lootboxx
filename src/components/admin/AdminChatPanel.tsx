@@ -205,9 +205,9 @@ const AdminChatPanel = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 h-[32rem]">
+      <div className="grid grid-cols-1 md:grid-cols-3 h-[32rem] max-h-[70vh]">
         {/* Conversations list */}
-        <div className="border-r border-border overflow-hidden flex flex-col">
+        <div className="border-r border-border overflow-hidden flex flex-col min-h-0">
           <ScrollArea className="flex-1">
             {conversations.length === 0 && (
               <p className="text-sm text-muted-foreground p-4">No conversations yet.</p>
@@ -246,7 +246,7 @@ const AdminChatPanel = () => {
         </div>
 
         {/* Active conversation */}
-        <div className="md:col-span-2 flex flex-col">
+        <div className="md:col-span-2 flex flex-col min-h-0">
           {!active && (
             <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
               Select a conversation to view messages

@@ -69,6 +69,15 @@ const AdminDashboard = () => {
   const [gsPayout, setGsPayout] = useState("1.0");
   const [gsActive, setGsActive] = useState(true);
   const [gsNote, setGsNote] = useState("");
+  // Global game odds
+  const [globalOdds, setGlobalOdds] = useState({
+    win_rate_modifier: 1,
+    payout_modifier: 1,
+    max_full_wins_per_day: 3,
+    win_window_radius_hours: 1,
+    is_active: false,
+  });
+  const [savingGlobal, setSavingGlobal] = useState(false);
 
   const adminCall = useCallback(async (action: string, params: any = {}) => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -118,13 +127,14 @@ const AdminDashboard = () => {
       setIsAdmin(true);
 
       try {
-        const [statsRes, usersRes, depositsRes, gamesRes, withdrawRes, gsRes] = await Promise.all([
+        const [statsRes, usersRes, depositsRes, gamesRes, withdrawRes, gsRes, globalRes] = await Promise.all([
           adminCall("get_stats"),
           adminCall("get_users"),
           adminCall("get_deposits"),
           adminCall("get_game_activity"),
           adminCall("get_withdrawals"),
           adminCall("get_game_settings"),
+          adminCall("get_global_game_settings"),
         ]);
 
         setStats(statsRes?.stats);
@@ -133,6 +143,16 @@ const AdminDashboard = () => {
         setGameActivity(gamesRes);
         setWithdrawals(withdrawRes?.withdrawals || []);
         setGameSettings(gsRes?.settings || []);
+        if (globalRes?.settings) {
+          const g = globalRes.settings;
+          setGlobalOdds({
+            win_rate_modifier: Number(g.win_rate_modifier),
+            payout_modifier: Number(g.payout_modifier),
+            max_full_wins_per_day: Number(g.max_full_wins_per_day),
+            win_window_radius_hours: Number(g.win_window_radius_hours),
+            is_active: g.is_active,
+          });
+        }
       } catch (err: any) {
         toast({ title: "Error loading admin data", description: err.message, variant: "destructive" });
       }
@@ -291,6 +311,28 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleSaveGlobalOdds = async () => {
+    setSavingGlobal(true);
+    try {
+      const res = await adminCall("update_global_game_settings", globalOdds);
+      toast({ title: res.message });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+    setSavingGlobal(false);
+  };
+
+  const handleUnlockAccount = async (userId: string) => {
+    try {
+      const res = await adminCall("unlock_withdrawal_account", { user_id: userId });
+      toast({ title: res.message });
+      const uRes = await adminCall("get_users");
+      setUsers(uRes?.users || []);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
+
   if (!isAdmin || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -344,7 +386,7 @@ const AdminDashboard = () => {
           </div>
 
           <Tabs defaultValue="users" className="space-y-6">
-            <TabsList className="grid grid-cols-3 sm:grid-cols-10 w-full max-w-5xl">
+            <TabsList className="grid grid-cols-3 sm:grid-cols-11 w-full max-w-6xl">
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="deposits">Deposits</TabsTrigger>
               <TabsTrigger value="games">Games</TabsTrigger>
@@ -353,6 +395,7 @@ const AdminDashboard = () => {
               <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
               <TabsTrigger value="points">Points</TabsTrigger>
               <TabsTrigger value="game-ctrl">Game Ctrl</TabsTrigger>
+              <TabsTrigger value="global-odds">Global Odds</TabsTrigger>
               <TabsTrigger value="emails">Emails</TabsTrigger>
               <TabsTrigger value="chat">Chat</TabsTrigger>
             </TabsList>
@@ -370,6 +413,7 @@ const AdminDashboard = () => {
                       <TableHead>Email</TableHead>
                       <TableHead>Balance</TableHead>
                       <TableHead>Deposited</TableHead>
+                      <TableHead>Lucky Hour</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Roles</TableHead>
                       <TableHead>Actions</TableHead>
@@ -382,6 +426,11 @@ const AdminDashboard = () => {
                         <TableCell className="text-muted-foreground text-xs">{u.email}</TableCell>
                         <TableCell>₦{Number(u.balance).toLocaleString()}</TableCell>
                         <TableCell>₦{Number(u.total_deposited).toLocaleString()}</TableCell>
+                        <TableCell className="text-xs">
+                          {u.win_window_hour !== null
+                            ? `${String(u.win_window_hour).padStart(2,"0")}:00 (${u.full_win_count_today}/${globalOdds.max_full_wins_per_day})`
+                            : <span className="text-muted-foreground">—</span>}
+                        </TableCell>
                         <TableCell>
                           <Badge variant={u.is_activated ? "default" : "secondary"}>
                             {u.is_activated ? "Active" : "Inactive"}
@@ -673,6 +722,15 @@ const AdminDashboard = () => {
                               />
                             </div>
                           )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="mt-1 text-xs h-7"
+                            onClick={() => handleUnlockAccount(w.user_id)}
+                            title="Allow this user to use a different bank account on their next withdrawal"
+                          >
+                            Unlock account
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -1034,6 +1092,50 @@ const AdminDashboard = () => {
                   </Table>
                 </Card>
               )}
+            </TabsContent>
+
+            {/* GLOBAL ODDS TAB */}
+            <TabsContent value="global-odds">
+              <Card className="glass p-6 max-w-2xl">
+                <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" /> Global Game Odds
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  These apply to ALL users without a personal override. Per-user "Game Ctrl" settings still take precedence.
+                </p>
+                <div className="space-y-5">
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Win Rate Multiplier: {globalOdds.win_rate_modifier}x</label>
+                    <Slider min={0} max={3} step={0.1} value={[globalOdds.win_rate_modifier]}
+                      onValueChange={([v]) => setGlobalOdds({ ...globalOdds, win_rate_modifier: Number(v.toFixed(1)) })} />
+                    <p className="text-xs text-muted-foreground mt-1">0 = nobody wins, 1 = normal, 3 = 3x</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Payout Multiplier: {globalOdds.payout_modifier}x</label>
+                    <Slider min={0} max={3} step={0.1} value={[globalOdds.payout_modifier]}
+                      onValueChange={([v]) => setGlobalOdds({ ...globalOdds, payout_modifier: Number(v.toFixed(1)) })} />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Max Full Wins / Day: {globalOdds.max_full_wins_per_day}</label>
+                    <Slider min={1} max={10} step={1} value={[globalOdds.max_full_wins_per_day]}
+                      onValueChange={([v]) => setGlobalOdds({ ...globalOdds, max_full_wins_per_day: v })} />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Lucky Hour Window (± hours): {globalOdds.win_window_radius_hours}</label>
+                    <Slider min={0} max={6} step={1} value={[globalOdds.win_window_radius_hours]}
+                      onValueChange={([v]) => setGlobalOdds({ ...globalOdds, win_window_radius_hours: v })} />
+                    <p className="text-xs text-muted-foreground mt-1">Width of the daily window around each user's lucky hour where full wins are possible.</p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium">Active</label>
+                    <Switch checked={globalOdds.is_active}
+                      onCheckedChange={(v) => setGlobalOdds({ ...globalOdds, is_active: v })} />
+                  </div>
+                  <Button className="button-gradient w-full" onClick={handleSaveGlobalOdds} disabled={savingGlobal}>
+                    {savingGlobal ? "Saving..." : "Save Global Odds"}
+                  </Button>
+                </div>
+              </Card>
             </TabsContent>
 
             {/* EMAILS TAB */}
