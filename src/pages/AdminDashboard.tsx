@@ -127,13 +127,14 @@ const AdminDashboard = () => {
       setIsAdmin(true);
 
       try {
-        const [statsRes, usersRes, depositsRes, gamesRes, withdrawRes, gsRes] = await Promise.all([
+        const [statsRes, usersRes, depositsRes, gamesRes, withdrawRes, gsRes, globalRes] = await Promise.all([
           adminCall("get_stats"),
           adminCall("get_users"),
           adminCall("get_deposits"),
           adminCall("get_game_activity"),
           adminCall("get_withdrawals"),
           adminCall("get_game_settings"),
+          adminCall("get_global_game_settings"),
         ]);
 
         setStats(statsRes?.stats);
@@ -142,6 +143,16 @@ const AdminDashboard = () => {
         setGameActivity(gamesRes);
         setWithdrawals(withdrawRes?.withdrawals || []);
         setGameSettings(gsRes?.settings || []);
+        if (globalRes?.settings) {
+          const g = globalRes.settings;
+          setGlobalOdds({
+            win_rate_modifier: Number(g.win_rate_modifier),
+            payout_modifier: Number(g.payout_modifier),
+            max_full_wins_per_day: Number(g.max_full_wins_per_day),
+            win_window_radius_hours: Number(g.win_window_radius_hours),
+            is_active: g.is_active,
+          });
+        }
       } catch (err: any) {
         toast({ title: "Error loading admin data", description: err.message, variant: "destructive" });
       }
