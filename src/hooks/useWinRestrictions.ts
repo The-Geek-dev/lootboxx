@@ -135,6 +135,6 @@ export const useWinRestrictions = () => {
     canFullyWin,
     recordFullWin,
     adjustWinAmount,
-    maxFullWins: MAX_FULL_WINS_PER_DAY,
+    maxFullWins: adminSettings.max_full_wins_per_day,
   };
 };
