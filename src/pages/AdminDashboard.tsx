@@ -1085,6 +1085,50 @@ const AdminDashboard = () => {
               )}
             </TabsContent>
 
+            {/* GLOBAL ODDS TAB */}
+            <TabsContent value="global-odds">
+              <Card className="glass p-6 max-w-2xl">
+                <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" /> Global Game Odds
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  These apply to ALL users without a personal override. Per-user "Game Ctrl" settings still take precedence.
+                </p>
+                <div className="space-y-5">
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Win Rate Multiplier: {globalOdds.win_rate_modifier}x</label>
+                    <Slider min={0} max={3} step={0.1} value={[globalOdds.win_rate_modifier]}
+                      onValueChange={([v]) => setGlobalOdds({ ...globalOdds, win_rate_modifier: Number(v.toFixed(1)) })} />
+                    <p className="text-xs text-muted-foreground mt-1">0 = nobody wins, 1 = normal, 3 = 3x</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Payout Multiplier: {globalOdds.payout_modifier}x</label>
+                    <Slider min={0} max={3} step={0.1} value={[globalOdds.payout_modifier]}
+                      onValueChange={([v]) => setGlobalOdds({ ...globalOdds, payout_modifier: Number(v.toFixed(1)) })} />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Max Full Wins / Day: {globalOdds.max_full_wins_per_day}</label>
+                    <Slider min={1} max={10} step={1} value={[globalOdds.max_full_wins_per_day]}
+                      onValueChange={([v]) => setGlobalOdds({ ...globalOdds, max_full_wins_per_day: v })} />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Lucky Hour Window (± hours): {globalOdds.win_window_radius_hours}</label>
+                    <Slider min={0} max={6} step={1} value={[globalOdds.win_window_radius_hours]}
+                      onValueChange={([v]) => setGlobalOdds({ ...globalOdds, win_window_radius_hours: v })} />
+                    <p className="text-xs text-muted-foreground mt-1">Width of the daily window around each user's lucky hour where full wins are possible.</p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium">Active</label>
+                    <Switch checked={globalOdds.is_active}
+                      onCheckedChange={(v) => setGlobalOdds({ ...globalOdds, is_active: v })} />
+                  </div>
+                  <Button className="button-gradient w-full" onClick={handleSaveGlobalOdds} disabled={savingGlobal}>
+                    {savingGlobal ? "Saving..." : "Save Global Odds"}
+                  </Button>
+                </div>
+              </Card>
+            </TabsContent>
+
             {/* EMAILS TAB */}
             <TabsContent value="emails" className="space-y-6">
               <SendManualReceiptPanel adminCall={adminCall} />
