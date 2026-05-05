@@ -69,6 +69,15 @@ const AdminDashboard = () => {
   const [gsPayout, setGsPayout] = useState("1.0");
   const [gsActive, setGsActive] = useState(true);
   const [gsNote, setGsNote] = useState("");
+  // Global game odds
+  const [globalOdds, setGlobalOdds] = useState({
+    win_rate_modifier: 1,
+    payout_modifier: 1,
+    max_full_wins_per_day: 3,
+    win_window_radius_hours: 1,
+    is_active: false,
+  });
+  const [savingGlobal, setSavingGlobal] = useState(false);
 
   const adminCall = useCallback(async (action: string, params: any = {}) => {
     const { data: { session } } = await supabase.auth.getSession();
