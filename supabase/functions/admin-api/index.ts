@@ -685,6 +685,65 @@ Deno.serve(async (req) => {
         );
       }
 
+      case "get_global_game_settings": {
+        const { data } = await serviceClient
+          .from("global_game_settings")
+          .select("*")
+          .eq("id", 1)
+          .maybeSingle();
+        return new Response(JSON.stringify({ settings: data }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      case "update_global_game_settings": {
+        const {
+          win_rate_modifier,
+          payout_modifier,
+          max_full_wins_per_day,
+          win_window_radius_hours,
+          is_active,
+        } = params;
+        const { error: gErr } = await serviceClient
+          .from("global_game_settings")
+          .upsert({
+            id: 1,
+            win_rate_modifier: Number(win_rate_modifier),
+            payout_modifier: Number(payout_modifier),
+            max_full_wins_per_day: Number(max_full_wins_per_day),
+            win_window_radius_hours: Number(win_window_radius_hours),
+            is_active: !!is_active,
+            updated_by: user.id,
+            updated_at: new Date().toISOString(),
+          });
+        if (gErr) {
+          return new Response(JSON.stringify({ error: gErr.message }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        return new Response(
+          JSON.stringify({ success: true, message: "Global game settings updated" }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      case "unlock_withdrawal_account": {
+        const { user_id: unlockId } = params;
+        await serviceClient
+          .from("user_wallets")
+          .update({
+            locked_bank_name: null,
+            locked_account_number: null,
+            locked_account_name: null,
+          })
+          .eq("user_id", unlockId);
+        return new Response(
+          JSON.stringify({ success: true, message: "Withdrawal account unlocked" }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400,
