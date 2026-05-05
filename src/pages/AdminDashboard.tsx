@@ -311,7 +311,27 @@ const AdminDashboard = () => {
     }
   };
 
-  if (!isAdmin || loading) {
+  const handleSaveGlobalOdds = async () => {
+    setSavingGlobal(true);
+    try {
+      const res = await adminCall("update_global_game_settings", globalOdds);
+      toast({ title: res.message });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+    setSavingGlobal(false);
+  };
+
+  const handleUnlockAccount = async (userId: string) => {
+    try {
+      const res = await adminCall("unlock_withdrawal_account", { user_id: userId });
+      toast({ title: res.message });
+      const uRes = await adminCall("get_users");
+      setUsers(uRes?.users || []);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
