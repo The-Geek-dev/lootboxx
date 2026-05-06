@@ -64,6 +64,14 @@ Deno.serve(async (req) => {
     const data = await initRes.json();
     if (!initRes.ok || data.status !== 200) {
       console.error("Squad init failed:", data);
+      try {
+        const svc = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+        await svc.from("payment_attempts").insert({
+          user_id: userId, provider: "squad", reference: transaction_ref,
+          amount: Number(amount), deposit_type, status: "init_failed",
+          error_message: data.message || "init failed",
+        });
+      } catch {}
       return json({ error: data.message || "Failed to initialize", details: data }, 400);
     }
 
