@@ -431,8 +431,8 @@ const AdminDashboard = () => {
                       <TableHead>Deposited</TableHead>
                       <TableHead>Lucky Hour</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Coupon expires</TableHead>
                       <TableHead>Roles</TableHead>
+                      <TableHead>Coupon expires</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
