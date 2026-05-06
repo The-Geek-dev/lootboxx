@@ -142,6 +142,27 @@ export const allGames: GameItem[] = [
   { id: "limbo", name: "Limbo", emoji: "\u{1F680}", category: ["top", "instant", "popular", "vip"], path: "/games/play/limbo", isPlayable: true, color: "from-indigo-500 to-violet-500", isVip: true, pointCost: 50 },
   { id: "pachinko", name: "Pachinko", emoji: "\u{1F3F0}", category: ["top", "popular", "instant"], path: "/games/play/pachinko", isPlayable: true, color: "from-pink-500 to-purple-500", pointCost: 30 },
   { id: "penalty-shootout", name: "Penalty Shootout", emoji: "\u{1F945}", category: ["top", "popular", "sports"], path: "/games/play/penalty-shootout", isPlayable: true, color: "from-green-500 to-emerald-500", pointCost: 25 },
+
+  // === NEW ENGINES ===
+  // Hot/Cold guess
+  { id: "hot-cold", name: "Hot or Cold", emoji: "\u{1F525}", category: ["top", "popular", "instant"], path: "/games/play/hot-cold", isPlayable: true, color: "from-rose-500 to-blue-500", pointCost: 20 },
+  { id: "number-hunter", name: "Number Hunter", emoji: "\u{1F3AF}", category: ["instant", "arcade"], path: "/games/play/number-hunter", isPlayable: true, color: "from-emerald-500 to-cyan-500", pointCost: 20 },
+  { id: "psychic-pick", name: "Psychic Pick", emoji: "\u{1F52E}", category: ["instant", "vip"], path: "/games/play/psychic-pick", isPlayable: true, color: "from-purple-500 to-pink-500", isVip: true, pointCost: 60 },
+
+  // Dragon-Tiger card duel
+  { id: "dragon-tiger", name: "Dragon Tiger", emoji: "\u{1F409}", category: ["top", "cards", "popular"], path: "/games/play/dragon-tiger", isPlayable: true, color: "from-red-600 to-orange-500", pointCost: 30 },
+  { id: "card-duel", name: "Card Duel", emoji: "\u{1F0CF}", category: ["cards"], path: "/games/play/card-duel", isPlayable: true, color: "from-blue-600 to-purple-500", pointCost: 25 },
+  { id: "lion-elephant", name: "Lion vs Elephant", emoji: "\u{1F981}", category: ["cards", "vip"], path: "/games/play/lion-elephant", isPlayable: true, color: "from-amber-500 to-stone-700", isVip: true, pointCost: 80 },
+
+  // Bomb-squad (mines variant)
+  { id: "bomb-squad", name: "Bomb Squad", emoji: "\u{1F4A3}", category: ["top", "popular", "instant"], path: "/games/play/bomb-squad", isPlayable: true, color: "from-stone-700 to-red-600", pointCost: 25 },
+  { id: "wire-cut", name: "Wire Cut", emoji: "\u2702\uFE0F", category: ["instant"], path: "/games/play/wire-cut", isPlayable: true, color: "from-yellow-500 to-red-500", pointCost: 20 },
+  { id: "minesweeper-x", name: "Minesweeper X", emoji: "\u{1F6A8}", category: ["instant", "vip"], path: "/games/play/minesweeper-x", isPlayable: true, color: "from-red-700 to-gray-700", isVip: true, pointCost: 75 },
+
+  // Fortune cookie pick
+  { id: "fortune-cookie", name: "Fortune Cookie", emoji: "\u{1F960}", category: ["top", "lottery", "instant"], path: "/games/play/fortune-cookie", isPlayable: true, color: "from-yellow-500 to-red-500", pointCost: 20 },
+  { id: "lucky-egg", name: "Lucky Egg", emoji: "\u{1F95A}", category: ["lottery", "instant"], path: "/games/play/lucky-egg", isPlayable: true, color: "from-amber-400 to-yellow-300", pointCost: 25 },
+  { id: "mystery-box", name: "Mystery Box", emoji: "\u{1F381}", category: ["lottery", "vip"], path: "/games/play/mystery-box", isPlayable: true, color: "from-purple-600 to-pink-500", isVip: true, pointCost: 100 },
 ];
 
 export const categories: { key: GameCategory; label: string; emoji: string }[] = [
