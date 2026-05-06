@@ -43,6 +43,7 @@ import WithdrawalSuccess from "./pages/WithdrawalSuccess";
 import Unsubscribe from "./pages/Unsubscribe";
 import CouponRenewalBanner from "@/components/CouponRenewalBanner";
 import PushAutoPrompt from "@/components/PushAutoPrompt";
+import AdsterraLoader from "@/components/AdsterraLoader";
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
@@ -65,6 +66,7 @@ const AppRoutes = () => {
       <LoadingScreen isLoading={isLoading} />
       <CouponRenewalBanner />
       <PushAutoPrompt />
+      <AdsterraLoader />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/about" element={<About />} />
