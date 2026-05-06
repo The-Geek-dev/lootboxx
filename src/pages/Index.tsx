@@ -13,6 +13,7 @@ import CyberpunkParticles from "@/components/CyberpunkParticles";
 import HexagonGrid from "@/components/HexagonGrid";
 import MascotBackground from "@/components/MascotBackground";
 import TutorialVideoButton from "@/components/TutorialVideoButton";
+import AdSlot from "@/components/AdSlot";
 import dashboardPreview from "@/assets/dashboard-preview-new.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -141,17 +142,26 @@ const Index = () => {
       {/* Logo Carousel */}
       <LogoCarousel />
 
+      {/* Ad Slot - after hero */}
+      <div className="bg-black"><AdSlot id="ad-home-top" size="medium" /></div>
+
       {/* Features Section */}
       <div id="features" className="bg-black relative overflow-hidden">
         <MascotBackground position="right" />
         <FeaturesSection />
       </div>
 
+      {/* Ad Slot - between features and testimonials */}
+      <div className="bg-black"><AdSlot id="ad-home-mid" size="medium" /></div>
+
       {/* Testimonials Section */}
       <div className="bg-black relative overflow-hidden">
         <MascotBackground position="left" />
         <TestimonialsSection />
       </div>
+
+      {/* Ad Slot - before footer */}
+      <div className="bg-black"><AdSlot id="ad-home-bottom" size="large" /></div>
 
       {/* Footer */}
       <div className="bg-black">
