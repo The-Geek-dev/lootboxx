@@ -83,6 +83,7 @@ const AppRoutes = () => {
         <Route path="/games/raffle" element={<RaffleDraw />} />
         <Route path="/games/play/:gameId" element={<DynamicGame />} />
         <Route path="/deposit" element={<Deposit />} />
+        <Route path="/payments" element={<PaymentStatus />} />
         <Route path="/referrals" element={<Referrals />} />
         <Route path="/testimonials" element={<Testimonials />} />
         <Route path="/privacy" element={<Privacy />} />
