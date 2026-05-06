@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_settings: {
+        Row: {
+          adsterra_enabled: boolean
+          id: number
+          route_overrides: Json
+          slot_order: Json
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          adsterra_enabled?: boolean
+          id?: number
+          route_overrides?: Json
+          slot_order?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          adsterra_enabled?: boolean
+          id?: number
+          route_overrides?: Json
+          slot_order?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       api_keys: {
         Row: {
           created_at: string
