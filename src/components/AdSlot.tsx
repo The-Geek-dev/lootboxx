@@ -1,4 +1,5 @@
 import { useLocation } from "react-router-dom";
+import { useAdSettings, isRouteEnabled, isSlotEnabled } from "@/hooks/useAdSettings";
 
 interface AdSlotProps {
   /** Identifier for analytics/debugging */
@@ -17,7 +18,9 @@ interface AdSlotProps {
  */
 const AdSlot = ({ id, size = "medium", label = "Advertisement", className = "" }: AdSlotProps) => {
   const location = useLocation();
-  if (location.pathname.startsWith("/games")) return null;
+  const { settings } = useAdSettings();
+  if (!isRouteEnabled(settings, location.pathname)) return null;
+  if (!isSlotEnabled(settings, id)) return null;
 
   const heights: Record<string, string> = {
     small: "min-h-[90px]",
