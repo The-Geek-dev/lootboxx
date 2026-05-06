@@ -491,23 +491,13 @@ const AdminDashboard = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {!u.is_activated && (
-                              <Button size="sm" variant="outline" onClick={() => handleCouponAction(u.id, "activate_coupon", 7)}>
-                                Activate (7d)
-                              </Button>
-                            )}
-                            {u.is_activated && (
-                              <Button size="sm" variant="outline" onClick={() => handleCouponAction(u.id, "renew_coupon", 7)}>
-                                Renew +7d
-                              </Button>
-                            )}
-                            {u.coupon_expires_at && new Date(u.coupon_expires_at) > new Date() && (
-                              <Button size="sm" variant="ghost" onClick={() => handleCouponAction(u.id, "expire_coupon")}>
-                                Expire
-                              </Button>
-                            )}
-                          </div>
+                          {u.roles.length > 0
+                            ? u.roles.map((r: string) => (
+                                <Badge key={r} variant="outline" className="mr-1 text-xs">
+                                  {r}
+                                </Badge>
+                              ))
+                            : <span className="text-muted-foreground text-xs">user</span>}
                         </TableCell>
                       </TableRow>
                     ))}
