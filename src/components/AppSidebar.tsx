@@ -16,6 +16,7 @@ import {
   ArrowUpFromLine,
   Menu,
   X,
+  CreditCard,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,7 @@ const navItems = [
   { label: "Points", icon: Coins, path: "/points" },
   { label: "Leaderboard", icon: Trophy, path: "/leaderboard" },
   { label: "Deposit", icon: ArrowDownToLine, path: "/deposit" },
+  { label: "Payments", icon: CreditCard, path: "/payments" },
   { label: "Withdraw", icon: ArrowUpFromLine, path: "/withdraw" },
   { label: "Referrals", icon: Users, path: "/referrals" },
   { label: "Transactions", icon: History, path: "/transactions" },
