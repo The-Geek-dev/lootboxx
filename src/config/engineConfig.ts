@@ -69,6 +69,22 @@ export const GAME_ENGINE_OVERRIDES: Record<string, string> = {
   "sic-bo": "sicbo",
   "pachinko": "pachinko",
   "penalty-shootout": "penaltyshoot",
+  // Hot/Cold guess
+  "hot-cold": "hotcold",
+  "number-hunter": "hotcold",
+  "psychic-pick": "hotcold",
+  // Dragon-Tiger card duel
+  "dragon-tiger": "dragontiger",
+  "card-duel": "dragontiger",
+  "lion-elephant": "dragontiger",
+  // Bomb-squad (mines variant)
+  "bomb-squad": "bombsquad",
+  "wire-cut": "bombsquad",
+  "minesweeper-x": "bombsquad",
+  // Fortune cookie pick
+  "fortune-cookie": "fortunecookie",
+  "lucky-egg": "fortunecookie",
+  "mystery-box": "fortunecookie",
   // Catcher (falling items)
   "pac-gold": "catcher",
   "tetris-cash": "catcher",

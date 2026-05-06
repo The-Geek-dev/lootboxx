@@ -137,6 +137,10 @@ export const PAYOUT_COEF = {
   blackjack: 2,
   limbo: 1,
   sicbo: 2,
+  hotCold: 1,
+  dragonTiger: 1,
+  bombSquad: 1,
+  fortuneCookie: 1,
 };
 
 /** CoinFlip uses pointCost * BASE^streak. Wrapped so it stays mutable. */

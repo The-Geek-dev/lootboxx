@@ -41,6 +41,10 @@ import SicBoEngine from "@/components/engines/SicBoEngine";
 import BaccaratEngine from "@/components/engines/BaccaratEngine";
 import PachinkoEngine from "@/components/engines/PachinkoEngine";
 import PenaltyShootoutEngine from "@/components/engines/PenaltyShootoutEngine";
+import HotColdEngine from "@/components/engines/HotColdEngine";
+import DragonTigerEngine from "@/components/engines/DragonTigerEngine";
+import BombSquadEngine from "@/components/engines/BombSquadEngine";
+import FortuneCookieEngine from "@/components/engines/FortuneCookieEngine";
 import { useEffect } from "react";
 
 const DynamicGame = () => {
@@ -163,6 +167,14 @@ const DynamicGame = () => {
         return <PachinkoEngine {...baseProps} />;
       case "penaltyshoot":
         return <PenaltyShootoutEngine {...baseProps} />;
+      case "hotcold":
+        return <HotColdEngine {...baseProps} />;
+      case "dragontiger":
+        return <DragonTigerEngine {...baseProps} />;
+      case "bombsquad":
+        return <BombSquadEngine {...baseProps} />;
+      case "fortunecookie":
+        return <FortuneCookieEngine {...baseProps} />;
       default:
         return <InstantEngine {...baseProps} />;
     }
