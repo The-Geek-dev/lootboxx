@@ -241,7 +241,7 @@ const LiveDepositView = () => {
 
         <Button
           className="button-gradient w-full py-3 text-lg"
-          onClick={startSquadPayment}
+          onClick={startPayment}
           disabled={paying}
         >
           {paying ? (
