@@ -66,6 +66,7 @@ const AppRoutes = () => {
       <LoadingScreen isLoading={isLoading} />
       <CouponRenewalBanner />
       <PushAutoPrompt />
+      <AdsterraLoader />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/about" element={<About />} />
