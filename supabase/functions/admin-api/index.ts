@@ -101,6 +101,7 @@ Deno.serve(async (req) => {
             locked_bank_name: wallet?.locked_bank_name || null,
             locked_account_number: wallet?.locked_account_number || null,
             locked_account_name: wallet?.locked_account_name || null,
+            coupon_expires_at: wallet?.coupon_expires_at || null,
           };
         });
 
@@ -849,6 +850,79 @@ Deno.serve(async (req) => {
           .eq("user_id", unlockId);
         return new Response(
           JSON.stringify({ success: true, message: "Withdrawal account unlocked" }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      case "activate_coupon": {
+        const { user_id: actId, days = 7 } = params;
+        if (!actId) {
+          return new Response(JSON.stringify({ error: "Missing user_id" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const expires = new Date(Date.now() + Number(days) * 86400000).toISOString();
+        await serviceClient
+          .from("user_wallets")
+          .update({ is_activated: true, coupon_expires_at: expires })
+          .eq("user_id", actId);
+        await serviceClient.from("notifications").insert({
+          user_id: actId,
+          title: "Account activated",
+          message: `Your account has been activated by an admin. Valid for ${days} day(s).`,
+          type: "info",
+        });
+        return new Response(
+          JSON.stringify({ success: true, message: "Coupon activated", coupon_expires_at: expires }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      case "renew_coupon": {
+        const { user_id: renewId, days = 7 } = params;
+        if (!renewId) {
+          return new Response(JSON.stringify({ error: "Missing user_id" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const { data: w } = await serviceClient
+          .from("user_wallets")
+          .select("coupon_expires_at")
+          .eq("user_id", renewId)
+          .maybeSingle();
+        const base = w?.coupon_expires_at && new Date(w.coupon_expires_at) > new Date()
+          ? new Date(w.coupon_expires_at).getTime()
+          : Date.now();
+        const expires = new Date(base + Number(days) * 86400000).toISOString();
+        await serviceClient
+          .from("user_wallets")
+          .update({ is_activated: true, coupon_expires_at: expires })
+          .eq("user_id", renewId);
+        await serviceClient.from("notifications").insert({
+          user_id: renewId,
+          title: "Coupon renewed",
+          message: `Your coupon has been renewed by an admin for ${days} more day(s).`,
+          type: "info",
+        });
+        return new Response(
+          JSON.stringify({ success: true, message: "Coupon renewed", coupon_expires_at: expires }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      case "expire_coupon": {
+        const { user_id: expId } = params;
+        if (!expId) {
+          return new Response(JSON.stringify({ error: "Missing user_id" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        await serviceClient
+          .from("user_wallets")
+          .update({ coupon_expires_at: new Date(Date.now() - 1000).toISOString() })
+          .eq("user_id", expId);
+        return new Response(
+          JSON.stringify({ success: true, message: "Coupon expired" }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
