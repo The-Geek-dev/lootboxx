@@ -167,6 +167,14 @@ const DynamicGame = () => {
         return <PachinkoEngine {...baseProps} />;
       case "penaltyshoot":
         return <PenaltyShootoutEngine {...baseProps} />;
+      case "hotcold":
+        return <HotColdEngine {...baseProps} />;
+      case "dragontiger":
+        return <DragonTigerEngine {...baseProps} />;
+      case "bombsquad":
+        return <BombSquadEngine {...baseProps} />;
+      case "fortunecookie":
+        return <FortuneCookieEngine {...baseProps} />;
       default:
         return <InstantEngine {...baseProps} />;
     }
