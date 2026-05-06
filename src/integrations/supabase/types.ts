@@ -889,6 +889,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_testimonials: {
+        Row: {
+          content: string
+          created_at: string
+          display_name: string
+          id: string
+          location: string | null
+          rating: number
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          display_name: string
+          id?: string
+          location?: string | null
+          rating?: number
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          location?: string | null
+          rating?: number
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_wallets: {
         Row: {
           balance: number
