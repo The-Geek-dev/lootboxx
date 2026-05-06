@@ -100,6 +100,10 @@ Deno.serve(async (req) => {
       type: "deposit",
     });
 
+    await admin.from("payment_attempts")
+      .update({ status: "confirmed" })
+      .eq("reference", transaction_ref);
+
     return json({ success: true, status: "verified", amount: amountNaira, bonus, points });
   } catch (err: any) {
     console.error("squad-verify error:", err);

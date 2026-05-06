@@ -505,6 +505,48 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_attempts: {
+        Row: {
+          amount: number
+          created_at: string
+          deposit_type: string | null
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          provider: string
+          reference: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          deposit_type?: string | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          provider: string
+          reference: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          deposit_type?: string | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          provider?: string
+          reference?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payout_overrides: {
         Row: {
           created_at: string

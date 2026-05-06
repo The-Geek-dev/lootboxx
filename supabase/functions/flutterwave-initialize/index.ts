@@ -1,3 +1,5 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -54,11 +56,34 @@ Deno.serve(async (req) => {
 
     const data = await response.json();
 
+    const userId = metadata?.user_id;
+    const svc = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+
     if (data.status !== "success") {
+      if (userId) {
+        try {
+          await svc.from("payment_attempts").insert({
+            user_id: userId, provider: "flutterwave", reference: tx_ref,
+            amount: Number(amount), deposit_type: metadata?.deposit_type,
+            status: "init_failed", error_message: data.message || "init failed",
+          });
+        } catch {}
+      }
       return new Response(JSON.stringify({ error: data.message || "Failed to initialize payment" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    if (userId) {
+      try {
+        await svc.from("payment_attempts").insert({
+          user_id: userId, provider: "flutterwave", reference: tx_ref,
+          amount: Number(amount), deposit_type: metadata?.deposit_type,
+          status: "initiated",
+          metadata: { bonus: Number(metadata?.bonus || 0), points_reward: Number(metadata?.points_reward || 0) },
+        });
+      } catch {}
     }
 
     return new Response(JSON.stringify({
