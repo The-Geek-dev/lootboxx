@@ -380,12 +380,15 @@ const AdminDashboard = () => {
       <AppSidebar />
       <main className="md:pl-16 container px-4 pt-32 pb-16">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="flex items-center gap-3 mb-8">
+          <div className="flex items-center gap-3 mb-8 flex-wrap">
             <Shield className="w-8 h-8 text-primary" />
-            <div>
+            <div className="flex-1 min-w-0">
               <h1 className="text-2xl sm:text-4xl font-bold">Admin <span className="text-gradient">Dashboard</span></h1>
               <p className="text-muted-foreground text-sm">Manage users, monitor activity, and release bonuses</p>
             </div>
+            <Button variant="outline" size="sm" onClick={() => navigate("/admin/ads")}>
+              Ads Settings
+            </Button>
           </div>
 
           {/* Stats */}
