@@ -490,15 +490,6 @@ const AdminDashboard = () => {
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>
-                          {u.roles.length > 0
-                            ? u.roles.map((r: string) => (
-                                <Badge key={r} variant="outline" className="mr-1 text-xs">
-                                  {r}
-                                </Badge>
-                              ))
-                            : <span className="text-muted-foreground text-xs">user</span>}
-                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
