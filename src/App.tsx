@@ -27,6 +27,7 @@ import LuckySlots from "./pages/LuckySlots";
 import TriviaQuiz from "./pages/TriviaQuiz";
 import RaffleDraw from "./pages/RaffleDraw";
 import Deposit from "./pages/Deposit";
+import PaymentStatus from "./pages/PaymentStatus";
 import Referrals from "./pages/Referrals";
 import Testimonials from "./pages/Testimonials";
 import Privacy from "./pages/Privacy";
