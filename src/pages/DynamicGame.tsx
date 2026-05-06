@@ -41,6 +41,10 @@ import SicBoEngine from "@/components/engines/SicBoEngine";
 import BaccaratEngine from "@/components/engines/BaccaratEngine";
 import PachinkoEngine from "@/components/engines/PachinkoEngine";
 import PenaltyShootoutEngine from "@/components/engines/PenaltyShootoutEngine";
+import HotColdEngine from "@/components/engines/HotColdEngine";
+import DragonTigerEngine from "@/components/engines/DragonTigerEngine";
+import BombSquadEngine from "@/components/engines/BombSquadEngine";
+import FortuneCookieEngine from "@/components/engines/FortuneCookieEngine";
 import { useEffect } from "react";
 
 const DynamicGame = () => {
