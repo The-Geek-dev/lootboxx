@@ -79,35 +79,35 @@ Deno.serve(async (req) => {
     let ctaUrl = APP_URL;
 
     if (!w.is_activated) {
-      title = slot === "morning" ? "🎁 Activate your account today!" : "⏳ Don't sleep on it — activate tonight";
-      message = "Pay ₦7,000 once to unlock games, raffles, and weekly bonuses. Your welcome bonus is waiting.";
-      ctaLabel = "Activate Now";
+      title = slot === "morning" ? "Complete your account setup" : "Your account is waiting";
+      message = "You haven't finished setting up your account yet. Sign in to complete the one-time setup and access your dashboard.";
+      ctaLabel = "Open dashboard";
       ctaUrl = `${APP_URL}/deposit`;
     } else if (w.coupon_expires_at && new Date(w.coupon_expires_at) <= now) {
-      title = slot === "morning" ? "⏰ Your coupon expired — renew now" : "🔁 Renew tonight to keep playing";
-      message = "Your weekly coupon has expired. Renew for ₦2,000 to get back in the action and keep earning.";
-      ctaLabel = "Renew Coupon";
+      title = slot === "morning" ? "Your weekly access has ended" : "Renew your weekly access";
+      message = "Your weekly access period has ended. You can renew it from your dashboard whenever you're ready.";
+      ctaLabel = "Open dashboard";
       ctaUrl = `${APP_URL}/deposit`;
     } else {
       const streakLine = w.current_streak && w.current_streak > 0
-        ? ` You're on a ${w.current_streak}-day streak — don't break it!`
+        ? ` Your current streak is ${w.current_streak} days.`
         : "";
       const morningPrompts = [
-        { t: "☀️ Good morning — your spins await", m: `Start your day with a spin or two. Quick wins, real cash.${streakLine}` },
-        { t: "🎮 Play before work", m: `Five minutes on the wheel could be your luckiest move today.${streakLine}` },
-        { t: "🔥 Keep your streak alive", m: `Open the app, play one round, keep your XP climbing.${streakLine}` },
+        { t: "Your daily LootBoxx update", m: `Good morning. Your account is active and ready when you are.${streakLine}` },
+        { t: "A quick reminder from LootBoxx", m: `Just a heads-up that your account is active today.${streakLine}` },
+        { t: "Daily summary from LootBoxx", m: `Here's your daily check-in. Everything looks good on your account.${streakLine}` },
       ];
       const eveningPrompts = [
-        { t: "🌙 Evening wind-down — play & win", m: `End your day with raffles, slots, or trivia.${streakLine}` },
-        { t: "💰 Convert your points before bed", m: `Got 5,000+ points? Turn them into cash in seconds.${streakLine}` },
-        { t: "🏆 Climb the leaderboard tonight", m: `A few rounds now could move you up the rankings by morning.${streakLine}` },
+        { t: "Evening update from LootBoxx", m: `A quick evening check-in on your account.${streakLine}` },
+        { t: "Your account summary", m: `Here is your end-of-day account summary.${streakLine}` },
+        { t: "Daily LootBoxx digest", m: `A short update on your account activity.${streakLine}` },
       ];
       const prompts = slot === "morning" ? morningPrompts : eveningPrompts;
       const pick = prompts[Math.floor(Math.random() * prompts.length)];
       title = pick.t;
       message = pick.m;
-      ctaLabel = "Play Now";
-      ctaUrl = `${APP_URL}/games`;
+      ctaLabel = "Open dashboard";
+      ctaUrl = `${APP_URL}/dashboard`;
     }
 
     await supabase.from("notifications").insert({
