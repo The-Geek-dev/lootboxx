@@ -116,48 +116,31 @@ const LiveDepositView = () => {
     if (!selectedTier) return;
     setPaying(true);
     try {
-      // Randomly route between Flutterwave and Squad
-      const useFlutterwave = Math.random() < 0.5;
+      // Use Flutterwave exclusively
       const callbackUrl = `${window.location.origin}/deposit`;
 
-      if (useFlutterwave) {
-        const { data: { session } } = await supabase.auth.getSession();
-        const email = session?.user?.email;
-        const userId = session?.user?.id;
-        if (!email || !userId) throw new Error("Please sign in again to deposit");
+      const { data: { session } } = await supabase.auth.getSession();
+      const email = session?.user?.email;
+      const userId = session?.user?.id;
+      if (!email || !userId) throw new Error("Please sign in again to deposit");
 
-        const { data, error } = await supabase.functions.invoke("flutterwave-initialize", {
-          body: {
-            amount: selectedTier.amount,
-            email,
-            redirect_url: callbackUrl,
-            metadata: {
-              user_id: userId,
-              deposit_type: selectedTier.type,
-              bonus: selectedTier.bonus,
-              points_reward: selectedTier.points,
-              callback_url: callbackUrl,
-            },
-          },
-        });
-        if (error) throw error;
-        if (!data?.authorization_url) throw new Error("No checkout URL returned");
-        window.location.href = data.authorization_url;
-        return;
-      }
-
-      const { data, error } = await supabase.functions.invoke("squad-initialize", {
+      const { data, error } = await supabase.functions.invoke("flutterwave-initialize", {
         body: {
           amount: selectedTier.amount,
-          deposit_type: selectedTier.type,
-          bonus: selectedTier.bonus,
-          points_reward: selectedTier.points,
-          callback_url: callbackUrl,
+          email,
+          redirect_url: callbackUrl,
+          metadata: {
+            user_id: userId,
+            deposit_type: selectedTier.type,
+            bonus: selectedTier.bonus,
+            points_reward: selectedTier.points,
+            callback_url: callbackUrl,
+          },
         },
       });
       if (error) throw error;
-      if (!data?.checkout_url) throw new Error("No checkout URL returned");
-      window.location.href = data.checkout_url;
+      if (!data?.authorization_url) throw new Error("No checkout URL returned");
+      window.location.href = data.authorization_url;
     } catch (e: any) {
       console.error(e);
       toast({ title: "Could not start payment", description: e.message, variant: "destructive" });
