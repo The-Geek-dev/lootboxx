@@ -203,6 +203,21 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleCouponAction = async (
+    userId: string,
+    action: "activate_coupon" | "renew_coupon" | "expire_coupon",
+    days = 7,
+  ) => {
+    try {
+      const res = await adminCall(action, { user_id: userId, days });
+      toast({ title: res?.message || "Done" });
+      const usersRes = await adminCall("get_users");
+      setUsers(usersRes?.users || []);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
+
   const handleWithdrawalAction = async (withdrawalId: string, status: string) => {
     try {
       const res = await adminCall("update_withdrawal", {
@@ -417,6 +432,7 @@ const AdminDashboard = () => {
                       <TableHead>Lucky Hour</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Roles</TableHead>
+                      <TableHead>Coupon expires</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -446,16 +462,33 @@ const AdminDashboard = () => {
                               ))
                             : <span className="text-muted-foreground text-xs">user</span>}
                         </TableCell>
-                        <TableCell>
-                          {!u.is_activated && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleActivateUser(u.id)}
-                            >
-                              Activate
-                            </Button>
+                        <TableCell className="text-xs">
+                          {u.coupon_expires_at ? (
+                            <span className={new Date(u.coupon_expires_at) > new Date() ? "text-green-400" : "text-red-400"}>
+                              {new Date(u.coupon_expires_at).toLocaleDateString()}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
                           )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {!u.is_activated && (
+                              <Button size="sm" variant="outline" onClick={() => handleCouponAction(u.id, "activate_coupon", 7)}>
+                                Activate (7d)
+                              </Button>
+                            )}
+                            {u.is_activated && (
+                              <Button size="sm" variant="outline" onClick={() => handleCouponAction(u.id, "renew_coupon", 7)}>
+                                Renew +7d
+                              </Button>
+                            )}
+                            {u.coupon_expires_at && new Date(u.coupon_expires_at) > new Date() && (
+                              <Button size="sm" variant="ghost" onClick={() => handleCouponAction(u.id, "expire_coupon")}>
+                                Expire
+                              </Button>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
