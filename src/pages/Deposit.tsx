@@ -76,24 +76,30 @@ const LiveDepositView = () => {
     setStep("confirm");
   };
 
-  // On mount, if URL has ?reference= from Squad redirect, auto-verify
+  // On mount, if URL has a callback ref from Squad or Flutterwave, auto-verify
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const ref = params.get("reference") || params.get("transaction_ref");
-    if (!ref) return;
+    const fwTxId = params.get("transaction_id");
+    const fwTxRef = params.get("tx_ref");
+    const squadRef = params.get("reference") || params.get("transaction_ref");
+    const provider = fwTxId ? "flutterwave" : squadRef ? "squad" : null;
+    if (!provider) return;
+
     (async () => {
       setStep("verifying");
       try {
-        const { data, error } = await supabase.functions.invoke("squad-verify", {
-          body: { transaction_ref: ref },
-        });
+        const fnName = provider === "flutterwave" ? "flutterwave-verify" : "squad-verify";
+        const body = provider === "flutterwave"
+          ? { transaction_id: fwTxId, tx_ref: fwTxRef }
+          : { transaction_ref: squadRef };
+        const { data, error } = await supabase.functions.invoke(fnName, { body });
         if (error) throw error;
         if (data?.success) {
           setResultMsg("Your wallet has been credited.");
           setStep("success");
           setIsActivated(true);
         } else {
-          setResultMsg(data?.message || "Payment was not completed.");
+          setResultMsg(data?.message || data?.error || "Payment was not completed.");
           setStep("rejected");
         }
       } catch (e: any) {
@@ -106,17 +112,47 @@ const LiveDepositView = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const startSquadPayment = async () => {
+  const startPayment = async () => {
     if (!selectedTier) return;
     setPaying(true);
     try {
+      // Randomly route between Flutterwave and Squad
+      const useFlutterwave = Math.random() < 0.5;
+      const callbackUrl = `${window.location.origin}/deposit`;
+
+      if (useFlutterwave) {
+        const { data: { session } } = await supabase.auth.getSession();
+        const email = session?.user?.email;
+        const userId = session?.user?.id;
+        if (!email || !userId) throw new Error("Please sign in again to deposit");
+
+        const { data, error } = await supabase.functions.invoke("flutterwave-initialize", {
+          body: {
+            amount: selectedTier.amount,
+            email,
+            redirect_url: callbackUrl,
+            metadata: {
+              user_id: userId,
+              deposit_type: selectedTier.type,
+              bonus: selectedTier.bonus,
+              points_reward: selectedTier.points,
+              callback_url: callbackUrl,
+            },
+          },
+        });
+        if (error) throw error;
+        if (!data?.authorization_url) throw new Error("No checkout URL returned");
+        window.location.href = data.authorization_url;
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke("squad-initialize", {
         body: {
           amount: selectedTier.amount,
           deposit_type: selectedTier.type,
           bonus: selectedTier.bonus,
           points_reward: selectedTier.points,
-          callback_url: `${window.location.origin}/deposit`,
+          callback_url: callbackUrl,
         },
       });
       if (error) throw error;
@@ -128,6 +164,7 @@ const LiveDepositView = () => {
       setPaying(false);
     }
   };
+
 
   const resetFlow = () => {
     setSelectedTier(null);
@@ -204,7 +241,7 @@ const LiveDepositView = () => {
 
         <Button
           className="button-gradient w-full py-3 text-lg"
-          onClick={startSquadPayment}
+          onClick={startPayment}
           disabled={paying}
         >
           {paying ? (
