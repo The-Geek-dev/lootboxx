@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Settings as SettingsIcon, User, ArrowLeft, Volume2, VolumeX, Moon, Sun, Palette, Save, LogOut, Bell, BellOff, Smile, Mail } from "lucide-react";
+import { Settings as SettingsIcon, User, ArrowLeft, Volume2, VolumeX, Moon, Sun, Palette, Save, LogOut, Bell, BellOff, Smile, Mail, CreditCard } from "lucide-react";
 import AvatarPicker from "@/components/AvatarPicker";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -365,6 +365,10 @@ const Settings = () => {
             <Card className="p-6 bg-card">
               <h3 className="text-xl font-semibold mb-4">Account</h3>
               <div className="space-y-3">
+                <Button variant="outline" className="w-full" onClick={() => navigate("/payments")}>
+                  <CreditCard className="w-4 h-4 mr-2" />
+                  Payment Status
+                </Button>
                 <Button variant="destructive" className="w-full" onClick={handleLogout}>
                   <LogOut className="w-4 h-4 mr-2" />
                   Sign Out

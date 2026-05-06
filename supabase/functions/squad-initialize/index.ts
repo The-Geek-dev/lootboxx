@@ -89,10 +89,24 @@ Deno.serve(async (req) => {
       });
     } catch (e) { console.error("attempt log failed", e); }
 
+    const rawCheckoutUrl = data?.data?.checkout_url as string | undefined;
+    const transactionRef = data?.data?.transaction_ref as string | undefined;
+    const checkoutUrl = rawCheckoutUrl
+      ? rawCheckoutUrl
+      : transactionRef
+        ? `https://pay.squadco.com/${encodeURIComponent(transactionRef)}`
+        : undefined;
+
+    if (!checkoutUrl) {
+      console.error("Squad init missing checkout URL", data);
+      return json({ error: "No checkout URL returned", details: data }, 502);
+    }
+
     return json({
       success: true,
-      checkout_url: data.data.checkout_url,
-      transaction_ref: data.data.transaction_ref,
+      checkout_url: checkoutUrl,
+      raw_checkout_url: rawCheckoutUrl ?? null,
+      transaction_ref: transactionRef,
     });
   } catch (err: any) {
     console.error("squad-initialize error:", err);

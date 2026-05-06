@@ -10,12 +10,18 @@ const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === "/";
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session) return;
+    const syncSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
+      if (!session) {
+        setIsAdmin(false);
+        return;
+      }
       const { data } = await supabase
         .from("user_roles")
         .select("role")
@@ -23,7 +29,15 @@ const Navigation = () => {
         .eq("role", "admin")
         .maybeSingle();
       setIsAdmin(!!data);
+    };
+
+    syncSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      syncSession();
     });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -56,6 +70,7 @@ const Navigation = () => {
   ];
 
   const navItems = isHomePage ? homeNavItems : globalNavItems;
+  const visibleNavItems = isLoggedIn ? [...navItems, { name: "Payments", href: "/payments" }] : navItems;
 
   return (
     <header
@@ -76,7 +91,7 @@ const Navigation = () => {
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
-            {navItems.map((item) => (
+            {visibleNavItems.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
@@ -94,16 +109,26 @@ const Navigation = () => {
                 Admin
               </Link>
             )}
-            <Link to="/login">
-              <Button size="sm" variant="ghost">
-                Login
-              </Button>
-            </Link>
-            <Link to="/signup">
-              <Button size="sm" className="button-gradient">
-                Get Started
-              </Button>
-            </Link>
+            {isLoggedIn ? (
+              <Link to="/settings">
+                <Button size="sm" variant="ghost">
+                  Profile
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button size="sm" variant="ghost">
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button size="sm" className="button-gradient">
+                    Get Started
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           <div className="md:hidden">
@@ -115,7 +140,7 @@ const Navigation = () => {
               </SheetTrigger>
               <SheetContent className="bg-[#1B1B1B]">
                 <div className="flex flex-col gap-4 mt-8">
-                  {navItems.map((item) => (
+                  {visibleNavItems.map((item) => (
                     <Link
                       key={item.name}
                       to={item.href}
@@ -135,16 +160,26 @@ const Navigation = () => {
                       Admin Panel
                     </Link>
                   )}
-                  <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full">
-                      Login
-                    </Button>
-                  </Link>
-                  <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button className="button-gradient w-full">
-                      Get Started
-                    </Button>
-                  </Link>
+                  {isLoggedIn ? (
+                    <Link to="/settings" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button variant="ghost" className="w-full">
+                        Profile
+                      </Button>
+                    </Link>
+                  ) : (
+                    <>
+                      <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button variant="ghost" className="w-full">
+                          Login
+                        </Button>
+                      </Link>
+                      <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button className="button-gradient w-full">
+                          Get Started
+                        </Button>
+                      </Link>
+                    </>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>
