@@ -141,6 +141,10 @@ Deno.serve(async (req) => {
       type: "deposit",
     });
 
+    await supabase.from("payment_attempts")
+      .update({ status: "confirmed" })
+      .eq("reference", reference);
+
     return new Response(JSON.stringify({
       success: true,
       amount: amountNaira,
