@@ -6,6 +6,7 @@ import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
 import MascotBackground from "@/components/MascotBackground";
 import LiveChatWidget from "@/components/LiveChatWidget";
+import AdSlot from "@/components/AdSlot";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -272,6 +273,7 @@ const FAQ = () => {
           </motion.div>
         </motion.div>
       </div>
+      <AdSlot id="ad-faq-bottom" size="large" className="pb-8" />
       <Footer />
       <LiveChatWidget />
     </div>

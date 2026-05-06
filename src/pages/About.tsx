@@ -4,6 +4,7 @@ import Navigation from "@/components/Navigation";
 import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
 import MascotBackground from "@/components/MascotBackground";
+import AdSlot from "@/components/AdSlot";
 
 const About = () => {
   const platformBenefits = [
@@ -113,8 +114,9 @@ const About = () => {
           </div>
         </div>
 
+        <AdSlot id="ad-about-mid" size="medium" />
+
         <div className="mb-20 relative">
-          <MascotBackground variant="watermark" corner="bottom-right" />
           <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">Security & Trust</h2>
           <p className="text-center text-gray-300 mb-12 max-w-2xl mx-auto">
             How we keep your gaming experience safe
@@ -174,6 +176,8 @@ const About = () => {
           </div>
         </div>
       </div>
+
+      <AdSlot id="ad-about-bottom" size="large" className="pb-12" />
 
       <Footer />
     </div>
