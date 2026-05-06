@@ -41,6 +41,7 @@ import DynamicGame from "./pages/DynamicGame";
 import WithdrawalSuccess from "./pages/WithdrawalSuccess";
 import Unsubscribe from "./pages/Unsubscribe";
 import CouponRenewalBanner from "@/components/CouponRenewalBanner";
+import PushAutoPrompt from "@/components/PushAutoPrompt";
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
@@ -62,6 +63,7 @@ const AppRoutes = () => {
     <>
       <LoadingScreen isLoading={isLoading} />
       <CouponRenewalBanner />
+      <PushAutoPrompt />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/about" element={<About />} />
