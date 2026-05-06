@@ -67,6 +67,20 @@ Deno.serve(async (req) => {
       return json({ error: data.message || "Failed to initialize", details: data }, 400);
     }
 
+    // Log payment attempt
+    try {
+      const svc = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+      await svc.from("payment_attempts").insert({
+        user_id: userId,
+        provider: "squad",
+        reference: data.data.transaction_ref,
+        amount: Number(amount),
+        deposit_type,
+        status: "initiated",
+        metadata: { bonus: Number(bonus || 0), points_reward: Number(points_reward || 0) },
+      });
+    } catch (e) { console.error("attempt log failed", e); }
+
     return json({
       success: true,
       checkout_url: data.data.checkout_url,
