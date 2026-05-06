@@ -91,20 +91,20 @@ Deno.serve(async (req) => {
 
     const rawCheckoutUrl = data?.data?.checkout_url as string | undefined;
     const transactionRef = data?.data?.transaction_ref as string | undefined;
-    const normalizedCheckoutUrl = rawCheckoutUrl
-      ? rawCheckoutUrl.replace("https://pay.squadco.com/", "https://checkout.squadco.com/")
+    const checkoutUrl = rawCheckoutUrl
+      ? rawCheckoutUrl
       : transactionRef
-        ? `https://checkout.squadco.com/${encodeURIComponent(transactionRef)}`
+        ? `https://pay.squadco.com/${encodeURIComponent(transactionRef)}`
         : undefined;
 
-    if (!normalizedCheckoutUrl) {
+    if (!checkoutUrl) {
       console.error("Squad init missing checkout URL", data);
       return json({ error: "No checkout URL returned", details: data }, 502);
     }
 
     return json({
       success: true,
-      checkout_url: normalizedCheckoutUrl,
+      checkout_url: checkoutUrl,
       raw_checkout_url: rawCheckoutUrl ?? null,
       transaction_ref: transactionRef,
     });
