@@ -533,6 +533,23 @@ const Predictions = () => {
   );
 
   const sortedStakes = useMemo(() => {
+    // Aggregate top-ups: same (market_id, side) → sum amount & payout, keep latest id/created_at
+    const grouped = new Map<string, MyStake>();
+    for (const s of myStakes) {
+      const key = `${s.market_id}::${s.side}`;
+      const prev = grouped.get(key);
+      if (!prev) {
+        grouped.set(key, { ...s });
+      } else {
+        grouped.set(key, {
+          ...prev,
+          amount: prev.amount + s.amount,
+          payout: prev.payout + s.payout,
+          settled: prev.settled && s.settled,
+          created_at: prev.created_at > s.created_at ? prev.created_at : s.created_at,
+        });
+      }
+    }
     const rank = (s: MyStake) => {
       const m = s.market;
       if (!m) return 4;
@@ -540,7 +557,7 @@ const Predictions = () => {
       if (new Date(m.deadline).getTime() <= Date.now()) return 2;
       return 1;
     };
-    let arr = [...myStakes].sort((a, b) => rank(a) - rank(b));
+    let arr = [...grouped.values()].sort((a, b) => rank(a) - rank(b) || (b.created_at.localeCompare(a.created_at)));
     if (stakeFilter !== "all") {
       arr = arr.filter((s) => getStakeStatus(s) === stakeFilter);
     }
