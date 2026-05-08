@@ -100,8 +100,12 @@ import gemCollector from "@/assets/games/gem-collector.jpg";
 import lavaFlow from "@/assets/games/lava-flow.jpg";
 import moonLander from "@/assets/games/moon-lander.jpg";
 import diceMaster from "@/assets/games/dice-master.jpg";
+import adRewards from "@/assets/games/ad-rewards.jpg";
+import predictions from "@/assets/games/predictions.jpg";
 
 export const gameImages: Record<string, string> = {
+  "ad-rewards": adRewards,
+  "predictions": predictions,
   "spin-wheel": spinWheel,
   "lucky-slots": luckySlots,
   "trivia-quiz": triviaQuiz,
