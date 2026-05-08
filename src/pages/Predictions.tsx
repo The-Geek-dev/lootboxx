@@ -83,12 +83,30 @@ const MarketCard = ({ market, onStake }: { market: Market; onStake: (m: Market, 
     <Card className="p-4 space-y-3 bg-card/60 border-border/60 hover:border-primary/40 transition-colors">
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+          <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+            <Badge
+              variant="outline"
+              className={
+                status === "open"
+                  ? "text-[10px] border-green-500/50 text-green-500 bg-green-500/10"
+                  : status === "pending"
+                  ? "text-[10px] border-amber-500/50 text-amber-500 bg-amber-500/10"
+                  : "text-[10px] border-muted-foreground/40 text-muted-foreground"
+              }
+            >
+              <span className={`h-1.5 w-1.5 rounded-full mr-1 ${status === "open" ? "bg-green-500 animate-pulse" : status === "pending" ? "bg-amber-500 animate-pulse" : "bg-muted-foreground"}`} />
+              {status === "open" ? "Open" : status === "pending" ? "Awaiting payout" : "Resolved"}
+            </Badge>
             {market.category && (
               <Badge variant="secondary" className="text-[10px]">{market.category}</Badge>
             )}
-            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-              <Clock className="h-3 w-3" /> {fmtTimeLeft(market.deadline)}
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1 ml-auto font-mono">
+              <Clock className="h-3 w-3" />
+              {status === "open"
+                ? fmtTimeLeft(market.deadline)
+                : status === "pending"
+                ? "Resolving ≤1h"
+                : "Closed"}
             </span>
           </div>
           <h3 className="text-sm font-semibold leading-snug">{market.question}</h3>
