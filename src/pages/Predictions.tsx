@@ -501,10 +501,21 @@ const Predictions = () => {
     };
   }, [authed]);
 
+  const stakedMarketIds = useMemo(
+    () => new Set(myStakes.map((s) => s.market_id)),
+    [myStakes]
+  );
+
   const filtered = useMemo(
     () =>
-      markets.filter((m) => m.region === region && m.tier === tier && (!m.resolved || (Date.now() - new Date(m.deadline).getTime()) < 24 * 3600_000)),
-    [markets, region, tier]
+      markets.filter(
+        (m) =>
+          m.region === region &&
+          m.tier === tier &&
+          !stakedMarketIds.has(m.id) &&
+          (!m.resolved || (Date.now() - new Date(m.deadline).getTime()) < 24 * 3600_000)
+      ),
+    [markets, region, tier, stakedMarketIds]
   );
 
   const sortedStakes = useMemo(() => {
