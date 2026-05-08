@@ -74,7 +74,7 @@ const WheelEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, se
         await updateBalance(prize);
       }
       play(prize > 0 ? "bigwin" : "lose");
-      setResult(prize > 0 ? `🎉 ${segments[winIndex].emoji} ${segments[winIndex].label}! Won ₦${prize.toLocaleString()}!` : "Better luck next time!");
+      setResult(prize > 0 ? `🎉 ${segments[winIndex].emoji} Won ₦${prize.toLocaleString()}!` : "Better luck next time!");
       await recordGameResult(gameId, pointCost, prize, { segment: segments[winIndex].label, index: winIndex });
       setIsSpinning(false);
     }, 4000);
