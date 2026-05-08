@@ -601,6 +601,110 @@ export type Database = {
         }
         Relationships: []
       }
+      prediction_markets: {
+        Row: {
+          category: string | null
+          created_at: string
+          currency: Database["public"]["Enums"]["prediction_currency"]
+          deadline: string
+          description: string | null
+          id: string
+          no_pool: number
+          outcome: Database["public"]["Enums"]["prediction_outcome"] | null
+          question: string
+          region: Database["public"]["Enums"]["prediction_region"]
+          resolution_notes: string | null
+          resolved: boolean
+          resolved_at: string | null
+          source_urls: Json
+          tier: Database["public"]["Enums"]["prediction_tier"]
+          total_stakers: number
+          yes_pool: number
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          currency: Database["public"]["Enums"]["prediction_currency"]
+          deadline: string
+          description?: string | null
+          id?: string
+          no_pool?: number
+          outcome?: Database["public"]["Enums"]["prediction_outcome"] | null
+          question: string
+          region: Database["public"]["Enums"]["prediction_region"]
+          resolution_notes?: string | null
+          resolved?: boolean
+          resolved_at?: string | null
+          source_urls?: Json
+          tier: Database["public"]["Enums"]["prediction_tier"]
+          total_stakers?: number
+          yes_pool?: number
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          currency?: Database["public"]["Enums"]["prediction_currency"]
+          deadline?: string
+          description?: string | null
+          id?: string
+          no_pool?: number
+          outcome?: Database["public"]["Enums"]["prediction_outcome"] | null
+          question?: string
+          region?: Database["public"]["Enums"]["prediction_region"]
+          resolution_notes?: string | null
+          resolved?: boolean
+          resolved_at?: string | null
+          source_urls?: Json
+          tier?: Database["public"]["Enums"]["prediction_tier"]
+          total_stakers?: number
+          yes_pool?: number
+        }
+        Relationships: []
+      }
+      prediction_stakes: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: Database["public"]["Enums"]["prediction_currency"]
+          id: string
+          market_id: string
+          payout: number
+          settled: boolean
+          side: Database["public"]["Enums"]["prediction_side"]
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency: Database["public"]["Enums"]["prediction_currency"]
+          id?: string
+          market_id: string
+          payout?: number
+          settled?: boolean
+          side: Database["public"]["Enums"]["prediction_side"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: Database["public"]["Enums"]["prediction_currency"]
+          id?: string
+          market_id?: string
+          payout?: number
+          settled?: boolean
+          side?: Database["public"]["Enums"]["prediction_side"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prediction_stakes_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "prediction_markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_id: string | null
@@ -1187,6 +1291,14 @@ export type Database = {
         }
         Returns: number
       }
+      place_prediction_stake: {
+        Args: {
+          p_amount: number
+          p_market_id: string
+          p_side: Database["public"]["Enums"]["prediction_side"]
+        }
+        Returns: Json
+      }
       process_referral_signup: {
         Args: { p_referral_code: string }
         Returns: Json
@@ -1209,6 +1321,14 @@ export type Database = {
         }
         Returns: Json
       }
+      resolve_prediction_market: {
+        Args: {
+          p_market_id: string
+          p_notes?: string
+          p_outcome: Database["public"]["Enums"]["prediction_outcome"]
+        }
+        Returns: Json
+      }
       validate_signup_token: {
         Args: { token_value: string; user_id: string }
         Returns: boolean
@@ -1220,6 +1340,11 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      prediction_currency: "points" | "cash"
+      prediction_outcome: "yes" | "no" | "void"
+      prediction_region: "nigeria" | "global"
+      prediction_side: "yes" | "no"
+      prediction_tier: "regular" | "vip"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1348,6 +1473,11 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      prediction_currency: ["points", "cash"],
+      prediction_outcome: ["yes", "no", "void"],
+      prediction_region: ["nigeria", "global"],
+      prediction_side: ["yes", "no"],
+      prediction_tier: ["regular", "vip"],
     },
   },
 } as const
