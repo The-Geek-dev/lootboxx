@@ -253,13 +253,32 @@ const getStakeStatus = (stake: MyStake): "open" | "pending" | "won" | "lost" | "
   return "open";
 };
 
-const MyStakeCard = ({ stake }: { stake: MyStake }) => {
+const MyStakeCard = ({
+  stake,
+  onIncrease,
+}: {
+  stake: MyStake;
+  onIncrease: (stake: MyStake, addAmount: number) => Promise<void>;
+}) => {
   useTick(1000);
   const status = getStakeStatus(stake);
   const m = stake.market;
   const unit = stake.currency === "points" ? "pts" : "₦";
   const potential = m ? computePotential(m, stake.side, stake.amount) : stake.amount;
   const deadlineMs = m ? new Date(m.deadline).getTime() : 0;
+  const minAdd = stake.currency === "points" ? 20 : 100;
+  const [addAmt, setAddAmt] = useState<string>(String(minAdd));
+  const [busy, setBusy] = useState(false);
+  const submitIncrease = async () => {
+    const amt = parseFloat(addAmt);
+    if (!amt || amt < minAdd) return;
+    setBusy(true);
+    try {
+      await onIncrease(stake, amt);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const statusMeta = {
     open: { label: "Open", cls: "border-green-500/50 text-green-500 bg-green-500/10" },
@@ -371,10 +390,35 @@ const MyStakeCard = ({ stake }: { stake: MyStake }) => {
       })()}
 
       {m && status === "open" && (
-        <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-          <span className="flex items-center gap-1"><TimerReset className="h-3 w-3" /> Matures in</span>
-          <span className="font-mono text-foreground">{fmtTimeLeft(m.deadline)}</span>
-        </div>
+        <>
+          <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+            <span className="flex items-center gap-1"><TimerReset className="h-3 w-3" /> Matures in</span>
+            <span className="font-mono text-foreground">{fmtTimeLeft(m.deadline)}</span>
+          </div>
+          <div className="rounded-md border border-primary/30 bg-primary/5 p-2.5 space-y-2">
+            <p className="text-[10px] uppercase tracking-wide text-primary font-semibold">
+              Increase stake on {stake.side.toUpperCase()}
+            </p>
+            <div className="flex gap-2">
+              <Input
+                type="number"
+                min={minAdd}
+                value={addAmt}
+                onChange={(e) => setAddAmt(e.target.value)}
+                placeholder={`Min ${minAdd} ${unit}`}
+                className="h-9 text-sm flex-1"
+              />
+              <Button
+                size="sm"
+                className="h-9"
+                disabled={busy}
+                onClick={submitIncrease}
+              >
+                {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Add"}
+              </Button>
+            </div>
+          </div>
+        </>
       )}
       {m && status === "pending" && (
         <p className="text-[11px] text-amber-400 text-center">Resolving within 1 hour…</p>
@@ -457,10 +501,21 @@ const Predictions = () => {
     };
   }, [authed]);
 
+  const stakedMarketIds = useMemo(
+    () => new Set(myStakes.map((s) => s.market_id)),
+    [myStakes]
+  );
+
   const filtered = useMemo(
     () =>
-      markets.filter((m) => m.region === region && m.tier === tier && (!m.resolved || (Date.now() - new Date(m.deadline).getTime()) < 24 * 3600_000)),
-    [markets, region, tier]
+      markets.filter(
+        (m) =>
+          m.region === region &&
+          m.tier === tier &&
+          !stakedMarketIds.has(m.id) &&
+          (!m.resolved || (Date.now() - new Date(m.deadline).getTime()) < 24 * 3600_000)
+      ),
+    [markets, region, tier, stakedMarketIds]
   );
 
   const sortedStakes = useMemo(() => {
@@ -500,6 +555,11 @@ const Predictions = () => {
     refetchWallet();
     load();
     loadMyStakes();
+  };
+
+  const handleIncrease = async (stake: MyStake, amount: number) => {
+    if (!stake.market) return;
+    await handleStake(stake.market, stake.side, amount);
   };
 
   if (!authChecked) {
@@ -628,7 +688,7 @@ const Predictions = () => {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {sortedStakes.map((s) => (
-                  <MyStakeCard key={s.id} stake={s} />
+                  <MyStakeCard key={s.id} stake={s} onIncrease={handleIncrease} />
                 ))}
               </div>
             )}
