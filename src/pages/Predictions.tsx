@@ -257,6 +257,9 @@ const MyStakeCard = ({ stake }: { stake: MyStake }) => {
   useTick(1000);
   const status = getStakeStatus(stake);
   const m = stake.market;
+  const unit = stake.currency === "points" ? "pts" : "₦";
+  const potential = m ? computePotential(m, stake.side, stake.amount) : stake.amount;
+  const deadlineMs = m ? new Date(m.deadline).getTime() : 0;
 
   const statusMeta = {
     open: { label: "Open", cls: "border-green-500/50 text-green-500 bg-green-500/10" },
