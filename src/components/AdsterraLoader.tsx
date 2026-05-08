@@ -25,11 +25,30 @@ const AdsterraLoader = () => {
     }
     if (existing) return;
 
-    const s = document.createElement("script");
-    s.id = SCRIPT_ID;
-    s.src = ADSTERRA_SRC;
-    s.async = true;
-    document.body.appendChild(s);
+    let injected = false;
+    const inject = () => {
+      if (injected) return;
+      injected = true;
+      cleanup();
+      const s = document.createElement("script");
+      s.id = SCRIPT_ID;
+      s.src = ADSTERRA_SRC;
+      s.async = true;
+      document.body.appendChild(s);
+    };
+
+    // Defer until first user interaction so popunder/social-bar scripts
+    // can't hijack the initial paint (which on mobile shows as a blank white tab).
+    const events: (keyof WindowEventMap)[] = ["pointerdown", "touchstart", "keydown", "scroll"];
+    const cleanup = () => {
+      events.forEach((e) => window.removeEventListener(e, inject));
+      clearTimeout(fallback);
+    };
+    events.forEach((e) => window.addEventListener(e, inject, { once: true, passive: true } as any));
+    // Fallback: load after 8s of inactivity so ads still appear for idle users
+    const fallback = window.setTimeout(inject, 8000);
+
+    return cleanup;
   }, [pathname, settings, loading]);
 
   return null;
