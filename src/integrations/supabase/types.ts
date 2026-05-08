@@ -962,6 +962,7 @@ export type Database = {
           daily_bonus_points: number
           id: string
           is_activated: boolean
+          last_ad_reward_at: string | null
           last_play_date: string | null
           last_weekly_bonus_at: string | null
           locked_account_name: string | null
@@ -986,6 +987,7 @@ export type Database = {
           daily_bonus_points?: number
           id?: string
           is_activated?: boolean
+          last_ad_reward_at?: string | null
           last_play_date?: string | null
           last_weekly_bonus_at?: string | null
           locked_account_name?: string | null
@@ -1010,6 +1012,7 @@ export type Database = {
           daily_bonus_points?: number
           id?: string
           is_activated?: boolean
+          last_ad_reward_at?: string | null
           last_play_date?: string | null
           last_weekly_bonus_at?: string | null
           locked_account_name?: string | null
@@ -1112,6 +1115,7 @@ export type Database = {
         Returns: Json
       }
       buy_xp_refill: { Args: never; Returns: boolean }
+      claim_ad_reward: { Args: never; Returns: Json }
       claim_daily_bonus: { Args: never; Returns: Json }
       contribute_to_jackpot:
         | { Args: { contribution: number }; Returns: Json }
