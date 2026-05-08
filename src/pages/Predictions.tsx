@@ -557,6 +557,11 @@ const Predictions = () => {
     loadMyStakes();
   };
 
+  const handleIncrease = async (stake: MyStake, amount: number) => {
+    if (!stake.market) return;
+    await handleStake(stake.market, stake.side, amount);
+  };
+
   if (!authChecked) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
