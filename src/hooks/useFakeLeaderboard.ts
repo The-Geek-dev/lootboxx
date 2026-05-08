@@ -99,14 +99,23 @@ export function useFakeLeaderboard(count = 20) {
 
       const players: FakePlayer[] = basePlayers.map((p) => {
         const winnings = Math.floor(p.baseWinnings + p.dailyGrowth * daysElapsed);
-        const gamesPlayed = Math.floor(p.baseGames + p.gamesPerDay * daysElapsed);
+        const gamesPlayed = Math.max(1, Math.floor(p.baseGames + p.gamesPerDay * daysElapsed));
         const wins = Math.floor(gamesPlayed * p.winRate);
+        const sRng = mulberry32(p.seed ^ 0xa5a5);
+        const longest = Math.floor(sRng() * 12) + 4;
+        const current = Math.floor(sRng() * longest) + 1;
         return {
           rank: 0,
           player_name: p.name,
           total_winnings: winnings,
-          games_played: Math.max(1, gamesPlayed),
+          games_played: gamesPlayed,
           wins,
+          base_winnings: p.baseWinnings,
+          daily_growth: p.dailyGrowth,
+          win_rate: p.winRate,
+          current_streak: current,
+          longest_streak: longest,
+          seed: p.seed,
         };
       });
       players.sort((a, b) => b.total_winnings - a.total_winnings);
