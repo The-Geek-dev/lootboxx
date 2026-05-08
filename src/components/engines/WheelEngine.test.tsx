@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, act, cleanup } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen, act, cleanup, fireEvent } from "@testing-library/react";
+
 
 // ---- Mocks ----
 const recordGameResult = vi.fn().mockResolvedValue({ success: true });
@@ -58,7 +58,6 @@ const SEGMENTS = [
 ];
 
 async function spinAndCapture() {
-  const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
   render(
     <WheelEngine
       gameId="wheel_test"
@@ -68,12 +67,12 @@ async function spinAndCapture() {
       segments={SEGMENTS}
     />,
   );
-  await user.click(screen.getByRole("button"));
   await act(async () => {
-    vi.advanceTimersByTime(4500);
+    fireEvent.click(screen.getByRole("button"));
   });
-  // flush microtasks created by setTimeout's async callback
-  await act(async () => { await Promise.resolve(); await Promise.resolve(); });
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(4500);
+  });
 
   expect(recordGameResult).toHaveBeenCalledTimes(1);
   const [, , recordedPrize, meta] = recordGameResult.mock.calls[0];
