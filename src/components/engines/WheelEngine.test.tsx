@@ -80,12 +80,9 @@ async function spinAndCapture() {
       segments={SEGMENTS}
     />,
   );
-  await act(async () => {
-    fireEvent.click(screen.getByRole("button"));
-  });
-  await act(async () => {
-    await vi.advanceTimersByTimeAsync(4500);
-  });
+  fireEvent.click(screen.getByRole("button"));
+  // The wheel resolves after a 4s setTimeout
+  await new Promise((r) => setTimeout(r, 4200));
 
   expect(recordGameResult).toHaveBeenCalledTimes(1);
   const [, , recordedPrize, meta] = recordGameResult.mock.calls[0];
@@ -98,14 +95,13 @@ async function spinAndCapture() {
 
 describe("WheelEngine — displayed prize matches recorded prize", () => {
   beforeEach(() => {
-    vi.useFakeTimers();
     recordGameResult.mockClear();
     updateBalance.mockClear();
     recordFullWin.mockClear();
   });
   afterEach(() => {
-    vi.useRealTimers();
     cleanup();
+    vi.restoreAllMocks();
   });
 
   it("full win window: shows prize == base * WHEEL.prizeMultiplier", async () => {
