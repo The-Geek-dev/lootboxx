@@ -62,9 +62,12 @@ const AppRoutes = () => {
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
+  const isGameRoute = location.pathname.startsWith("/games");
+
   return (
     <>
       <LoadingScreen isLoading={isLoading} />
+      {!isGameRoute && <WinnerMarquee />}
       <CouponRenewalBanner />
       <PushAutoPrompt />
       <AdsterraLoader />
