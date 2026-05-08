@@ -302,6 +302,73 @@ const MyStakeCard = ({ stake }: { stake: MyStake }) => {
         </div>
       </div>
 
+      {/* Payout math breakdown */}
+      {m && (() => {
+        const fmt = (n: number) =>
+          `${unit === "₦" ? "₦" : ""}${Math.round(n).toLocaleString()}${unit === "pts" ? " pts" : ""}`;
+        const yourSidePool = stake.side === "yes" ? m.yes_pool : m.no_pool;
+        const oppSidePool = stake.side === "yes" ? m.no_pool : m.yes_pool;
+        const winningSide: "yes" | "no" | null = m.resolved
+          ? m.outcome === "yes" || m.outcome === "no"
+            ? m.outcome
+            : null
+          : m.yes_pool === m.no_pool
+          ? null
+          : m.yes_pool > m.no_pool
+          ? "yes"
+          : "no";
+        const sharePct = yourSidePool > 0 ? (stake.amount / yourSidePool) * 100 : 0;
+        const projectedWinnings = oppSidePool * (stake.amount / Math.max(yourSidePool, 1));
+        return (
+          <div className="rounded-md border border-border/60 bg-muted/20 p-2.5 space-y-1.5">
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold flex items-center gap-1">
+              <Sparkles className="h-3 w-3" /> Payout math
+            </p>
+            <div className="grid grid-cols-2 gap-1 text-[11px]">
+              <span className="text-muted-foreground">YES pool</span>
+              <span className="text-right font-mono text-green-500">{fmt(m.yes_pool)}</span>
+              <span className="text-muted-foreground">NO pool</span>
+              <span className="text-right font-mono text-red-500">{fmt(m.no_pool)}</span>
+              <span className="text-muted-foreground">
+                {m.resolved ? "Winning side" : "Currently leading"}
+              </span>
+              <span className={`text-right font-mono font-semibold ${winningSide === "yes" ? "text-green-500" : winningSide === "no" ? "text-red-500" : "text-muted-foreground"}`}>
+                {winningSide ? winningSide.toUpperCase() : "TIED"}
+              </span>
+              <span className="text-muted-foreground">Your share of {stake.side.toUpperCase()}</span>
+              <span className="text-right font-mono">{sharePct.toFixed(2)}%</span>
+            </div>
+            <div className="border-t border-border/60 pt-1.5 mt-1 text-[11px] space-y-1">
+              {stake.settled ? (
+                <>
+                  <p className="font-mono text-[10px] text-muted-foreground leading-snug">
+                    payout = stake + (opposing pool × your share)
+                  </p>
+                  <p className="font-mono text-[11px]">
+                    = {fmt(stake.amount)} + ({fmt(oppSidePool)} × {sharePct.toFixed(2)}%)
+                  </p>
+                  <p className="font-mono text-[11px] font-bold text-primary">
+                    = {fmt(stake.payout)}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="font-mono text-[10px] text-muted-foreground leading-snug">
+                    if {stake.side.toUpperCase()} wins → stake + share of NO pool
+                  </p>
+                  <p className="font-mono text-[11px]">
+                    = {fmt(stake.amount)} + {fmt(projectedWinnings)} = <span className="font-bold text-primary">{fmt(stake.amount + projectedWinnings)}</span>
+                  </p>
+                  <p className="font-mono text-[10px] text-red-400/80">
+                    if {stake.side === "yes" ? "NO" : "YES"} wins → lose {fmt(stake.amount)}
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+
       {m && status === "open" && (
         <div className="flex items-center justify-between text-[11px] text-muted-foreground">
           <span className="flex items-center gap-1"><TimerReset className="h-3 w-3" /> Matures in</span>
