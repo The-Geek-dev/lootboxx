@@ -38,18 +38,35 @@ const fmtTimeLeft = (iso: string) => {
   if (ms <= 0) return "Closed";
   const h = Math.floor(ms / 3_600_000);
   const m = Math.floor((ms % 3_600_000) / 60_000);
+  const s = Math.floor((ms % 60_000) / 1000);
   if (h >= 24) return `${Math.floor(h / 24)}d ${h % 24}h`;
-  return `${h}h ${m}m`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m ${s}s`;
+};
+
+const useTick = (ms = 1000) => {
+  const [, setT] = useState(0);
+  useEffect(() => {
+    const i = setInterval(() => setT((x) => x + 1), ms);
+    return () => clearInterval(i);
+  }, [ms]);
 };
 
 const MarketCard = ({ market, onStake }: { market: Market; onStake: (m: Market, side: Side, amount: number) => Promise<void> }) => {
   const min = market.currency === "points" ? 20 : 100;
   const [amount, setAmount] = useState<string>(String(min));
   const [busy, setBusy] = useState<Side | null>(null);
+  useTick(1000);
   const total = market.yes_pool + market.no_pool;
   const yesPct = total > 0 ? Math.round((market.yes_pool / total) * 100) : 50;
   const noPct = 100 - yesPct;
-  const closed = market.resolved || new Date(market.deadline).getTime() <= Date.now();
+  const deadlineMs = new Date(market.deadline).getTime();
+  const closed = market.resolved || deadlineMs <= Date.now();
+  const status: "resolved" | "pending" | "open" = market.resolved
+    ? "resolved"
+    : deadlineMs <= Date.now()
+    ? "pending"
+    : "open";
 
   const submit = async (side: Side) => {
     const amt = parseFloat(amount);
@@ -66,12 +83,30 @@ const MarketCard = ({ market, onStake }: { market: Market; onStake: (m: Market, 
     <Card className="p-4 space-y-3 bg-card/60 border-border/60 hover:border-primary/40 transition-colors">
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+          <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+            <Badge
+              variant="outline"
+              className={
+                status === "open"
+                  ? "text-[10px] border-green-500/50 text-green-500 bg-green-500/10"
+                  : status === "pending"
+                  ? "text-[10px] border-amber-500/50 text-amber-500 bg-amber-500/10"
+                  : "text-[10px] border-muted-foreground/40 text-muted-foreground"
+              }
+            >
+              <span className={`h-1.5 w-1.5 rounded-full mr-1 ${status === "open" ? "bg-green-500 animate-pulse" : status === "pending" ? "bg-amber-500 animate-pulse" : "bg-muted-foreground"}`} />
+              {status === "open" ? "Open" : status === "pending" ? "Awaiting payout" : "Resolved"}
+            </Badge>
             {market.category && (
               <Badge variant="secondary" className="text-[10px]">{market.category}</Badge>
             )}
-            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-              <Clock className="h-3 w-3" /> {fmtTimeLeft(market.deadline)}
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1 ml-auto font-mono">
+              <Clock className="h-3 w-3" />
+              {status === "open"
+                ? fmtTimeLeft(market.deadline)
+                : status === "pending"
+                ? "Resolving ≤1h"
+                : "Closed"}
             </span>
           </div>
           <h3 className="text-sm font-semibold leading-snug">{market.question}</h3>
