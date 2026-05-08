@@ -595,9 +595,35 @@ const Predictions = () => {
           </>
         ) : (
           <>
+            {/* My Stakes filters */}
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+              {(["all", "open", "pending", "won", "lost"] as const).map((f) => {
+                const count = f === "all" ? myStakes.length : myStakes.filter((s) => getStakeStatus(s) === f).length;
+                const active = stakeFilter === f;
+                return (
+                  <button
+                    key={f}
+                    onClick={() => setStakeFilter(f)}
+                    className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
+                      active
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-muted/40 text-muted-foreground border-border hover:bg-muted/60"
+                    }`}
+                  >
+                    {f === "all" ? "All" : f === "open" ? "Open" : f === "pending" ? "Pending" : f === "won" ? "Won" : "Lost"}
+                    <span className={`ml-1 ${active ? "text-primary-foreground/80" : "text-muted-foreground/70"}`}>{count}</span>
+                  </button>
+                );
+              })}
+            </div>
             {sortedStakes.length === 0 ? (
               <Card className="p-8 text-center text-sm text-muted-foreground">
-                You haven't placed any predictions yet. Head to <button className="underline text-primary" onClick={() => setView("markets")}>Markets</button> to start.
+                {stakeFilter === "all" ? (
+                  <>You haven't placed any predictions yet. Head to <button className="underline text-primary" onClick={() => setView("markets")}>Markets</button> to start.</>
+                ) : (
+                  <>No <span className="text-foreground font-medium">{stakeFilter}</span> stakes found.</>
+                )}
               </Card>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
