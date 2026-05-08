@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useWallet } from "@/hooks/useWallet";
+
 
 type Region = "nigeria" | "global";
 type Tier = "regular" | "vip";
@@ -148,7 +148,14 @@ const MarketCard = ({ market, onStake }: { market: Market; onStake: (m: Market, 
 const Predictions = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { wallet, refetch } = useWallet();
+  const [wallet, setWallet] = useState<{ points: number; balance: number }>({ points: 0, balance: 0 });
+  const refetchWallet = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    const { data } = await supabase.from("user_wallets").select("points, balance").eq("user_id", session.user.id).maybeSingle();
+    if (data) setWallet({ points: Number(data.points ?? 0), balance: Number(data.balance ?? 0) });
+  };
+  useEffect(() => { if (authed) refetchWallet(); }, [authed]);
   const [authChecked, setAuthChecked] = useState(false);
   const [authed, setAuthed] = useState(false);
   const [loading, setLoading] = useState(true);
