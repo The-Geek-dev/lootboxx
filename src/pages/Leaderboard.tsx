@@ -3,13 +3,15 @@ import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
-import { Trophy, Rocket } from "lucide-react";
+import { Trophy, Rocket, TrendingUp, Flame, Award, Gamepad2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { useLaunchStatus } from "@/hooks/useLaunchStatus";
-import { useFakeLeaderboard } from "@/hooks/useFakeLeaderboard";
+import { useFakeLeaderboard, FakePlayer, getPlayerRecentGames } from "@/hooks/useFakeLeaderboard";
 
 const ComingSoonView = () => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md mx-auto">
