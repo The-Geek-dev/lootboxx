@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Loader2, Sparkles, Globe, MapPin, TrendingUp, Clock, Crown } from "lucide-react";
+import { Loader2, Sparkles, Globe, MapPin, TrendingUp, Clock, Crown, ListChecks, Trophy, TimerReset } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
@@ -31,6 +31,19 @@ interface Market {
   yes_pool: number;
   no_pool: number;
   total_stakers: number;
+  created_at?: string;
+}
+
+interface MyStake {
+  id: string;
+  market_id: string;
+  side: Side;
+  amount: number;
+  currency: "points" | "cash";
+  payout: number;
+  settled: boolean;
+  created_at: string;
+  market: Market | null;
 }
 
 const fmtTimeLeft = (iso: string) => {
@@ -52,6 +65,46 @@ const useTick = (ms = 1000) => {
   }, [ms]);
 };
 
+// Deterministic seeded baseline + monotonic growth for phantom staker counts.
+// Always non-decreasing per market id.
+const hashId = (id: string) => {
+  let h = 2166136261;
+  for (let i = 0; i < id.length; i++) {
+    h ^= id.charCodeAt(i);
+    h = (h * 16777619) >>> 0;
+  }
+  return h;
+};
+const phantomStakers = (m: Market) => {
+  const seed = hashId(m.id);
+  const base = 28 + (seed % 140); // 28–167 baseline
+  const refMs = m.created_at ? new Date(m.created_at).getTime() : new Date(m.deadline).getTime() - 24 * 3600_000;
+  const minutes = Math.max(0, (Date.now() - refMs) / 60000);
+  const ratePerMin = 0.04 + ((seed >> 8) % 12) / 100; // 0.04–0.15 per min
+  return base + Math.floor(minutes * ratePerMin);
+};
+const displayStakers = (m: Market) => m.total_stakers + phantomStakers(m);
+
+// Odds & potential payout based on current pools (pari-mutuel).
+// Pretend the staker is added to chosen pool; payout = stake + share of opposing pool.
+const computePotential = (m: Market, side: Side, stake: number) => {
+  const yes = Math.max(m.yes_pool, 0);
+  const no = Math.max(m.no_pool, 0);
+  const winning = side === "yes" ? yes + stake : no + stake;
+  const losing = side === "yes" ? no : yes;
+  if (winning <= 0) return stake;
+  const payout = stake + (losing * stake) / winning;
+  return payout;
+};
+const computeOdds = (m: Market, side: Side) => {
+  // Implied multiplier on a 1-unit stake at current pool (excluding own stake)
+  const yes = Math.max(m.yes_pool, 1);
+  const no = Math.max(m.no_pool, 1);
+  const total = yes + no;
+  // payout multiple = total / chosen_pool (pari-mutuel)
+  return total / (side === "yes" ? yes : no);
+};
+
 const MarketCard = ({ market, onStake }: { market: Market; onStake: (m: Market, side: Side, amount: number) => Promise<void> }) => {
   const min = market.currency === "points" ? 20 : 100;
   const [amount, setAmount] = useState<string>(String(min));
@@ -67,6 +120,13 @@ const MarketCard = ({ market, onStake }: { market: Market; onStake: (m: Market, 
     : deadlineMs <= Date.now()
     ? "pending"
     : "open";
+
+  const stakeNum = Math.max(parseFloat(amount) || 0, min);
+  const oddsYes = computeOdds(market, "yes");
+  const oddsNo = computeOdds(market, "no");
+  const potYes = computePotential(market, "yes", stakeNum);
+  const potNo = computePotential(market, "no", stakeNum);
+  const unit = market.currency === "points" ? "pts" : "₦";
 
   const submit = async (side: Side) => {
     const amt = parseFloat(amount);
@@ -119,15 +179,15 @@ const MarketCard = ({ market, onStake }: { market: Market; onStake: (m: Market, 
       {/* Pool bar */}
       <div className="space-y-1">
         <div className="flex justify-between text-[11px]">
-          <span className="text-green-500 font-medium">Yes {yesPct}%</span>
-          <span className="text-red-500 font-medium">No {noPct}%</span>
+          <span className="text-green-500 font-medium">Yes {yesPct}% · {oddsYes.toFixed(2)}x</span>
+          <span className="text-red-500 font-medium">No {noPct}% · {oddsNo.toFixed(2)}x</span>
         </div>
         <div className="h-1.5 rounded-full overflow-hidden bg-muted/40 flex">
           <div className="bg-green-500" style={{ width: `${yesPct}%` }} />
           <div className="bg-red-500" style={{ width: `${noPct}%` }} />
         </div>
         <p className="text-[10px] text-muted-foreground">
-          Pool: {market.currency === "points" ? `${total.toLocaleString()} pts` : `₦${total.toLocaleString()}`} · {market.total_stakers} stakers
+          Pool: {market.currency === "points" ? `${total.toLocaleString()} pts` : `₦${total.toLocaleString()}`} · {displayStakers(market).toLocaleString()} stakers
         </p>
       </div>
 
@@ -151,30 +211,110 @@ const MarketCard = ({ market, onStake }: { market: Market; onStake: (m: Market, 
             min={min}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            placeholder={`Min ${min} ${market.currency === "points" ? "pts" : "₦"}`}
+            placeholder={`Min ${min} ${unit}`}
             className="h-9 text-sm"
           />
           <div className="grid grid-cols-2 gap-2">
             <Button
               size="sm"
               variant="outline"
-              className="border-green-500/50 text-green-500 hover:bg-green-500/10 hover:text-green-400"
+              className="border-green-500/50 text-green-500 hover:bg-green-500/10 hover:text-green-400 flex-col h-auto py-1.5"
               disabled={!!busy}
               onClick={() => submit("yes")}
             >
-              {busy === "yes" ? <Loader2 className="h-3 w-3 animate-spin" /> : "Stake YES"}
+              <span className="text-xs font-semibold">{busy === "yes" ? <Loader2 className="h-3 w-3 animate-spin" /> : "Stake YES"}</span>
+              <span className="text-[10px] opacity-80 font-normal">Win ~{unit === "₦" ? "₦" : ""}{Math.round(potYes).toLocaleString()}{unit === "pts" ? " pts" : ""}</span>
             </Button>
             <Button
               size="sm"
               variant="outline"
-              className="border-red-500/50 text-red-500 hover:bg-red-500/10 hover:text-red-400"
+              className="border-red-500/50 text-red-500 hover:bg-red-500/10 hover:text-red-400 flex-col h-auto py-1.5"
               disabled={!!busy}
               onClick={() => submit("no")}
             >
-              {busy === "no" ? <Loader2 className="h-3 w-3 animate-spin" /> : "Stake NO"}
+              <span className="text-xs font-semibold">{busy === "no" ? <Loader2 className="h-3 w-3 animate-spin" /> : "Stake NO"}</span>
+              <span className="text-[10px] opacity-80 font-normal">Win ~{unit === "₦" ? "₦" : ""}{Math.round(potNo).toLocaleString()}{unit === "pts" ? " pts" : ""}</span>
             </Button>
           </div>
         </div>
+      )}
+    </Card>
+  );
+};
+
+const MyStakeCard = ({ stake }: { stake: MyStake }) => {
+  useTick(1000);
+  const m = stake.market;
+  const unit = stake.currency === "points" ? "pts" : "₦";
+  const potential = m ? computePotential(m, stake.side, stake.amount) : stake.amount;
+  const deadlineMs = m ? new Date(m.deadline).getTime() : 0;
+  const status: "open" | "pending" | "won" | "lost" | "void" = !m
+    ? "void"
+    : m.resolved
+    ? m.outcome === "void"
+      ? "void"
+      : m.outcome === stake.side
+      ? "won"
+      : "lost"
+    : deadlineMs <= Date.now()
+    ? "pending"
+    : "open";
+
+  const statusMeta = {
+    open: { label: "Open", cls: "border-green-500/50 text-green-500 bg-green-500/10" },
+    pending: { label: "Awaiting payout", cls: "border-amber-500/50 text-amber-500 bg-amber-500/10" },
+    won: { label: "Won", cls: "border-green-500/50 text-green-400 bg-green-500/10" },
+    lost: { label: "Lost", cls: "border-red-500/50 text-red-500 bg-red-500/10" },
+    void: { label: "Refunded", cls: "border-muted-foreground/40 text-muted-foreground" },
+  }[status];
+
+  return (
+    <Card className="p-4 space-y-3 bg-card/60 border-border/60">
+      <div className="flex items-start justify-between gap-2">
+        <h3 className="text-sm font-semibold leading-snug flex-1">
+          {m?.question ?? "Market unavailable"}
+        </h3>
+        <Badge variant="outline" className={`text-[10px] ${statusMeta.cls}`}>{statusMeta.label}</Badge>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2 text-center">
+        <div className="rounded-md bg-muted/30 p-2">
+          <p className="text-[9px] text-muted-foreground uppercase">Side</p>
+          <p className={`text-sm font-bold ${stake.side === "yes" ? "text-green-500" : "text-red-500"}`}>
+            {stake.side.toUpperCase()}
+          </p>
+        </div>
+        <div className="rounded-md bg-muted/30 p-2">
+          <p className="text-[9px] text-muted-foreground uppercase">Stake</p>
+          <p className="text-sm font-bold">
+            {unit === "₦" ? "₦" : ""}{stake.amount.toLocaleString()}{unit === "pts" ? " pts" : ""}
+          </p>
+        </div>
+        <div className="rounded-md bg-muted/30 p-2">
+          <p className="text-[9px] text-muted-foreground uppercase">
+            {status === "won" || status === "lost" || status === "void" ? "Payout" : "Potential"}
+          </p>
+          <p className="text-sm font-bold text-primary">
+            {unit === "₦" ? "₦" : ""}
+            {Math.round(stake.settled ? stake.payout : potential).toLocaleString()}
+            {unit === "pts" ? " pts" : ""}
+          </p>
+        </div>
+      </div>
+
+      {m && status === "open" && (
+        <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+          <span className="flex items-center gap-1"><TimerReset className="h-3 w-3" /> Matures in</span>
+          <span className="font-mono text-foreground">{fmtTimeLeft(m.deadline)}</span>
+        </div>
+      )}
+      {m && status === "pending" && (
+        <p className="text-[11px] text-amber-400 text-center">Resolving within 1 hour…</p>
+      )}
+      {m && (status === "won" || status === "lost" || status === "void") && (
+        <p className="text-[11px] text-muted-foreground text-center">
+          Outcome: <span className="font-semibold text-foreground">{m.outcome?.toUpperCase() ?? "—"}</span>
+        </p>
       )}
     </Card>
   );
@@ -187,6 +327,8 @@ const Predictions = () => {
   const [authed, setAuthed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [markets, setMarkets] = useState<Market[]>([]);
+  const [myStakes, setMyStakes] = useState<MyStake[]>([]);
+  const [view, setView] = useState<"markets" | "mine">("markets");
   const [region, setRegion] = useState<Region>("nigeria");
   const [tier, setTier] = useState<Tier>("regular");
   const [wallet, setWallet] = useState<{ points: number; balance: number }>({ points: 0, balance: 0 });
@@ -220,12 +362,26 @@ const Predictions = () => {
     setLoading(false);
   };
 
+  const loadMyStakes = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    const { data } = await supabase
+      .from("prediction_stakes")
+      .select("id, market_id, side, amount, currency, payout, settled, created_at, market:prediction_markets(*)")
+      .eq("user_id", session.user.id)
+      .order("created_at", { ascending: false })
+      .limit(200);
+    setMyStakes((data ?? []) as any);
+  };
+
   useEffect(() => {
     if (!authed) return;
     load();
+    loadMyStakes();
     const ch = supabase
       .channel("prediction_markets_live")
-      .on("postgres_changes", { event: "*", schema: "public", table: "prediction_markets" }, load)
+      .on("postgres_changes", { event: "*", schema: "public", table: "prediction_markets" }, () => { load(); loadMyStakes(); })
+      .on("postgres_changes", { event: "*", schema: "public", table: "prediction_stakes" }, loadMyStakes)
       .subscribe();
     return () => {
       supabase.removeChannel(ch);
@@ -237,6 +393,17 @@ const Predictions = () => {
       markets.filter((m) => m.region === region && m.tier === tier && (!m.resolved || (Date.now() - new Date(m.deadline).getTime()) < 24 * 3600_000)),
     [markets, region, tier]
   );
+
+  const sortedStakes = useMemo(() => {
+    const rank = (s: MyStake) => {
+      const m = s.market;
+      if (!m) return 4;
+      if (m.resolved) return 3;
+      if (new Date(m.deadline).getTime() <= Date.now()) return 2;
+      return 1;
+    };
+    return [...myStakes].sort((a, b) => rank(a) - rank(b));
+  }, [myStakes]);
 
   const handleStake = async (m: Market, side: Side, amount: number) => {
     if (m.currency === "cash" && (wallet?.balance ?? 0) < amount) {
@@ -259,6 +426,7 @@ const Predictions = () => {
     toast({ title: "Stake placed!", description: `${amount} ${m.currency === "points" ? "pts" : "₦"} on ${side.toUpperCase()}` });
     refetchWallet();
     load();
+    loadMyStakes();
   };
 
   if (!authChecked) {
@@ -295,42 +463,77 @@ const Predictions = () => {
           </Card>
         </div>
 
-        {/* Region tabs */}
-        <Tabs value={region} onValueChange={(v) => setRegion(v as Region)} className="mb-3">
+        {/* Top-level: Markets vs My Stakes */}
+        <Tabs value={view} onValueChange={(v) => setView(v as any)} className="mb-4">
           <TabsList className="w-full grid grid-cols-2">
-            <TabsTrigger value="nigeria" className="gap-1.5"><MapPin className="h-3.5 w-3.5" /> Nigeria</TabsTrigger>
-            <TabsTrigger value="global" className="gap-1.5"><Globe className="h-3.5 w-3.5" /> Global</TabsTrigger>
+            <TabsTrigger value="markets" className="gap-1.5">
+              <Trophy className="h-3.5 w-3.5" /> Markets
+            </TabsTrigger>
+            <TabsTrigger value="mine" className="gap-1.5">
+              <ListChecks className="h-3.5 w-3.5" /> My Stakes
+              {myStakes.length > 0 && (
+                <span className="ml-1 text-[10px] px-1.5 rounded-full bg-primary/20 text-primary">
+                  {myStakes.length}
+                </span>
+              )}
+            </TabsTrigger>
           </TabsList>
         </Tabs>
 
-        {/* Tier tabs */}
-        <Tabs value={tier} onValueChange={(v) => setTier(v as Tier)} className="mb-4">
-          <TabsList className="w-full grid grid-cols-2">
-            <TabsTrigger value="regular" className="gap-1.5"><Sparkles className="h-3.5 w-3.5" /> Regular (Points)</TabsTrigger>
-            <TabsTrigger value="vip" className="gap-1.5"><Crown className="h-3.5 w-3.5 text-amber-400" /> VIP (Cash)</TabsTrigger>
-          </TabsList>
-          <TabsContent value="regular" className="mt-1">
-            <p className="text-[11px] text-muted-foreground text-center">Stake points (min 20). Win the losing pool, paid in points.</p>
-          </TabsContent>
-          <TabsContent value="vip" className="mt-1">
-            <p className="text-[11px] text-amber-400/80 text-center">Stake real ₦ from your balance (min ₦100). Winnings go straight to your withdrawable balance.</p>
-          </TabsContent>
-        </Tabs>
+        {view === "markets" ? (
+          <>
+            {/* Region tabs */}
+            <Tabs value={region} onValueChange={(v) => setRegion(v as Region)} className="mb-3">
+              <TabsList className="w-full grid grid-cols-2">
+                <TabsTrigger value="nigeria" className="gap-1.5"><MapPin className="h-3.5 w-3.5" /> Nigeria</TabsTrigger>
+                <TabsTrigger value="global" className="gap-1.5"><Globe className="h-3.5 w-3.5" /> Global</TabsTrigger>
+              </TabsList>
+            </Tabs>
 
-        {loading ? (
-          <div className="flex justify-center py-10">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          </div>
-        ) : filtered.length === 0 ? (
-          <Card className="p-8 text-center text-sm text-muted-foreground">
-            No markets yet — fresh ones drop every 12 hours.
-          </Card>
+            {/* Tier tabs */}
+            <Tabs value={tier} onValueChange={(v) => setTier(v as Tier)} className="mb-4">
+              <TabsList className="w-full grid grid-cols-2">
+                <TabsTrigger value="regular" className="gap-1.5"><Sparkles className="h-3.5 w-3.5" /> Regular (Points)</TabsTrigger>
+                <TabsTrigger value="vip" className="gap-1.5"><Crown className="h-3.5 w-3.5 text-amber-400" /> VIP (Cash)</TabsTrigger>
+              </TabsList>
+              <TabsContent value="regular" className="mt-1">
+                <p className="text-[11px] text-muted-foreground text-center">Stake points (min 20). Win the losing pool, paid in points.</p>
+              </TabsContent>
+              <TabsContent value="vip" className="mt-1">
+                <p className="text-[11px] text-amber-400/80 text-center">Stake real ₦ from your balance (min ₦100). Winnings go straight to your withdrawable balance.</p>
+              </TabsContent>
+            </Tabs>
+
+            {loading ? (
+              <div className="flex justify-center py-10">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              </div>
+            ) : filtered.length === 0 ? (
+              <Card className="p-8 text-center text-sm text-muted-foreground">
+                No markets yet — fresh ones drop every 12 hours.
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {filtered.map((m) => (
+                  <MarketCard key={m.id} market={m} onStake={handleStake} />
+                ))}
+              </div>
+            )}
+          </>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {filtered.map((m) => (
-              <MarketCard key={m.id} market={m} onStake={handleStake} />
-            ))}
-          </div>
+          <>
+            {sortedStakes.length === 0 ? (
+              <Card className="p-8 text-center text-sm text-muted-foreground">
+                You haven't placed any predictions yet. Head to <button className="underline text-primary" onClick={() => setView("markets")}>Markets</button> to start.
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {sortedStakes.map((s) => (
+                  <MyStakeCard key={s.id} stake={s} />
+                ))}
+              </div>
+            )}
+          </>
         )}
 
         <p className="text-center text-[10px] text-muted-foreground mt-6">
