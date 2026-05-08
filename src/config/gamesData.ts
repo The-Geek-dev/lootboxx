@@ -9,6 +9,7 @@ export interface GameItem {
   isPlayable: boolean;
   color: string;
   isVip?: boolean;
+  isNew?: boolean;
   pointCost: number;
 }
 
