@@ -34,6 +34,17 @@ vi.mock("@/hooks/use-toast", () => ({
 vi.mock("@/hooks/useGameSounds", () => ({
   useGameSounds: () => ({ play: vi.fn() }),
 }));
+vi.mock("framer-motion", () => {
+  const React = require("react");
+  const passthrough = (tag: string) =>
+    React.forwardRef(({ children, ...props }: any, ref: any) =>
+      React.createElement(tag, { ref, ...props }, children),
+    );
+  return {
+    motion: new Proxy({}, { get: (_t, k: string) => passthrough(k) }),
+    AnimatePresence: ({ children }: any) => children,
+  };
+});
 vi.mock("@/components/engines/GameBackground", () => ({
   default: ({ children }: any) => <div>{children}</div>,
 }));
