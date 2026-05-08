@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Gift, Sparkles, Loader2, Tv } from "lucide-react";
+import { Gift, Sparkles, Loader2, Tv, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Navigation from "@/components/Navigation";
@@ -24,6 +24,52 @@ interface ClaimResult {
   won_cash?: boolean;
   cooldown_seconds?: number;
 }
+
+const MAX_COOLDOWN = 60;
+
+const CircularCountdown = ({ seconds }: { seconds: number }) => {
+  const radius = 50;
+  const circumference = 2 * Math.PI * radius;
+  const progress = Math.max(0, Math.min(1, seconds / MAX_COOLDOWN));
+  const offset = circumference * (1 - progress);
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  const label = mins > 0 ? `${mins}m ${secs.toString().padStart(2, "0")}s` : `${secs}s`;
+
+  return (
+    <div className="relative w-[120px] h-[120px] mx-auto mb-4 flex items-center justify-center">
+      <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 120 120">
+        <circle
+          cx="60"
+          cy="60"
+          r={radius}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="8"
+          className="text-muted/20"
+        />
+        <motion.circle
+          cx="60"
+          cy="60"
+          r={radius}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="8"
+          strokeLinecap="round"
+          className="text-primary"
+          strokeDasharray={circumference}
+          initial={{ strokeDashoffset: offset }}
+          animate={{ strokeDashoffset: offset }}
+          transition={{ duration: 0.5, ease: "linear" }}
+        />
+      </svg>
+      <div className="relative z-10 flex flex-col items-center justify-center">
+        <Clock className="h-5 w-5 text-muted-foreground mb-0.5" />
+        <span className="text-xl font-bold tabular-nums">{label}</span>
+      </div>
+    </div>
+  );
+};
 
 const AdRewards = () => {
   const { toast } = useToast();
@@ -188,13 +234,17 @@ const AdRewards = () => {
         <Card className="p-6 text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent pointer-events-none" />
           <div className="relative">
-            <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/15 flex items-center justify-center">
-              {adWatching ? (
-                <Tv className="h-8 w-8 text-primary animate-pulse" />
-              ) : (
-                <Gift className="h-8 w-8 text-primary" />
-              )}
-            </div>
+            {cooldown > 0 ? (
+              <CircularCountdown seconds={cooldown} />
+            ) : (
+              <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/15 flex items-center justify-center">
+                {adWatching ? (
+                  <Tv className="h-8 w-8 text-primary animate-pulse" />
+                ) : (
+                  <Gift className="h-8 w-8 text-primary" />
+                )}
+              </div>
+            )}
 
             <p className="text-sm text-muted-foreground mb-1">Reward per ad</p>
             <p className="text-lg font-semibold mb-4">
