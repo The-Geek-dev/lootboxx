@@ -99,7 +99,7 @@ const AdRewards = () => {
       return;
     }
 
-    const result = data as ClaimResult;
+    const result = data as unknown as ClaimResult;
     if (!result.success) {
       if (result.reason === "cooldown") {
         setCooldown(result.seconds_left ?? 60);
