@@ -47,6 +47,13 @@ const GameCard = ({ game, size = "normal" }: { game: GameItem; size?: "normal" |
             </Badge>
           </div>
         )}
+        {game.isNew && (
+          <div className="absolute top-1.5 right-1.5">
+            <Badge className="text-[9px] px-1 py-0 bg-pink-500/95 text-white border-0 font-bold animate-pulse">
+              ✨ NEW
+            </Badge>
+          </div>
+        )}
         {!game.isPlayable && !game.isVip && (
           <div className="absolute top-2 right-2">
             <Lock className="w-3 h-3 text-foreground/70" />
