@@ -5,6 +5,14 @@ import { render, screen, act, cleanup, fireEvent } from "@testing-library/react"
 
 
 // ---- Mocks ----
+vi.mock("@/integrations/supabase/client", () => ({
+  supabase: {
+    from: () => ({ select: () => ({ eq: () => ({ single: () => Promise.resolve({ data: null }) }) }) }),
+    auth: { getSession: () => Promise.resolve({ data: { session: null } }) },
+    rpc: () => Promise.resolve({ data: null, error: null }),
+  },
+}));
+
 const recordGameResult = vi.fn().mockResolvedValue({ success: true });
 const updateBalance = vi.fn().mockResolvedValue(true);
 const spendPoints = vi.fn().mockResolvedValue(true);
