@@ -148,6 +148,12 @@ const MarketCard = ({ market, onStake }: { market: Market; onStake: (m: Market, 
 const Predictions = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [authChecked, setAuthChecked] = useState(false);
+  const [authed, setAuthed] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [markets, setMarkets] = useState<Market[]>([]);
+  const [region, setRegion] = useState<Region>("nigeria");
+  const [tier, setTier] = useState<Tier>("regular");
   const [wallet, setWallet] = useState<{ points: number; balance: number }>({ points: 0, balance: 0 });
   const refetchWallet = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -156,12 +162,6 @@ const Predictions = () => {
     if (data) setWallet({ points: Number(data.points ?? 0), balance: Number(data.balance ?? 0) });
   };
   useEffect(() => { if (authed) refetchWallet(); }, [authed]);
-  const [authChecked, setAuthChecked] = useState(false);
-  const [authed, setAuthed] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [markets, setMarkets] = useState<Market[]>([]);
-  const [region, setRegion] = useState<Region>("nigeria");
-  const [tier, setTier] = useState<Tier>("regular");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -222,7 +222,7 @@ const Predictions = () => {
       return;
     }
     toast({ title: "Stake placed!", description: `${amount} ${m.currency === "points" ? "pts" : "₦"} on ${side.toUpperCase()}` });
-    refetch?.();
+    refetchWallet();
     load();
   };
 
