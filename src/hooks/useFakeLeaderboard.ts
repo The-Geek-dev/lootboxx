@@ -41,6 +41,12 @@ export interface FakePlayer {
   total_winnings: number;
   games_played: number;
   wins: number;
+  base_winnings: number;
+  daily_growth: number;
+  win_rate: number;
+  current_streak: number;
+  longest_streak: number;
+  seed: number;
 }
 
 export interface FakeJackpotWinner {
