@@ -1,5 +1,7 @@
+import React from "react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, act, cleanup, fireEvent } from "@testing-library/react";
+
 
 
 // ---- Mocks ----
@@ -34,8 +36,8 @@ vi.mock("@/hooks/use-toast", () => ({
 vi.mock("@/hooks/useGameSounds", () => ({
   useGameSounds: () => ({ play: vi.fn() }),
 }));
-vi.mock("framer-motion", () => {
-  const React = require("react");
+vi.mock("framer-motion", async () => {
+  const React = await import("react");
   const passthrough = (tag: string) =>
     React.forwardRef(({ children, ...props }: any, ref: any) =>
       React.createElement(tag, { ref, ...props }, children),
