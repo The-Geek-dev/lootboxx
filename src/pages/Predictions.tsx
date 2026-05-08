@@ -253,13 +253,32 @@ const getStakeStatus = (stake: MyStake): "open" | "pending" | "won" | "lost" | "
   return "open";
 };
 
-const MyStakeCard = ({ stake }: { stake: MyStake }) => {
+const MyStakeCard = ({
+  stake,
+  onIncrease,
+}: {
+  stake: MyStake;
+  onIncrease: (stake: MyStake, addAmount: number) => Promise<void>;
+}) => {
   useTick(1000);
   const status = getStakeStatus(stake);
   const m = stake.market;
   const unit = stake.currency === "points" ? "pts" : "₦";
   const potential = m ? computePotential(m, stake.side, stake.amount) : stake.amount;
   const deadlineMs = m ? new Date(m.deadline).getTime() : 0;
+  const minAdd = stake.currency === "points" ? 20 : 100;
+  const [addAmt, setAddAmt] = useState<string>(String(minAdd));
+  const [busy, setBusy] = useState(false);
+  const submitIncrease = async () => {
+    const amt = parseFloat(addAmt);
+    if (!amt || amt < minAdd) return;
+    setBusy(true);
+    try {
+      await onIncrease(stake, amt);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const statusMeta = {
     open: { label: "Open", cls: "border-green-500/50 text-green-500 bg-green-500/10" },
