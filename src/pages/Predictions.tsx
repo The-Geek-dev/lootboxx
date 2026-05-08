@@ -390,10 +390,35 @@ const MyStakeCard = ({
       })()}
 
       {m && status === "open" && (
-        <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-          <span className="flex items-center gap-1"><TimerReset className="h-3 w-3" /> Matures in</span>
-          <span className="font-mono text-foreground">{fmtTimeLeft(m.deadline)}</span>
-        </div>
+        <>
+          <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+            <span className="flex items-center gap-1"><TimerReset className="h-3 w-3" /> Matures in</span>
+            <span className="font-mono text-foreground">{fmtTimeLeft(m.deadline)}</span>
+          </div>
+          <div className="rounded-md border border-primary/30 bg-primary/5 p-2.5 space-y-2">
+            <p className="text-[10px] uppercase tracking-wide text-primary font-semibold">
+              Increase stake on {stake.side.toUpperCase()}
+            </p>
+            <div className="flex gap-2">
+              <Input
+                type="number"
+                min={minAdd}
+                value={addAmt}
+                onChange={(e) => setAddAmt(e.target.value)}
+                placeholder={`Min ${minAdd} ${unit}`}
+                className="h-9 text-sm flex-1"
+              />
+              <Button
+                size="sm"
+                className="h-9"
+                disabled={busy}
+                onClick={submitIncrease}
+              >
+                {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Add"}
+              </Button>
+            </div>
+          </div>
+        </>
       )}
       {m && status === "pending" && (
         <p className="text-[11px] text-amber-400 text-center">Resolving within 1 hour…</p>
