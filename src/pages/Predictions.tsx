@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Loader2, Sparkles, Globe, MapPin, TrendingUp, Clock, Crown, ListChecks, Trophy, TimerReset } from "lucide-react";
+import { Loader2, Sparkles, Globe, MapPin, TrendingUp, Clock, Crown, ListChecks, Trophy, TimerReset, Filter } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
@@ -242,23 +242,24 @@ const MarketCard = ({ market, onStake }: { market: Market; onStake: (m: Market, 
   );
 };
 
+const getStakeStatus = (stake: MyStake): "open" | "pending" | "won" | "lost" | "void" => {
+  const m = stake.market;
+  if (!m) return "void";
+  if (m.resolved) {
+    if (m.outcome === "void") return "void";
+    return m.outcome === stake.side ? "won" : "lost";
+  }
+  if (new Date(m.deadline).getTime() <= Date.now()) return "pending";
+  return "open";
+};
+
 const MyStakeCard = ({ stake }: { stake: MyStake }) => {
   useTick(1000);
+  const status = getStakeStatus(stake);
   const m = stake.market;
   const unit = stake.currency === "points" ? "pts" : "₦";
   const potential = m ? computePotential(m, stake.side, stake.amount) : stake.amount;
   const deadlineMs = m ? new Date(m.deadline).getTime() : 0;
-  const status: "open" | "pending" | "won" | "lost" | "void" = !m
-    ? "void"
-    : m.resolved
-    ? m.outcome === "void"
-      ? "void"
-      : m.outcome === stake.side
-      ? "won"
-      : "lost"
-    : deadlineMs <= Date.now()
-    ? "pending"
-    : "open";
 
   const statusMeta = {
     open: { label: "Open", cls: "border-green-500/50 text-green-500 bg-green-500/10" },
@@ -396,6 +397,7 @@ const Predictions = () => {
   const [markets, setMarkets] = useState<Market[]>([]);
   const [myStakes, setMyStakes] = useState<MyStake[]>([]);
   const [view, setView] = useState<"markets" | "mine">("markets");
+  const [stakeFilter, setStakeFilter] = useState<"all" | "open" | "pending" | "won" | "lost">("all");
   const [region, setRegion] = useState<Region>("nigeria");
   const [tier, setTier] = useState<Tier>("regular");
   const [wallet, setWallet] = useState<{ points: number; balance: number }>({ points: 0, balance: 0 });
@@ -469,8 +471,12 @@ const Predictions = () => {
       if (new Date(m.deadline).getTime() <= Date.now()) return 2;
       return 1;
     };
-    return [...myStakes].sort((a, b) => rank(a) - rank(b));
-  }, [myStakes]);
+    let arr = [...myStakes].sort((a, b) => rank(a) - rank(b));
+    if (stakeFilter !== "all") {
+      arr = arr.filter((s) => getStakeStatus(s) === stakeFilter);
+    }
+    return arr;
+  }, [myStakes, stakeFilter]);
 
   const handleStake = async (m: Market, side: Side, amount: number) => {
     if (m.currency === "cash" && (wallet?.balance ?? 0) < amount) {
@@ -589,9 +595,35 @@ const Predictions = () => {
           </>
         ) : (
           <>
+            {/* My Stakes filters */}
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+              {(["all", "open", "pending", "won", "lost"] as const).map((f) => {
+                const count = f === "all" ? myStakes.length : myStakes.filter((s) => getStakeStatus(s) === f).length;
+                const active = stakeFilter === f;
+                return (
+                  <button
+                    key={f}
+                    onClick={() => setStakeFilter(f)}
+                    className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
+                      active
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-muted/40 text-muted-foreground border-border hover:bg-muted/60"
+                    }`}
+                  >
+                    {f === "all" ? "All" : f === "open" ? "Open" : f === "pending" ? "Pending" : f === "won" ? "Won" : "Lost"}
+                    <span className={`ml-1 ${active ? "text-primary-foreground/80" : "text-muted-foreground/70"}`}>{count}</span>
+                  </button>
+                );
+              })}
+            </div>
             {sortedStakes.length === 0 ? (
               <Card className="p-8 text-center text-sm text-muted-foreground">
-                You haven't placed any predictions yet. Head to <button className="underline text-primary" onClick={() => setView("markets")}>Markets</button> to start.
+                {stakeFilter === "all" ? (
+                  <>You haven't placed any predictions yet. Head to <button className="underline text-primary" onClick={() => setView("markets")}>Markets</button> to start.</>
+                ) : (
+                  <>No <span className="text-foreground font-medium">{stakeFilter}</span> stakes found.</>
+                )}
               </Card>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
