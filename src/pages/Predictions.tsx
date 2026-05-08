@@ -269,8 +269,9 @@ const MyStakeCard = ({
   const minAdd = stake.currency === "points" ? 20 : 100;
   const [addAmt, setAddAmt] = useState<string>(String(minAdd));
   const [busy, setBusy] = useState(false);
-  const submitIncrease = async () => {
-    const amt = parseFloat(addAmt);
+  const quickAdds = stake.currency === "points" ? [50, 100, 250, 500] : [100, 250, 500, 1000];
+  const submitIncrease = async (override?: number) => {
+    const amt = override ?? parseFloat(addAmt);
     if (!amt || amt < minAdd) return;
     setBusy(true);
     try {
@@ -412,10 +413,23 @@ const MyStakeCard = ({
                 size="sm"
                 className="h-9"
                 disabled={busy}
-                onClick={submitIncrease}
+                onClick={() => submitIncrease()}
               >
                 {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Add"}
               </Button>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {quickAdds.map((q) => (
+                <button
+                  key={q}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => submitIncrease(q)}
+                  className="text-[11px] px-2 py-1 rounded-full border border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 disabled:opacity-50 transition-colors font-mono"
+                >
+                  +{unit === "₦" ? "₦" : ""}{q.toLocaleString()}{unit === "pts" ? " pts" : ""}
+                </button>
+              ))}
             </div>
           </div>
         </>
