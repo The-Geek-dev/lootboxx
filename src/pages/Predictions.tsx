@@ -269,8 +269,9 @@ const MyStakeCard = ({
   const minAdd = stake.currency === "points" ? 20 : 100;
   const [addAmt, setAddAmt] = useState<string>(String(minAdd));
   const [busy, setBusy] = useState(false);
-  const submitIncrease = async () => {
-    const amt = parseFloat(addAmt);
+  const quickAdds = stake.currency === "points" ? [50, 100, 250, 500] : [100, 250, 500, 1000];
+  const submitIncrease = async (override?: number) => {
+    const amt = override ?? parseFloat(addAmt);
     if (!amt || amt < minAdd) return;
     setBusy(true);
     try {
