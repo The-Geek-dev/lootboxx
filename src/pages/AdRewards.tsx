@@ -234,13 +234,17 @@ const AdRewards = () => {
         <Card className="p-6 text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent pointer-events-none" />
           <div className="relative">
-            <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/15 flex items-center justify-center">
-              {adWatching ? (
-                <Tv className="h-8 w-8 text-primary animate-pulse" />
-              ) : (
-                <Gift className="h-8 w-8 text-primary" />
-              )}
-            </div>
+            {cooldown > 0 ? (
+              <CircularCountdown seconds={cooldown} />
+            ) : (
+              <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/15 flex items-center justify-center">
+                {adWatching ? (
+                  <Tv className="h-8 w-8 text-primary animate-pulse" />
+                ) : (
+                  <Gift className="h-8 w-8 text-primary" />
+                )}
+              </div>
+            )}
 
             <p className="text-sm text-muted-foreground mb-1">Reward per ad</p>
             <p className="text-lg font-semibold mb-4">
