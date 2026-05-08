@@ -136,7 +136,42 @@ export function useFakeLeaderboard(count = 20) {
           amount: Math.floor(jpRng() * 80000) + 5000,
           timeAgo: timeLabels[i],
         });
-      }
+}
+
+export interface FakeRecentGame {
+  game: string;
+  result: "win" | "loss";
+  amount: number;
+  timeAgo: string;
+}
+
+const GAME_NAMES = [
+  "Lucky Slots", "Spin Wheel", "Plinko", "Crash", "Mines",
+  "Dice", "Coin Flip", "Roulette", "Blackjack", "Keno",
+  "Scratch Card", "High Low", "Tower", "Limbo",
+];
+const TIME_AGO = [
+  "2 min ago", "11 min ago", "27 min ago", "48 min ago",
+  "1 hr ago", "2 hrs ago", "4 hrs ago", "7 hrs ago",
+  "11 hrs ago", "Yesterday",
+];
+
+export function getPlayerRecentGames(seed: number, winRate: number, count = 8): FakeRecentGame[] {
+  const rng = mulberry32(seed ^ 0x7777);
+  const out: FakeRecentGame[] = [];
+  for (let i = 0; i < count; i++) {
+    const isWin = rng() < winRate;
+    const stake = Math.floor(rng() * 4500) + 500;
+    const amount = isWin ? Math.floor(stake * (1 + rng() * 4)) : stake;
+    out.push({
+      game: GAME_NAMES[Math.floor(rng() * GAME_NAMES.length)],
+      result: isWin ? "win" : "loss",
+      amount,
+      timeAgo: TIME_AGO[i] ?? "Recently",
+    });
+  }
+  return out;
+}
       setJackpotWinners(winners);
     };
 
