@@ -471,8 +471,12 @@ const Predictions = () => {
       if (new Date(m.deadline).getTime() <= Date.now()) return 2;
       return 1;
     };
-    return [...myStakes].sort((a, b) => rank(a) - rank(b));
-  }, [myStakes]);
+    let arr = [...myStakes].sort((a, b) => rank(a) - rank(b));
+    if (stakeFilter !== "all") {
+      arr = arr.filter((s) => getStakeStatus(s) === stakeFilter);
+    }
+    return arr;
+  }, [myStakes, stakeFilter]);
 
   const handleStake = async (m: Market, side: Side, amount: number) => {
     if (m.currency === "cash" && (wallet?.balance ?? 0) < amount) {
