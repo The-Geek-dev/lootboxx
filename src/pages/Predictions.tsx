@@ -583,6 +583,31 @@ const Predictions = () => {
       return;
     }
     toast({ title: "Stake placed!", description: `${amount} ${m.currency === "points" ? "pts" : "₦"} on ${side.toUpperCase()}` });
+    // Optimistic: insert a synthetic stake row so totals update instantly
+    const optimistic: MyStake = {
+      id: `optimistic-${Date.now()}`,
+      market_id: m.id,
+      side,
+      amount,
+      currency: m.currency,
+      payout: 0,
+      settled: false,
+      created_at: new Date().toISOString(),
+      market: { ...m, [side === "yes" ? "yes_pool" : "no_pool"]: (side === "yes" ? m.yes_pool : m.no_pool) + amount } as Market,
+    };
+    setMyStakes((prev) => [optimistic, ...prev]);
+    setMarkets((prev) =>
+      prev.map((mm) =>
+        mm.id === m.id
+          ? { ...mm, [side === "yes" ? "yes_pool" : "no_pool"]: (side === "yes" ? mm.yes_pool : mm.no_pool) + amount }
+          : mm,
+      ),
+    );
+    setWallet((w) =>
+      m.currency === "points"
+        ? { ...w, points: Math.max(0, w.points - amount) }
+        : { ...w, balance: Math.max(0, w.balance - amount) },
+    );
     refetchWallet();
     load();
     loadMyStakes();
