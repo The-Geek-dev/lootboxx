@@ -64,15 +64,16 @@ interface PlayerBase {
   winRate: number;          // 0..1
 }
 
-function buildBasePlayers(count: number): PlayerBase[] {
+function buildBasePlayers(count: number): (PlayerBase & { seed: number })[] {
   const rng = mulberry32(LEADERBOARD_SEED);
-  const players: PlayerBase[] = [];
+  const players: (PlayerBase & { seed: number })[] = [];
   for (let i = 0; i < count; i++) {
-    const baseWinnings = Math.floor(rng() * 380000) + 20000;       // 20k–400k starting
-    const dailyGrowth = Math.floor(rng() * 1800) + 200;            // 200–2000 ₦/day
+    const baseWinnings = Math.floor(rng() * 380000) + 20000;
+    const dailyGrowth = Math.floor(rng() * 1800) + 200;
     const baseGames = Math.floor(rng() * 180) + 20;
-    const gamesPerDay = rng() * 4 + 0.5;                           // 0.5–4.5 games/day
-    const winRate = 0.25 + rng() * 0.35;                           // 25%–60%
+    const gamesPerDay = rng() * 4 + 0.5;
+    const winRate = 0.25 + rng() * 0.35;
+    const seed = Math.floor(rng() * 0xffffffff);
     players.push({
       name: generateName(rng),
       baseWinnings,
@@ -80,6 +81,7 @@ function buildBasePlayers(count: number): PlayerBase[] {
       baseGames,
       gamesPerDay,
       winRate,
+      seed,
     });
   }
   return players;
