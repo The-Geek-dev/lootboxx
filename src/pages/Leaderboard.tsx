@@ -34,12 +34,88 @@ const ComingSoonView = () => (
 
 type TimeFilter = "daily" | "weekly" | "monthly" | "all-time";
 
+const PlayerProfileDialog = ({ player, onClose }: { player: FakePlayer | null; onClose: () => void }) => {
+  if (!player) return null;
+  const games = getPlayerRecentGames(player.seed, player.win_rate, 8);
+  const winRatePct = Math.round(player.win_rate * 100);
+  const monthlyGrowth = player.daily_growth * 30;
+
+  return (
+    <Dialog open={!!player} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-primary" />
+            {player.player_name}
+            <Badge variant="secondary" className="ml-auto">Rank #{player.rank}</Badge>
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <Card className="p-3">
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+                <Award className="w-3 h-3" /> Base winnings
+              </div>
+              <p className="font-bold text-foreground">₦{player.base_winnings.toLocaleString()}</p>
+            </Card>
+            <Card className="p-3">
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+                <TrendingUp className="w-3 h-3" /> Daily growth
+              </div>
+              <p className="font-bold text-emerald-500">+₦{player.daily_growth.toLocaleString()}/day</p>
+              <p className="text-[10px] text-muted-foreground">~₦{monthlyGrowth.toLocaleString()}/mo</p>
+            </Card>
+            <Card className="p-3">
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+                <Flame className="w-3 h-3" /> Current streak
+              </div>
+              <p className="font-bold text-orange-500">{player.current_streak} 🔥</p>
+              <p className="text-[10px] text-muted-foreground">Best: {player.longest_streak}</p>
+            </Card>
+            <Card className="p-3">
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+                <Gamepad2 className="w-3 h-3" /> Win rate
+              </div>
+              <p className="font-bold text-foreground">{winRatePct}%</p>
+              <p className="text-[10px] text-muted-foreground">{player.wins}/{player.games_played} games</p>
+            </Card>
+          </div>
+
+          <Card className="p-3 bg-primary/5 border-primary/20">
+            <p className="text-xs text-muted-foreground">Total winnings</p>
+            <p className="text-2xl font-bold text-primary">₦{player.total_winnings.toLocaleString()}</p>
+          </Card>
+
+          <div>
+            <h4 className="text-sm font-semibold mb-2">Recent games</h4>
+            <div className="space-y-1.5">
+              {games.map((g, i) => (
+                <div key={i} className="flex items-center justify-between text-sm py-2 px-3 rounded-md bg-muted/40">
+                  <div>
+                    <p className="font-medium">{g.game}</p>
+                    <p className="text-[10px] text-muted-foreground">{g.timeAgo}</p>
+                  </div>
+                  <p className={`font-bold ${g.result === "win" ? "text-emerald-500" : "text-muted-foreground"}`}>
+                    {g.result === "win" ? "+" : "-"}₦{g.amount.toLocaleString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 const LiveLeaderboardView = () => {
   const { leaders: allLeaders } = useFakeLeaderboard(50);
   const [timeFilter, setTimeFilter] = useState<TimeFilter>("all-time");
+  const [selected, setSelected] = useState<FakePlayer | null>(null);
 
   // Simulate different data per time filter by slicing/scaling
-  const getFilteredLeaders = () => {
+  const getFilteredLeaders = (): FakePlayer[] => {
     switch (timeFilter) {
       case "daily":
         return allLeaders.slice(0, 10).map((p, i) => ({
@@ -101,13 +177,17 @@ const LiveLeaderboardView = () => {
         </TabsList>
       </Tabs>
 
-      <p className="text-xs text-muted-foreground text-center mb-4">Updates every 30 minutes</p>
+      <p className="text-xs text-muted-foreground text-center mb-4">Tap a player to view their profile</p>
 
       <div className="space-y-2">
         {leaders.map((player) => (
           <Card
             key={`${timeFilter}-${player.rank}`}
-            className={`p-4 flex items-center justify-between transition-all ${
+            onClick={() => setSelected(player)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setSelected(player)}
+            className={`p-4 flex items-center justify-between transition-all cursor-pointer hover:bg-muted/50 hover:scale-[1.01] active:scale-[0.99] ${
               player.rank <= 3 ? "border-primary/30 bg-primary/5" : ""
             }`}
           >
@@ -122,6 +202,8 @@ const LiveLeaderboardView = () => {
           </Card>
         ))}
       </div>
+
+      <PlayerProfileDialog player={selected} onClose={() => setSelected(null)} />
     </motion.div>
   );
 };
