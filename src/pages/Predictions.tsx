@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Loader2, Sparkles, Globe, MapPin, TrendingUp, Clock, Crown, ListChecks, Trophy, TimerReset } from "lucide-react";
+import { Loader2, Sparkles, Globe, MapPin, TrendingUp, Clock, Crown, ListChecks, Trophy, TimerReset, Filter } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
