@@ -38,8 +38,18 @@ const fmtTimeLeft = (iso: string) => {
   if (ms <= 0) return "Closed";
   const h = Math.floor(ms / 3_600_000);
   const m = Math.floor((ms % 3_600_000) / 60_000);
+  const s = Math.floor((ms % 60_000) / 1000);
   if (h >= 24) return `${Math.floor(h / 24)}d ${h % 24}h`;
-  return `${h}h ${m}m`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m ${s}s`;
+};
+
+const useTick = (ms = 1000) => {
+  const [, setT] = useState(0);
+  useEffect(() => {
+    const i = setInterval(() => setT((x) => x + 1), ms);
+    return () => clearInterval(i);
+  }, [ms]);
 };
 
 const MarketCard = ({ market, onStake }: { market: Market; onStake: (m: Market, side: Side, amount: number) => Promise<void> }) => {
