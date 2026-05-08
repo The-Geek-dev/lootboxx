@@ -61,6 +61,18 @@ const MarketCard = ({ market, onStake }: { market: Market; onStake: (m: Market, 
   const noPct = 100 - yesPct;
   const closed = market.resolved || new Date(market.deadline).getTime() <= Date.now();
 
+  useTick(1000);
+  const total = market.yes_pool + market.no_pool;
+  const yesPct = total > 0 ? Math.round((market.yes_pool / total) * 100) : 50;
+  const noPct = 100 - yesPct;
+  const deadlineMs = new Date(market.deadline).getTime();
+  const closed = market.resolved || deadlineMs <= Date.now();
+  const status: "resolved" | "pending" | "open" = market.resolved
+    ? "resolved"
+    : deadlineMs <= Date.now()
+    ? "pending"
+    : "open";
+
   const submit = async (side: Side) => {
     const amt = parseFloat(amount);
     if (!amt || amt < min) return;
