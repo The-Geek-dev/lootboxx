@@ -56,11 +56,6 @@ const MarketCard = ({ market, onStake }: { market: Market; onStake: (m: Market, 
   const min = market.currency === "points" ? 20 : 100;
   const [amount, setAmount] = useState<string>(String(min));
   const [busy, setBusy] = useState<Side | null>(null);
-  const total = market.yes_pool + market.no_pool;
-  const yesPct = total > 0 ? Math.round((market.yes_pool / total) * 100) : 50;
-  const noPct = 100 - yesPct;
-  const closed = market.resolved || new Date(market.deadline).getTime() <= Date.now();
-
   useTick(1000);
   const total = market.yes_pool + market.no_pool;
   const yesPct = total > 0 ? Math.round((market.yes_pool / total) * 100) : 50;
