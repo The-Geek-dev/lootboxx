@@ -136,6 +136,18 @@ export function useFakeLeaderboard(count = 20) {
           amount: Math.floor(jpRng() * 80000) + 5000,
           timeAgo: timeLabels[i],
         });
+      }
+      setJackpotWinners(winners);
+    };
+
+    generate();
+
+    // Tick every 60s so totals visibly creep upward, never reset/decrease
+    const interval = setInterval(generate, 60 * 1000);
+    return () => clearInterval(interval);
+  }, [count]);
+
+  return { leaders, jackpotWinners };
 }
 
 export interface FakeRecentGame {
@@ -172,15 +184,4 @@ export function getPlayerRecentGames(seed: number, winRate: number, count = 8): 
   }
   return out;
 }
-      setJackpotWinners(winners);
-    };
 
-    generate();
-
-    // Tick every 60s so totals visibly creep upward, never reset/decrease
-    const interval = setInterval(generate, 60 * 1000);
-    return () => clearInterval(interval);
-  }, [count]);
-
-  return { leaders, jackpotWinners };
-}
