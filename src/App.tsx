@@ -43,6 +43,7 @@ import DynamicGame from "./pages/DynamicGame";
 import WithdrawalSuccess from "./pages/WithdrawalSuccess";
 import Unsubscribe from "./pages/Unsubscribe";
 import AdRewards from "./pages/AdRewards";
+import Predictions from "./pages/Predictions";
 import CouponRenewalBanner from "@/components/CouponRenewalBanner";
 import PushAutoPrompt from "@/components/PushAutoPrompt";
 import AdsterraLoader from "@/components/AdsterraLoader";
@@ -107,6 +108,7 @@ const AppRoutes = () => {
         <Route path="/points" element={<Points />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/ad-rewards" element={<AdRewards />} />
+        <Route path="/predictions" element={<Predictions />} />
       </Routes>
     </>
   );
