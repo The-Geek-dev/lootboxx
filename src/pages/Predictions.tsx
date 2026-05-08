@@ -242,23 +242,21 @@ const MarketCard = ({ market, onStake }: { market: Market; onStake: (m: Market, 
   );
 };
 
+const getStakeStatus = (stake: MyStake): "open" | "pending" | "won" | "lost" | "void" => {
+  const m = stake.market;
+  if (!m) return "void";
+  if (m.resolved) {
+    if (m.outcome === "void") return "void";
+    return m.outcome === stake.side ? "won" : "lost";
+  }
+  if (new Date(m.deadline).getTime() <= Date.now()) return "pending";
+  return "open";
+};
+
 const MyStakeCard = ({ stake }: { stake: MyStake }) => {
   useTick(1000);
+  const status = getStakeStatus(stake);
   const m = stake.market;
-  const unit = stake.currency === "points" ? "pts" : "₦";
-  const potential = m ? computePotential(m, stake.side, stake.amount) : stake.amount;
-  const deadlineMs = m ? new Date(m.deadline).getTime() : 0;
-  const status: "open" | "pending" | "won" | "lost" | "void" = !m
-    ? "void"
-    : m.resolved
-    ? m.outcome === "void"
-      ? "void"
-      : m.outcome === stake.side
-      ? "won"
-      : "lost"
-    : deadlineMs <= Date.now()
-    ? "pending"
-    : "open";
 
   const statusMeta = {
     open: { label: "Open", cls: "border-green-500/50 text-green-500 bg-green-500/10" },
