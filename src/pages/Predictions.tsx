@@ -688,7 +688,7 @@ const Predictions = () => {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {sortedStakes.map((s) => (
-                  <MyStakeCard key={s.id} stake={s} />
+                  <MyStakeCard key={s.id} stake={s} onIncrease={handleIncrease} />
                 ))}
               </div>
             )}
