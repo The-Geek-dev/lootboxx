@@ -41,6 +41,12 @@ export interface FakePlayer {
   total_winnings: number;
   games_played: number;
   wins: number;
+  base_winnings: number;
+  daily_growth: number;
+  win_rate: number;
+  current_streak: number;
+  longest_streak: number;
+  seed: number;
 }
 
 export interface FakeJackpotWinner {
@@ -58,15 +64,16 @@ interface PlayerBase {
   winRate: number;          // 0..1
 }
 
-function buildBasePlayers(count: number): PlayerBase[] {
+function buildBasePlayers(count: number): (PlayerBase & { seed: number })[] {
   const rng = mulberry32(LEADERBOARD_SEED);
-  const players: PlayerBase[] = [];
+  const players: (PlayerBase & { seed: number })[] = [];
   for (let i = 0; i < count; i++) {
-    const baseWinnings = Math.floor(rng() * 380000) + 20000;       // 20k–400k starting
-    const dailyGrowth = Math.floor(rng() * 1800) + 200;            // 200–2000 ₦/day
+    const baseWinnings = Math.floor(rng() * 380000) + 20000;
+    const dailyGrowth = Math.floor(rng() * 1800) + 200;
     const baseGames = Math.floor(rng() * 180) + 20;
-    const gamesPerDay = rng() * 4 + 0.5;                           // 0.5–4.5 games/day
-    const winRate = 0.25 + rng() * 0.35;                           // 25%–60%
+    const gamesPerDay = rng() * 4 + 0.5;
+    const winRate = 0.25 + rng() * 0.35;
+    const seed = Math.floor(rng() * 0xffffffff);
     players.push({
       name: generateName(rng),
       baseWinnings,
@@ -74,6 +81,7 @@ function buildBasePlayers(count: number): PlayerBase[] {
       baseGames,
       gamesPerDay,
       winRate,
+      seed,
     });
   }
   return players;
@@ -91,14 +99,23 @@ export function useFakeLeaderboard(count = 20) {
 
       const players: FakePlayer[] = basePlayers.map((p) => {
         const winnings = Math.floor(p.baseWinnings + p.dailyGrowth * daysElapsed);
-        const gamesPlayed = Math.floor(p.baseGames + p.gamesPerDay * daysElapsed);
+        const gamesPlayed = Math.max(1, Math.floor(p.baseGames + p.gamesPerDay * daysElapsed));
         const wins = Math.floor(gamesPlayed * p.winRate);
+        const sRng = mulberry32(p.seed ^ 0xa5a5);
+        const longest = Math.floor(sRng() * 12) + 4;
+        const current = Math.floor(sRng() * longest) + 1;
         return {
           rank: 0,
           player_name: p.name,
           total_winnings: winnings,
-          games_played: Math.max(1, gamesPlayed),
+          games_played: gamesPlayed,
           wins,
+          base_winnings: p.baseWinnings,
+          daily_growth: p.dailyGrowth,
+          win_rate: p.winRate,
+          current_streak: current,
+          longest_streak: longest,
+          seed: p.seed,
         };
       });
       players.sort((a, b) => b.total_winnings - a.total_winnings);
@@ -132,3 +149,39 @@ export function useFakeLeaderboard(count = 20) {
 
   return { leaders, jackpotWinners };
 }
+
+export interface FakeRecentGame {
+  game: string;
+  result: "win" | "loss";
+  amount: number;
+  timeAgo: string;
+}
+
+const GAME_NAMES = [
+  "Lucky Slots", "Spin Wheel", "Plinko", "Crash", "Mines",
+  "Dice", "Coin Flip", "Roulette", "Blackjack", "Keno",
+  "Scratch Card", "High Low", "Tower", "Limbo",
+];
+const TIME_AGO = [
+  "2 min ago", "11 min ago", "27 min ago", "48 min ago",
+  "1 hr ago", "2 hrs ago", "4 hrs ago", "7 hrs ago",
+  "11 hrs ago", "Yesterday",
+];
+
+export function getPlayerRecentGames(seed: number, winRate: number, count = 8): FakeRecentGame[] {
+  const rng = mulberry32(seed ^ 0x7777);
+  const out: FakeRecentGame[] = [];
+  for (let i = 0; i < count; i++) {
+    const isWin = rng() < winRate;
+    const stake = Math.floor(rng() * 4500) + 500;
+    const amount = isWin ? Math.floor(stake * (1 + rng() * 4)) : stake;
+    out.push({
+      game: GAME_NAMES[Math.floor(rng() * GAME_NAMES.length)],
+      result: isWin ? "win" : "loss",
+      amount,
+      timeAgo: TIME_AGO[i] ?? "Recently",
+    });
+  }
+  return out;
+}
+
