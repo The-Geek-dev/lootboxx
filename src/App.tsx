@@ -62,9 +62,12 @@ const AppRoutes = () => {
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
+  const isGameRoute = location.pathname.startsWith("/games");
+
   return (
     <>
       <LoadingScreen isLoading={isLoading} />
+      {!isGameRoute && <WinnerMarquee />}
       <CouponRenewalBanner />
       <PushAutoPrompt />
       <AdsterraLoader />
@@ -114,7 +117,6 @@ const App = () => {
       <TooltipProvider>
         <div className="min-h-screen bg-background">
           <AgeVerification />
-          <WinnerMarquee />
           <LaunchCountdown />
           <Toaster />
           <Sonner />
