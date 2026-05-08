@@ -37,6 +37,7 @@ export const allGames: GameItem[] = [
   { id: "lucky-slots", name: "Lucky Slots", emoji: "\u{1F3B0}", category: ["top", "popular", "slots"], path: "/games/slots", isPlayable: true, color: "from-yellow-500 to-orange-500", pointCost: 20 },
   { id: "trivia-quiz", name: "Trivia Quiz", emoji: "\u{1F9E0}", category: ["top", "popular", "arcade"], path: "/games/trivia", isPlayable: true, color: "from-green-500 to-emerald-500", pointCost: 20 },
   { id: "raffle-draw", name: "Raffle Draw", emoji: "\u{1F39F}\uFE0F", category: ["top", "popular", "lottery"], path: "/games/raffle", isPlayable: true, color: "from-blue-500 to-cyan-500", pointCost: 50 },
+  { id: "ad-rewards", name: "Ad Rewards", emoji: "\u{1F4FA}", category: ["top", "popular", "instant"], path: "/ad-rewards", isPlayable: true, color: "from-emerald-500 to-teal-500", pointCost: 0 },
 
   // === VIP GAMES ===
   { id: "aviator", name: "Aviator", emoji: "\u2708\uFE0F", category: ["top", "crash", "vip"], path: "/games/play/aviator", isPlayable: true, color: "from-red-500 to-orange-500", isVip: true, pointCost: 100 },
