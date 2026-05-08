@@ -397,6 +397,7 @@ const Predictions = () => {
   const [markets, setMarkets] = useState<Market[]>([]);
   const [myStakes, setMyStakes] = useState<MyStake[]>([]);
   const [view, setView] = useState<"markets" | "mine">("markets");
+  const [stakeFilter, setStakeFilter] = useState<"all" | "open" | "pending" | "won" | "lost">("all");
   const [region, setRegion] = useState<Region>("nigeria");
   const [tier, setTier] = useState<Tier>("regular");
   const [wallet, setWallet] = useState<{ points: number; balance: number }>({ points: 0, balance: 0 });
