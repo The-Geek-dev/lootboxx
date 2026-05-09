@@ -275,7 +275,7 @@ const AdRewards = () => {
               size="lg"
               className="w-full button-gradient text-lg h-14"
               disabled={cooldown > 0 || claiming || adWatching}
-              onClick={handleWatchAndClaim}
+              onClick={startVideoAd}
             >
               {adWatching ? (
                 <>
