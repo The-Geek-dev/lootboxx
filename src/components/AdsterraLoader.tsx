@@ -24,25 +24,31 @@ const AdsterraLoader = () => {
 
   useEffect(() => {
     if (loading) return;
-    const existing = document.getElementById(SCRIPT_ID) as HTMLScriptElement | null;
     const allowed = isRouteEnabled(settings, pathname);
 
     if (!allowed) {
-      if (existing) existing.remove();
+      ADSTERRA_SCRIPTS.forEach(({ id }) => {
+        document.getElementById(id)?.remove();
+      });
       return;
     }
-    if (existing) return;
+
+    const missing = ADSTERRA_SCRIPTS.filter(({ id }) => !document.getElementById(id));
+    if (missing.length === 0) return;
 
     let injected = false;
     const inject = () => {
       if (injected) return;
       injected = true;
       cleanup();
-      const s = document.createElement("script");
-      s.id = SCRIPT_ID;
-      s.src = ADSTERRA_SRC;
-      s.async = true;
-      document.body.appendChild(s);
+      missing.forEach(({ id, src }) => {
+        if (document.getElementById(id)) return;
+        const s = document.createElement("script");
+        s.id = id;
+        s.src = src;
+        s.async = true;
+        document.body.appendChild(s);
+      });
     };
 
     // Defer until first user interaction so popunder/social-bar scripts
