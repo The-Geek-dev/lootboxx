@@ -2,9 +2,17 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useAdSettings, isRouteEnabled } from "@/hooks/useAdSettings";
 
-const ADSTERRA_SRC =
-  "https://pl29358616.profitablecpmratenetwork.com/61/b8/72/61b872ff8dc3a8cba392302b8e4f6d06.js";
-const SCRIPT_ID = "adsterra-social-bar";
+const ADSTERRA_SCRIPTS: { id: string; src: string }[] = [
+  {
+    id: "adsterra-popunder",
+    src: "https://pl29358616.profitablecpmratenetwork.com/61/b8/72/61b872ff8dc3a8cba392302b8e4f6d06.js",
+  },
+  {
+    // SocialBar — also serves video creatives
+    id: "adsterra-social-bar",
+    src: "https://pl29386836.profitablecpmratenetwork.com/a1/e3/4f/a1e34f4c5a7b8011c18d0e08ec0162e6.js",
+  },
+];
 
 /**
  * Loads the Adsterra script on every route EXCEPT game pages
@@ -16,25 +24,31 @@ const AdsterraLoader = () => {
 
   useEffect(() => {
     if (loading) return;
-    const existing = document.getElementById(SCRIPT_ID) as HTMLScriptElement | null;
     const allowed = isRouteEnabled(settings, pathname);
 
     if (!allowed) {
-      if (existing) existing.remove();
+      ADSTERRA_SCRIPTS.forEach(({ id }) => {
+        document.getElementById(id)?.remove();
+      });
       return;
     }
-    if (existing) return;
+
+    const missing = ADSTERRA_SCRIPTS.filter(({ id }) => !document.getElementById(id));
+    if (missing.length === 0) return;
 
     let injected = false;
     const inject = () => {
       if (injected) return;
       injected = true;
       cleanup();
-      const s = document.createElement("script");
-      s.id = SCRIPT_ID;
-      s.src = ADSTERRA_SRC;
-      s.async = true;
-      document.body.appendChild(s);
+      missing.forEach(({ id, src }) => {
+        if (document.getElementById(id)) return;
+        const s = document.createElement("script");
+        s.id = id;
+        s.src = src;
+        s.async = true;
+        document.body.appendChild(s);
+      });
     };
 
     // Defer until first user interaction so popunder/social-bar scripts
