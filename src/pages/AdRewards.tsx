@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Gift, Sparkles, Loader2, Tv, Clock } from "lucide-react";
+import { Gift, Sparkles, Loader2, Tv, Clock, Volume2, VolumeX, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,8 +13,17 @@ import { useNavigate } from "react-router-dom";
 const ADSTERRA_BANNER_KEY = "61b872ff8dc3a8cba392302b8e4f6d06";
 const ADSTERRA_BANNER_SRC =
   "https://pl29358616.profitablecpmratenetwork.com/61/b8/72/61b872ff8dc3a8cba392302b8e4f6d06.js";
-// Interstitial-style popunder unit (re-used existing publisher key)
-const ADSTERRA_INTERSTITIAL_SRC = ADSTERRA_BANNER_SRC;
+
+// Pool of real video ad creatives (publicly hosted short clips).
+// You can swap these with your own VAST/IMA-tagged creatives later.
+const VIDEO_AD_POOL = [
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+];
+
 
 interface ClaimResult {
   success: boolean;
@@ -117,28 +127,38 @@ const AdRewards = () => {
     return () => clearInterval(t);
   }, [cooldown]);
 
-  const triggerInterstitial = () => {
-    // Inject a fresh popunder/interstitial-style script per claim.
-    const s = document.createElement("script");
-    s.src = ADSTERRA_INTERSTITIAL_SRC;
-    s.async = true;
-    s.dataset.cfasync = "false";
-    document.body.appendChild(s);
-    setTimeout(() => s.remove(), 30_000);
+  // Video ad state
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoOpen, setVideoOpen] = useState(false);
+  const [videoSrc, setVideoSrc] = useState<string | null>(null);
+  const [videoMuted, setVideoMuted] = useState(true);
+  const [videoRemaining, setVideoRemaining] = useState(0);
+  const [videoEnded, setVideoEnded] = useState(false);
+
+  const startVideoAd = () => {
+    if (cooldown > 0 || claiming || adWatching) return;
+    const src = VIDEO_AD_POOL[Math.floor(Math.random() * VIDEO_AD_POOL.length)];
+    setVideoSrc(src);
+    setVideoEnded(false);
+    setVideoRemaining(0);
+    setVideoMuted(true);
+    setVideoOpen(true);
+    setAdWatching(true);
   };
 
-  const handleWatchAndClaim = async () => {
-    if (cooldown > 0 || claiming || adWatching) return;
-    setAdWatching(true);
-    triggerInterstitial();
-
-    // Simulate ad-view duration (5s) before crediting reward
-    await new Promise((r) => setTimeout(r, 5000));
+  const closeVideoAndClaim = async () => {
+    setVideoOpen(false);
     setAdWatching(false);
+    if (!videoEnded) return; // user closed early — no reward
     setClaiming(true);
 
     const { data, error } = await supabase.rpc("claim_ad_reward");
     setClaiming(false);
+
+    if (error) {
+      toast({ title: "Reward failed", description: error.message, variant: "destructive" });
+      return;
+    }
 
     if (error) {
       toast({ title: "Reward failed", description: error.message, variant: "destructive" });
@@ -255,7 +275,7 @@ const AdRewards = () => {
               size="lg"
               className="w-full button-gradient text-lg h-14"
               disabled={cooldown > 0 || claiming || adWatching}
-              onClick={handleWatchAndClaim}
+              onClick={startVideoAd}
             >
               {adWatching ? (
                 <>
@@ -307,6 +327,89 @@ const AdRewards = () => {
             )}
           </AnimatePresence>
         </Card>
+
+        {/* Real video ad modal */}
+        <Dialog
+          open={videoOpen}
+          onOpenChange={(o) => {
+            if (!o) closeVideoAndClaim();
+          }}
+        >
+          <DialogContent className="max-w-2xl p-0 overflow-hidden bg-black border-border">
+            <div className="relative">
+              <video
+                ref={videoRef}
+                src={videoSrc ?? undefined}
+                autoPlay
+                playsInline
+                muted={videoMuted}
+                controls={false}
+                className="w-full aspect-video bg-black"
+                onLoadedMetadata={(e) => {
+                  const v = e.currentTarget;
+                  setVideoRemaining(Math.ceil(v.duration || 0));
+                }}
+                onTimeUpdate={(e) => {
+                  const v = e.currentTarget;
+                  setVideoRemaining(Math.max(0, Math.ceil((v.duration || 0) - v.currentTime)));
+                }}
+                onEnded={() => {
+                  setVideoEnded(true);
+                  setVideoRemaining(0);
+                  // auto-close & claim shortly after the ad finishes
+                  setTimeout(() => {
+                    setVideoOpen(false);
+                  }, 800);
+                }}
+              />
+
+              {/* Top bar */}
+              <div className="absolute top-0 inset-x-0 flex items-center justify-between p-2 bg-gradient-to-b from-black/70 to-transparent text-white">
+                <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-white/10">
+                  Sponsored
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setVideoMuted((m) => !m)}
+                    className="p-1.5 rounded-full bg-white/10 hover:bg-white/20"
+                    aria-label={videoMuted ? "Unmute" : "Mute"}
+                  >
+                    {videoMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={closeVideoAndClaim}
+                    disabled={!videoEnded}
+                    className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                    aria-label="Close ad"
+                    title={videoEnded ? "Close" : "Wait for ad to finish"}
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Bottom info */}
+              <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/80 to-transparent text-white text-sm flex items-center justify-between">
+                {videoEnded ? (
+                  <span className="font-semibold text-green-400 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" /> Ad complete — claiming reward…
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Tv className="w-4 h-4" /> Ad ends in {videoRemaining}s
+                  </span>
+                )}
+                {videoEnded && (
+                  <Button size="sm" onClick={closeVideoAndClaim}>
+                    Claim reward
+                  </Button>
+                )}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
 
       <Footer />

@@ -47,6 +47,8 @@ const playBuzz = () => {
   } catch {/* ignore */}
 };
 
+type UserInfo = { email: string | null; full_name: string | null };
+
 const AdminChatPanel = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -54,6 +56,7 @@ const AdminChatPanel = () => {
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
   const [pushEnabled, setPushEnabled] = useState(false);
+  const [userInfo, setUserInfo] = useState<Record<string, UserInfo>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Push permission state
@@ -97,6 +100,35 @@ const AdminChatPanel = () => {
 
   useEffect(() => { loadConversations(); }, [loadConversations]);
   useEffect(() => { if (activeId) loadMessages(activeId); }, [activeId, loadMessages]);
+
+  // Fetch user emails/names for logged-in conversations
+  useEffect(() => {
+    const missing = conversations
+      .map((c) => c.user_id)
+      .filter((id): id is string => !!id && !(id in userInfo));
+    if (missing.length === 0) return;
+    const unique = Array.from(new Set(missing));
+    supabase.functions
+      .invoke("admin-api", { body: { action: "get_chat_users", user_ids: unique } })
+      .then(({ data, error }) => {
+        if (error || !data?.users) return;
+        setUserInfo((prev) => ({ ...prev, ...data.users }));
+      })
+      .catch(() => {});
+  }, [conversations, userInfo]);
+
+  const labelFor = (c: Conversation) => {
+    if (c.user_id) {
+      const info = userInfo[c.user_id];
+      return info?.full_name || info?.email || `User ${c.user_id.slice(0, 8)}`;
+    }
+    return c.guest_name || "Guest";
+  };
+  const emailFor = (c: Conversation) => {
+    if (c.user_id) return userInfo[c.user_id]?.email || null;
+    return c.guest_email || null;
+  };
+
 
   // Realtime: new messages anywhere
   useEffect(() => {
@@ -223,12 +255,15 @@ const AdminChatPanel = () => {
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-medium truncate">
-                    {c.guest_name || (c.user_id ? `User ${c.user_id.slice(0, 8)}` : "Guest")}
+                    {labelFor(c)}
                   </span>
                   {c.admin_unread_count > 0 && (
                     <Badge className="h-5 px-1.5 text-[10px]">{c.admin_unread_count}</Badge>
                   )}
                 </div>
+                {emailFor(c) && (
+                  <p className="text-[11px] text-muted-foreground/80 truncate">{emailFor(c)}</p>
+                )}
                 <p className="text-xs text-muted-foreground truncate mt-0.5">
                   {c.last_message_preview || "No messages yet"}
                 </p>
@@ -255,10 +290,11 @@ const AdminChatPanel = () => {
           {active && (
             <>
               <div className="flex items-center justify-between px-4 py-2 border-b border-border">
-                <div>
-                  <p className="font-semibold text-sm">
-                    {active.guest_name || (active.user_id ? `User ${active.user_id.slice(0, 8)}` : "Guest")}
-                  </p>
+                <div className="min-w-0">
+                  <p className="font-semibold text-sm truncate">{labelFor(active)}</p>
+                  {emailFor(active) && (
+                    <p className="text-xs text-primary/80 truncate">{emailFor(active)}</p>
+                  )}
                   <p className="text-xs text-muted-foreground">
                     Started {new Date(active.created_at).toLocaleString()}
                   </p>
