@@ -101,6 +101,35 @@ const AdminChatPanel = () => {
   useEffect(() => { loadConversations(); }, [loadConversations]);
   useEffect(() => { if (activeId) loadMessages(activeId); }, [activeId, loadMessages]);
 
+  // Fetch user emails/names for logged-in conversations
+  useEffect(() => {
+    const missing = conversations
+      .map((c) => c.user_id)
+      .filter((id): id is string => !!id && !(id in userInfo));
+    if (missing.length === 0) return;
+    const unique = Array.from(new Set(missing));
+    supabase.functions
+      .invoke("admin-api", { body: { action: "get_chat_users", user_ids: unique } })
+      .then(({ data, error }) => {
+        if (error || !data?.users) return;
+        setUserInfo((prev) => ({ ...prev, ...data.users }));
+      })
+      .catch(() => {});
+  }, [conversations, userInfo]);
+
+  const labelFor = (c: Conversation) => {
+    if (c.user_id) {
+      const info = userInfo[c.user_id];
+      return info?.full_name || info?.email || `User ${c.user_id.slice(0, 8)}`;
+    }
+    return c.guest_name || "Guest";
+  };
+  const emailFor = (c: Conversation) => {
+    if (c.user_id) return userInfo[c.user_id]?.email || null;
+    return c.guest_email || null;
+  };
+
+
   // Realtime: new messages anywhere
   useEffect(() => {
     const channel = supabase
