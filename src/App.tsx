@@ -47,6 +47,7 @@ const Withdraw = lazy(() => import("./pages/Withdraw"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const DynamicGame = lazy(() => import("./pages/DynamicGame"));
 const WithdrawalSuccess = lazy(() => import("./pages/WithdrawalSuccess"));
+const WithdrawalProcessing = lazy(() => import("./pages/WithdrawalProcessing"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const AdRewards = lazy(() => import("./pages/AdRewards"));
 const Predictions = lazy(() => import("./pages/Predictions"));
@@ -117,6 +118,7 @@ const AppRoutes = () => {
           <Route path="/admin/payouts" element={<AdminPayouts />} />
           <Route path="/admin/ads" element={<AdminAds />} />
           <Route path="/withdraw" element={<Withdraw />} />
+          <Route path="/withdraw/processing" element={<WithdrawalProcessing />} />
           <Route path="/withdraw/success" element={<WithdrawalSuccess />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route path="/points" element={<Points />} />

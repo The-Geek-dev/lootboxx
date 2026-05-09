@@ -132,23 +132,15 @@ const LiveWithdrawView = () => {
         processedAt,
       };
 
-      // Send receipt email (non-blocking failure)
-      try {
-        await supabase.functions.invoke("send-transactional-email", {
-          body: {
-            templateName: "withdrawal-receipt",
-            recipientEmail,
-            idempotencyKey: `withdrawal-receipt-${insertedId}`,
-            templateData: details,
-          },
-        });
-      } catch (emailErr) {
-        console.warn("Receipt email failed to enqueue", emailErr);
-      }
+      // NOTE: Receipt email is sent ONLY after an admin approves the withdrawal
+      // (see admin-api `update_withdrawal` action). No email is sent on submission.
 
       sessionStorage.setItem("lootboxx_last_withdrawal", JSON.stringify(details));
-      toast({ title: "Withdrawal submitted! 🎉", description: `Receipt sent to ${recipientEmail}` });
-      navigate("/withdraw/success", { state: { details } });
+      toast({
+        title: "Withdrawal submitted ⏳",
+        description: "Awaiting admin approval. Estimated 48–72 hours.",
+      });
+      navigate("/withdraw/processing", { state: { details } });
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
