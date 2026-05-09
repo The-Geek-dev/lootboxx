@@ -110,6 +110,39 @@ Deno.serve(async (req) => {
         });
       }
 
+      case "get_chat_users": {
+        const ids: string[] = Array.isArray(params.user_ids) ? params.user_ids.filter(Boolean) : [];
+        if (ids.length === 0) {
+          return new Response(JSON.stringify({ users: {} }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const { data: profiles } = await serviceClient
+          .from("profiles")
+          .select("user_id, full_name")
+          .in("user_id", ids);
+
+        const map: Record<string, { email: string | null; full_name: string | null }> = {};
+        await Promise.all(
+          ids.map(async (uid) => {
+            try {
+              const { data } = await serviceClient.auth.admin.getUserById(uid);
+              const profile = profiles?.find((p: any) => p.user_id === uid);
+              map[uid] = {
+                email: data?.user?.email ?? null,
+                full_name: profile?.full_name ?? null,
+              };
+            } catch {
+              map[uid] = { email: null, full_name: null };
+            }
+          })
+        );
+
+        return new Response(JSON.stringify({ users: map }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       case "get_deposits": {
         const { data: deposits } = await serviceClient
           .from("deposits")
