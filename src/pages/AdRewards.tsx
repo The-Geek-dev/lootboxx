@@ -378,19 +378,27 @@ const AdRewards = () => {
                 className="w-full aspect-video bg-black"
                 onLoadedMetadata={(e) => {
                   const v = e.currentTarget;
+                  durationRef.current = v.duration || 0;
                   setVideoRemaining(Math.ceil(v.duration || 0));
                 }}
                 onTimeUpdate={(e) => {
                   const v = e.currentTarget;
+                  watchedSecondsRef.current = Math.max(watchedSecondsRef.current, v.currentTime);
                   setVideoRemaining(Math.max(0, Math.ceil((v.duration || 0) - v.currentTime)));
                 }}
                 onEnded={() => {
+                  endedRef.current = true;
                   setVideoEnded(true);
                   setVideoRemaining(0);
                   // auto-close & claim shortly after the ad finishes
                   setTimeout(() => {
                     setVideoOpen(false);
                   }, 800);
+                }}
+                onError={() => abortVideo("error")}
+                onStalled={() => {
+                  // network stall — only treat as error if we never started
+                  if (watchedSecondsRef.current === 0) abortVideo("error");
                 }}
               />
 
