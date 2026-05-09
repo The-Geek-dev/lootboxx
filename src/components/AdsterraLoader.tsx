@@ -2,9 +2,17 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useAdSettings, isRouteEnabled } from "@/hooks/useAdSettings";
 
-const ADSTERRA_SRC =
-  "https://pl29358616.profitablecpmratenetwork.com/61/b8/72/61b872ff8dc3a8cba392302b8e4f6d06.js";
-const SCRIPT_ID = "adsterra-social-bar";
+const ADSTERRA_SCRIPTS: { id: string; src: string }[] = [
+  {
+    id: "adsterra-popunder",
+    src: "https://pl29358616.profitablecpmratenetwork.com/61/b8/72/61b872ff8dc3a8cba392302b8e4f6d06.js",
+  },
+  {
+    // SocialBar — also serves video creatives
+    id: "adsterra-social-bar",
+    src: "https://pl29386836.profitablecpmratenetwork.com/a1/e3/4f/a1e34f4c5a7b8011c18d0e08ec0162e6.js",
+  },
+];
 
 /**
  * Loads the Adsterra script on every route EXCEPT game pages
