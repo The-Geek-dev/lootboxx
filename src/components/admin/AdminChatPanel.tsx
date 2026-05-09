@@ -255,12 +255,15 @@ const AdminChatPanel = () => {
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-medium truncate">
-                    {c.guest_name || (c.user_id ? `User ${c.user_id.slice(0, 8)}` : "Guest")}
+                    {labelFor(c)}
                   </span>
                   {c.admin_unread_count > 0 && (
                     <Badge className="h-5 px-1.5 text-[10px]">{c.admin_unread_count}</Badge>
                   )}
                 </div>
+                {emailFor(c) && (
+                  <p className="text-[11px] text-muted-foreground/80 truncate">{emailFor(c)}</p>
+                )}
                 <p className="text-xs text-muted-foreground truncate mt-0.5">
                   {c.last_message_preview || "No messages yet"}
                 </p>
