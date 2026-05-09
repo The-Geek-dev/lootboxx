@@ -425,96 +425,54 @@ const AdRewards = () => {
           </AnimatePresence>
         </Card>
 
-        {/* Real video ad modal */}
-        <Dialog
-          open={videoOpen}
-          onOpenChange={(o) => {
-            if (!o) closeVideoAndClaim();
-          }}
-        >
-          <DialogContent className="max-w-2xl p-0 overflow-hidden bg-black border-border">
-            <div className="relative">
-              <video
-                ref={videoRef}
-                src={videoSrc ?? undefined}
-                autoPlay
-                playsInline
-                muted={videoMuted}
-                controls={false}
-                className="w-full aspect-video bg-black"
-                onLoadedMetadata={(e) => {
-                  const v = e.currentTarget;
-                  durationRef.current = v.duration || 0;
-                  setVideoRemaining(Math.ceil(v.duration || 0));
-                }}
-                onTimeUpdate={(e) => {
-                  const v = e.currentTarget;
-                  watchedSecondsRef.current = Math.max(watchedSecondsRef.current, v.currentTime);
-                  setVideoRemaining(Math.max(0, Math.ceil((v.duration || 0) - v.currentTime)));
-                }}
-                onEnded={() => {
-                  endedRef.current = true;
-                  setVideoEnded(true);
-                  setVideoRemaining(0);
-                  // auto-close & claim shortly after the ad finishes
-                  setTimeout(() => {
-                    setVideoOpen(false);
-                  }, 800);
-                }}
-                onError={() => abortVideo("error")}
-                onStalled={() => {
-                  // network stall — only treat as error if we never started
-                  if (watchedSecondsRef.current === 0) abortVideo("error");
-                }}
-              />
+        {/* Watching-ad overlay (Adsterra SocialBar opens its own popup/tab). */}
+        <AnimatePresence>
+          {adWatching && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-background/90 backdrop-blur-sm flex items-center justify-center p-4"
+            >
+              <Card className="max-w-md w-full p-6 text-center">
+                <Tv className="h-10 w-10 text-primary mx-auto mb-3 animate-pulse" />
+                <h2 className="text-xl font-bold mb-2">Watching ad…</h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  An ad should open in a new tab/popup. Watch it for at least{" "}
+                  <span className="font-semibold text-foreground">{MIN_WATCH_SECONDS}s</span>,
+                  then come back here to claim your reward automatically.
+                </p>
 
-              {/* Top bar */}
-              <div className="absolute top-0 inset-x-0 flex items-center justify-between p-2 bg-gradient-to-b from-black/70 to-transparent text-white">
-                <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-white/10">
-                  Sponsored
-                </span>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setVideoMuted((m) => !m)}
-                    className="p-1.5 rounded-full bg-white/10 hover:bg-white/20"
-                    aria-label={videoMuted ? "Unmute" : "Mute"}
-                  >
-                    {videoMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={closeVideoAndClaim}
-                    disabled={!videoEnded}
-                    className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-40 disabled:cursor-not-allowed"
-                    aria-label="Close ad"
-                    title={videoEnded ? "Close" : "Wait for ad to finish"}
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                <div className="mb-4">
+                  <div className="text-3xl font-bold tabular-nums text-primary">
+                    {dwellSeconds}s
+                    <span className="text-base text-muted-foreground"> / {MIN_WATCH_SECONDS}s</span>
+                  </div>
+                  <div className="h-2 mt-2 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full bg-primary transition-all"
+                      style={{
+                        width: `${Math.min(100, (dwellSeconds / MIN_WATCH_SECONDS) * 100)}%`,
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* Bottom info */}
-              <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/80 to-transparent text-white text-sm flex items-center justify-between">
-                {videoEnded ? (
-                  <span className="font-semibold text-green-400 flex items-center gap-2">
-                    <Sparkles className="w-4 h-4" /> Ad complete — claiming reward…
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <Tv className="w-4 h-4" /> Ad ends in {videoRemaining}s
-                  </span>
-                )}
-                {videoEnded && (
-                  <Button size="sm" onClick={closeVideoAndClaim}>
-                    Claim reward
-                  </Button>
-                )}
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => stopWatching()}
+                  className="w-full"
+                >
+                  Cancel (no reward)
+                </Button>
+                <p className="text-[11px] text-muted-foreground mt-3">
+                  No ad popup? Disable your ad-blocker, then try again.
+                </p>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       <Footer />
