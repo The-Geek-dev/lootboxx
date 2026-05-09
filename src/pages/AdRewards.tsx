@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Gift, Sparkles, Loader2, Tv, Clock, Volume2, VolumeX, X } from "lucide-react";
+import { Gift, Sparkles, Loader2, Tv, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,15 +13,17 @@ const ADSTERRA_BANNER_KEY = "61b872ff8dc3a8cba392302b8e4f6d06";
 const ADSTERRA_BANNER_SRC =
   "https://pl29358616.profitablecpmratenetwork.com/61/b8/72/61b872ff8dc3a8cba392302b8e4f6d06.js";
 
-// Pool of real video ad creatives (publicly hosted short clips).
-// You can swap these with your own VAST/IMA-tagged creatives later.
-const VIDEO_AD_POOL = [
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
-];
+// Adsterra SocialBar — serves video / interactive ad creatives.
+// When triggered it opens its own popup/new tab; we measure dwell time
+// off-tab to confirm the user actually watched it.
+const ADSTERRA_SOCIAL_BAR_SRC =
+  "https://pl29386836.profitablecpmratenetwork.com/a1/e3/4f/a1e34f4c5a7b8011c18d0e08ec0162e6.js";
+const ADSTERRA_SOCIAL_BAR_ID = "adsterra-social-bar";
+
+// Minimum off-tab dwell required to count as a watched video ad.
+const MIN_WATCH_SECONDS = 15;
+// If the popup/tab never opens within this window, abort the attempt.
+const ENGAGE_TIMEOUT_MS = 30_000;
 
 
 interface ClaimResult {
