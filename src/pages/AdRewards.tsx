@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Gift, Sparkles, Loader2, Tv, Clock, Volume2, VolumeX, X } from "lucide-react";
+import { Gift, Sparkles, Loader2, Tv, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,15 +13,17 @@ const ADSTERRA_BANNER_KEY = "61b872ff8dc3a8cba392302b8e4f6d06";
 const ADSTERRA_BANNER_SRC =
   "https://pl29358616.profitablecpmratenetwork.com/61/b8/72/61b872ff8dc3a8cba392302b8e4f6d06.js";
 
-// Pool of real video ad creatives (publicly hosted short clips).
-// You can swap these with your own VAST/IMA-tagged creatives later.
-const VIDEO_AD_POOL = [
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
-];
+// Adsterra SocialBar — serves video / interactive ad creatives.
+// When triggered it opens its own popup/new tab; we measure dwell time
+// off-tab to confirm the user actually watched it.
+const ADSTERRA_SOCIAL_BAR_SRC =
+  "https://pl29386836.profitablecpmratenetwork.com/a1/e3/4f/a1e34f4c5a7b8011c18d0e08ec0162e6.js";
+const ADSTERRA_SOCIAL_BAR_ID = "adsterra-social-bar";
+
+// Minimum off-tab dwell required to count as a watched video ad.
+const MIN_WATCH_SECONDS = 15;
+// If the popup/tab never opens within this window, abort the attempt.
+const ENGAGE_TIMEOUT_MS = 30_000;
 
 
 interface ClaimResult {
@@ -127,67 +128,34 @@ const AdRewards = () => {
     return () => clearInterval(t);
   }, [cooldown]);
 
-  // Video ad state
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const endedRef = useRef(false); // authoritative completion flag (no stale closures)
-  const watchedSecondsRef = useRef(0);
-  const durationRef = useRef(0);
-  const [videoOpen, setVideoOpen] = useState(false);
-  const [videoSrc, setVideoSrc] = useState<string | null>(null);
-  const [videoMuted, setVideoMuted] = useState(true);
-  const [videoRemaining, setVideoRemaining] = useState(0);
-  const [videoEnded, setVideoEnded] = useState(false);
+  // Ad watch state — driven by Adsterra SocialBar (popup/new tab).
+  const watchingRef = useRef(false);
+  const awayMsRef = useRef(0);
+  const lastBlurAtRef = useRef<number | null>(null);
+  const engageDeadlineRef = useRef<number | null>(null);
+  const [dwellSeconds, setDwellSeconds] = useState(0);
 
-  const startVideoAd = () => {
-    if (cooldown > 0 || claiming || adWatching) return;
-    const src = VIDEO_AD_POOL[Math.floor(Math.random() * VIDEO_AD_POOL.length)];
-    endedRef.current = false;
-    watchedSecondsRef.current = 0;
-    durationRef.current = 0;
-    setVideoSrc(src);
-    setVideoEnded(false);
-    setVideoRemaining(0);
-    setVideoMuted(true);
-    setVideoOpen(true);
-    setAdWatching(true);
+  const ensureSocialBar = () => {
+    if (document.getElementById(ADSTERRA_SOCIAL_BAR_ID)) return;
+    const s = document.createElement("script");
+    s.id = ADSTERRA_SOCIAL_BAR_ID;
+    s.src = ADSTERRA_SOCIAL_BAR_SRC;
+    s.async = true;
+    document.body.appendChild(s);
   };
 
-  const abortVideo = (reason: "closed" | "error") => {
-    setVideoOpen(false);
+  const stopWatching = () => {
+    watchingRef.current = false;
     setAdWatching(false);
-    setVideoSrc(null);
-    if (reason === "error") {
-      toast({
-        title: "Ad failed to play",
-        description: "No reward was given. Try again in a moment.",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Ad skipped",
-        description: "You must watch the full ad to earn the reward.",
-      });
-    }
+    awayMsRef.current = 0;
+    lastBlurAtRef.current = null;
+    engageDeadlineRef.current = null;
+    setDwellSeconds(0);
   };
 
-  const closeVideoAndClaim = async () => {
-    // Authoritative check: only reward if the video element actually fired `ended`
-    // AND we observed at least ~95% of its duration playing. Anything else = no reward.
-    const dur = durationRef.current;
-    const watched = watchedSecondsRef.current;
-    const fullyWatched =
-      endedRef.current && dur > 0 && watched >= Math.max(0, dur * 0.95);
-
-    if (!fullyWatched) {
-      abortVideo("closed");
-      return;
-    }
-
-    setVideoOpen(false);
-    setAdWatching(false);
-    setVideoSrc(null);
+  const claimReward = async () => {
+    stopWatching();
     setClaiming(true);
-
     const { data, error } = await supabase.rpc("claim_ad_reward");
     setClaiming(false);
 
@@ -226,6 +194,104 @@ const AdRewards = () => {
       });
     }
   };
+
+  const startAd = () => {
+    if (cooldown > 0 || claiming || adWatching) return;
+    ensureSocialBar();
+    awayMsRef.current = 0;
+    lastBlurAtRef.current = null;
+    engageDeadlineRef.current = Date.now() + ENGAGE_TIMEOUT_MS;
+    setDwellSeconds(0);
+    watchingRef.current = true;
+    setAdWatching(true);
+    toast({
+      title: "Ad starting…",
+      description: `Watch the full ad (~${MIN_WATCH_SECONDS}s) to earn your reward.`,
+    });
+  };
+
+  const cancelAd = (reason: "no-ad" | "too-short") => {
+    stopWatching();
+    if (reason === "no-ad") {
+      toast({
+        title: "No ad served",
+        description: "Disable any ad-blocker and try again.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Ad closed too early",
+        description: `You must watch at least ${MIN_WATCH_SECONDS}s of the ad to earn.`,
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Track off-tab dwell while watching. Adsterra SocialBar/Popunder opens
+  // a new tab/window — we measure how long the user stayed there.
+  useEffect(() => {
+    if (!adWatching) return;
+
+    const accumulate = () => {
+      if (lastBlurAtRef.current != null) {
+        awayMsRef.current += Date.now() - lastBlurAtRef.current;
+        lastBlurAtRef.current = null;
+      }
+    };
+
+    const onHidden = () => {
+      // User left tab → ad opened. Clear engage deadline.
+      lastBlurAtRef.current = Date.now();
+      engageDeadlineRef.current = null;
+    };
+
+    const onVisible = () => {
+      accumulate();
+      const seconds = Math.floor(awayMsRef.current / 1000);
+      setDwellSeconds(seconds);
+      if (seconds >= MIN_WATCH_SECONDS) {
+        claimReward();
+      } else if (awayMsRef.current > 0) {
+        // They came back early
+        cancelAd("too-short");
+      }
+    };
+
+    const onVisChange = () => {
+      if (document.hidden) onHidden();
+      else onVisible();
+    };
+
+    window.addEventListener("blur", onHidden);
+    window.addEventListener("focus", onVisible);
+    document.addEventListener("visibilitychange", onVisChange);
+
+    // Watchdog: if user never engages with an ad within ENGAGE_TIMEOUT_MS, abort.
+    const watchdog = setInterval(() => {
+      if (!watchingRef.current) return;
+      // live dwell counter
+      let total = awayMsRef.current;
+      if (lastBlurAtRef.current != null) total += Date.now() - lastBlurAtRef.current;
+      setDwellSeconds(Math.floor(total / 1000));
+
+      if (
+        engageDeadlineRef.current != null &&
+        Date.now() > engageDeadlineRef.current &&
+        awayMsRef.current === 0 &&
+        lastBlurAtRef.current == null
+      ) {
+        cancelAd("no-ad");
+      }
+    }, 500);
+
+    return () => {
+      window.removeEventListener("blur", onHidden);
+      window.removeEventListener("focus", onVisible);
+      document.removeEventListener("visibilitychange", onVisChange);
+      clearInterval(watchdog);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adWatching]);
 
   if (!authChecked) {
     return (
@@ -306,7 +372,7 @@ const AdRewards = () => {
               size="lg"
               className="w-full button-gradient text-lg h-14"
               disabled={cooldown > 0 || claiming || adWatching}
-              onClick={startVideoAd}
+              onClick={startAd}
             >
               {adWatching ? (
                 <>
@@ -359,96 +425,54 @@ const AdRewards = () => {
           </AnimatePresence>
         </Card>
 
-        {/* Real video ad modal */}
-        <Dialog
-          open={videoOpen}
-          onOpenChange={(o) => {
-            if (!o) closeVideoAndClaim();
-          }}
-        >
-          <DialogContent className="max-w-2xl p-0 overflow-hidden bg-black border-border">
-            <div className="relative">
-              <video
-                ref={videoRef}
-                src={videoSrc ?? undefined}
-                autoPlay
-                playsInline
-                muted={videoMuted}
-                controls={false}
-                className="w-full aspect-video bg-black"
-                onLoadedMetadata={(e) => {
-                  const v = e.currentTarget;
-                  durationRef.current = v.duration || 0;
-                  setVideoRemaining(Math.ceil(v.duration || 0));
-                }}
-                onTimeUpdate={(e) => {
-                  const v = e.currentTarget;
-                  watchedSecondsRef.current = Math.max(watchedSecondsRef.current, v.currentTime);
-                  setVideoRemaining(Math.max(0, Math.ceil((v.duration || 0) - v.currentTime)));
-                }}
-                onEnded={() => {
-                  endedRef.current = true;
-                  setVideoEnded(true);
-                  setVideoRemaining(0);
-                  // auto-close & claim shortly after the ad finishes
-                  setTimeout(() => {
-                    setVideoOpen(false);
-                  }, 800);
-                }}
-                onError={() => abortVideo("error")}
-                onStalled={() => {
-                  // network stall — only treat as error if we never started
-                  if (watchedSecondsRef.current === 0) abortVideo("error");
-                }}
-              />
+        {/* Watching-ad overlay (Adsterra SocialBar opens its own popup/tab). */}
+        <AnimatePresence>
+          {adWatching && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-background/90 backdrop-blur-sm flex items-center justify-center p-4"
+            >
+              <Card className="max-w-md w-full p-6 text-center">
+                <Tv className="h-10 w-10 text-primary mx-auto mb-3 animate-pulse" />
+                <h2 className="text-xl font-bold mb-2">Watching ad…</h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  An ad should open in a new tab/popup. Watch it for at least{" "}
+                  <span className="font-semibold text-foreground">{MIN_WATCH_SECONDS}s</span>,
+                  then come back here to claim your reward automatically.
+                </p>
 
-              {/* Top bar */}
-              <div className="absolute top-0 inset-x-0 flex items-center justify-between p-2 bg-gradient-to-b from-black/70 to-transparent text-white">
-                <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-white/10">
-                  Sponsored
-                </span>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setVideoMuted((m) => !m)}
-                    className="p-1.5 rounded-full bg-white/10 hover:bg-white/20"
-                    aria-label={videoMuted ? "Unmute" : "Mute"}
-                  >
-                    {videoMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={closeVideoAndClaim}
-                    disabled={!videoEnded}
-                    className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-40 disabled:cursor-not-allowed"
-                    aria-label="Close ad"
-                    title={videoEnded ? "Close" : "Wait for ad to finish"}
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                <div className="mb-4">
+                  <div className="text-3xl font-bold tabular-nums text-primary">
+                    {dwellSeconds}s
+                    <span className="text-base text-muted-foreground"> / {MIN_WATCH_SECONDS}s</span>
+                  </div>
+                  <div className="h-2 mt-2 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full bg-primary transition-all"
+                      style={{
+                        width: `${Math.min(100, (dwellSeconds / MIN_WATCH_SECONDS) * 100)}%`,
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* Bottom info */}
-              <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/80 to-transparent text-white text-sm flex items-center justify-between">
-                {videoEnded ? (
-                  <span className="font-semibold text-green-400 flex items-center gap-2">
-                    <Sparkles className="w-4 h-4" /> Ad complete — claiming reward…
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <Tv className="w-4 h-4" /> Ad ends in {videoRemaining}s
-                  </span>
-                )}
-                {videoEnded && (
-                  <Button size="sm" onClick={closeVideoAndClaim}>
-                    Claim reward
-                  </Button>
-                )}
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => stopWatching()}
+                  className="w-full"
+                >
+                  Cancel (no reward)
+                </Button>
+                <p className="text-[11px] text-muted-foreground mt-3">
+                  No ad popup? Disable your ad-blocker, then try again.
+                </p>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       <Footer />
