@@ -290,10 +290,11 @@ const AdminChatPanel = () => {
           {active && (
             <>
               <div className="flex items-center justify-between px-4 py-2 border-b border-border">
-                <div>
-                  <p className="font-semibold text-sm">
-                    {active.guest_name || (active.user_id ? `User ${active.user_id.slice(0, 8)}` : "Guest")}
-                  </p>
+                <div className="min-w-0">
+                  <p className="font-semibold text-sm truncate">{labelFor(active)}</p>
+                  {emailFor(active) && (
+                    <p className="text-xs text-primary/80 truncate">{emailFor(active)}</p>
+                  )}
                   <p className="text-xs text-muted-foreground">
                     Started {new Date(active.created_at).toLocaleString()}
                   </p>
