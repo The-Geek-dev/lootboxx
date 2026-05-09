@@ -327,6 +327,85 @@ const AdRewards = () => {
             )}
           </AnimatePresence>
         </Card>
+
+        {/* Real video ad modal */}
+        <Dialog
+          open={videoOpen}
+          onOpenChange={(o) => {
+            if (!o) closeVideoAndClaim();
+          }}
+        >
+          <DialogContent className="max-w-2xl p-0 overflow-hidden bg-black border-border">
+            <div className="relative">
+              <video
+                ref={videoRef}
+                src={videoSrc ?? undefined}
+                autoPlay
+                playsInline
+                muted={videoMuted}
+                controls={false}
+                className="w-full aspect-video bg-black"
+                onLoadedMetadata={(e) => {
+                  const v = e.currentTarget;
+                  setVideoRemaining(Math.ceil(v.duration || 0));
+                }}
+                onTimeUpdate={(e) => {
+                  const v = e.currentTarget;
+                  setVideoRemaining(Math.max(0, Math.ceil((v.duration || 0) - v.currentTime)));
+                }}
+                onEnded={() => {
+                  setVideoEnded(true);
+                  setVideoRemaining(0);
+                }}
+              />
+
+              {/* Top bar */}
+              <div className="absolute top-0 inset-x-0 flex items-center justify-between p-2 bg-gradient-to-b from-black/70 to-transparent text-white">
+                <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-white/10">
+                  Sponsored
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setVideoMuted((m) => !m)}
+                    className="p-1.5 rounded-full bg-white/10 hover:bg-white/20"
+                    aria-label={videoMuted ? "Unmute" : "Mute"}
+                  >
+                    {videoMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={closeVideoAndClaim}
+                    disabled={!videoEnded}
+                    className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                    aria-label="Close ad"
+                    title={videoEnded ? "Close" : "Wait for ad to finish"}
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Bottom info */}
+              <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/80 to-transparent text-white text-sm flex items-center justify-between">
+                {videoEnded ? (
+                  <span className="font-semibold text-green-400 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" /> Ad complete — claiming reward…
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Tv className="w-4 h-4" /> Ad ends in {videoRemaining}s
+                  </span>
+                )}
+                {videoEnded && (
+                  <Button size="sm" onClick={closeVideoAndClaim}>
+                    Claim reward
+                  </Button>
+                )}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
 
       <Footer />
