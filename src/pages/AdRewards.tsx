@@ -127,28 +127,38 @@ const AdRewards = () => {
     return () => clearInterval(t);
   }, [cooldown]);
 
-  const triggerInterstitial = () => {
-    // Inject a fresh popunder/interstitial-style script per claim.
-    const s = document.createElement("script");
-    s.src = ADSTERRA_INTERSTITIAL_SRC;
-    s.async = true;
-    s.dataset.cfasync = "false";
-    document.body.appendChild(s);
-    setTimeout(() => s.remove(), 30_000);
+  // Video ad state
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoOpen, setVideoOpen] = useState(false);
+  const [videoSrc, setVideoSrc] = useState<string | null>(null);
+  const [videoMuted, setVideoMuted] = useState(true);
+  const [videoRemaining, setVideoRemaining] = useState(0);
+  const [videoEnded, setVideoEnded] = useState(false);
+
+  const startVideoAd = () => {
+    if (cooldown > 0 || claiming || adWatching) return;
+    const src = VIDEO_AD_POOL[Math.floor(Math.random() * VIDEO_AD_POOL.length)];
+    setVideoSrc(src);
+    setVideoEnded(false);
+    setVideoRemaining(0);
+    setVideoMuted(true);
+    setVideoOpen(true);
+    setAdWatching(true);
   };
 
-  const handleWatchAndClaim = async () => {
-    if (cooldown > 0 || claiming || adWatching) return;
-    setAdWatching(true);
-    triggerInterstitial();
-
-    // Simulate ad-view duration (5s) before crediting reward
-    await new Promise((r) => setTimeout(r, 5000));
+  const closeVideoAndClaim = async () => {
+    setVideoOpen(false);
     setAdWatching(false);
+    if (!videoEnded) return; // user closed early — no reward
     setClaiming(true);
 
     const { data, error } = await supabase.rpc("claim_ad_reward");
     setClaiming(false);
+
+    if (error) {
+      toast({ title: "Reward failed", description: error.message, variant: "destructive" });
+      return;
+    }
 
     if (error) {
       toast({ title: "Reward failed", description: error.message, variant: "destructive" });
