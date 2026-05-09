@@ -129,6 +129,9 @@ const AdRewards = () => {
 
   // Video ad state
   const videoRef = useRef<HTMLVideoElement>(null);
+  const endedRef = useRef(false); // authoritative completion flag (no stale closures)
+  const watchedSecondsRef = useRef(0);
+  const durationRef = useRef(0);
   const [videoOpen, setVideoOpen] = useState(false);
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
   const [videoMuted, setVideoMuted] = useState(true);
@@ -138,6 +141,9 @@ const AdRewards = () => {
   const startVideoAd = () => {
     if (cooldown > 0 || claiming || adWatching) return;
     const src = VIDEO_AD_POOL[Math.floor(Math.random() * VIDEO_AD_POOL.length)];
+    endedRef.current = false;
+    watchedSecondsRef.current = 0;
+    durationRef.current = 0;
     setVideoSrc(src);
     setVideoEnded(false);
     setVideoRemaining(0);
@@ -146,19 +152,44 @@ const AdRewards = () => {
     setAdWatching(true);
   };
 
-  const closeVideoAndClaim = async () => {
+  const abortVideo = (reason: "closed" | "error") => {
     setVideoOpen(false);
     setAdWatching(false);
-    if (!videoEnded) return; // user closed early — no reward
+    setVideoSrc(null);
+    if (reason === "error") {
+      toast({
+        title: "Ad failed to play",
+        description: "No reward was given. Try again in a moment.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Ad skipped",
+        description: "You must watch the full ad to earn the reward.",
+      });
+    }
+  };
+
+  const closeVideoAndClaim = async () => {
+    // Authoritative check: only reward if the video element actually fired `ended`
+    // AND we observed at least ~95% of its duration playing. Anything else = no reward.
+    const dur = durationRef.current;
+    const watched = watchedSecondsRef.current;
+    const fullyWatched =
+      endedRef.current && dur > 0 && watched >= Math.max(0, dur * 0.95);
+
+    if (!fullyWatched) {
+      abortVideo("closed");
+      return;
+    }
+
+    setVideoOpen(false);
+    setAdWatching(false);
+    setVideoSrc(null);
     setClaiming(true);
 
     const { data, error } = await supabase.rpc("claim_ad_reward");
     setClaiming(false);
-
-    if (error) {
-      toast({ title: "Reward failed", description: error.message, variant: "destructive" });
-      return;
-    }
 
     if (error) {
       toast({ title: "Reward failed", description: error.message, variant: "destructive" });
