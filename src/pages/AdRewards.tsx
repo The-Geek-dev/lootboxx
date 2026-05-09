@@ -24,11 +24,6 @@ const VIDEO_AD_POOL = [
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
 ];
 
-const ADSTERRA_BANNER_KEY = "61b872ff8dc3a8cba392302b8e4f6d06";
-const ADSTERRA_BANNER_SRC =
-  "https://pl29358616.profitablecpmratenetwork.com/61/b8/72/61b872ff8dc3a8cba392302b8e4f6d06.js";
-// Interstitial-style popunder unit (re-used existing publisher key)
-const ADSTERRA_INTERSTITIAL_SRC = ADSTERRA_BANNER_SRC;
 
 interface ClaimResult {
   success: boolean;
