@@ -128,67 +128,34 @@ const AdRewards = () => {
     return () => clearInterval(t);
   }, [cooldown]);
 
-  // Video ad state
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const endedRef = useRef(false); // authoritative completion flag (no stale closures)
-  const watchedSecondsRef = useRef(0);
-  const durationRef = useRef(0);
-  const [videoOpen, setVideoOpen] = useState(false);
-  const [videoSrc, setVideoSrc] = useState<string | null>(null);
-  const [videoMuted, setVideoMuted] = useState(true);
-  const [videoRemaining, setVideoRemaining] = useState(0);
-  const [videoEnded, setVideoEnded] = useState(false);
+  // Ad watch state — driven by Adsterra SocialBar (popup/new tab).
+  const watchingRef = useRef(false);
+  const awayMsRef = useRef(0);
+  const lastBlurAtRef = useRef<number | null>(null);
+  const engageDeadlineRef = useRef<number | null>(null);
+  const [dwellSeconds, setDwellSeconds] = useState(0);
 
-  const startVideoAd = () => {
-    if (cooldown > 0 || claiming || adWatching) return;
-    const src = VIDEO_AD_POOL[Math.floor(Math.random() * VIDEO_AD_POOL.length)];
-    endedRef.current = false;
-    watchedSecondsRef.current = 0;
-    durationRef.current = 0;
-    setVideoSrc(src);
-    setVideoEnded(false);
-    setVideoRemaining(0);
-    setVideoMuted(true);
-    setVideoOpen(true);
-    setAdWatching(true);
+  const ensureSocialBar = () => {
+    if (document.getElementById(ADSTERRA_SOCIAL_BAR_ID)) return;
+    const s = document.createElement("script");
+    s.id = ADSTERRA_SOCIAL_BAR_ID;
+    s.src = ADSTERRA_SOCIAL_BAR_SRC;
+    s.async = true;
+    document.body.appendChild(s);
   };
 
-  const abortVideo = (reason: "closed" | "error") => {
-    setVideoOpen(false);
+  const stopWatching = () => {
+    watchingRef.current = false;
     setAdWatching(false);
-    setVideoSrc(null);
-    if (reason === "error") {
-      toast({
-        title: "Ad failed to play",
-        description: "No reward was given. Try again in a moment.",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Ad skipped",
-        description: "You must watch the full ad to earn the reward.",
-      });
-    }
+    awayMsRef.current = 0;
+    lastBlurAtRef.current = null;
+    engageDeadlineRef.current = null;
+    setDwellSeconds(0);
   };
 
-  const closeVideoAndClaim = async () => {
-    // Authoritative check: only reward if the video element actually fired `ended`
-    // AND we observed at least ~95% of its duration playing. Anything else = no reward.
-    const dur = durationRef.current;
-    const watched = watchedSecondsRef.current;
-    const fullyWatched =
-      endedRef.current && dur > 0 && watched >= Math.max(0, dur * 0.95);
-
-    if (!fullyWatched) {
-      abortVideo("closed");
-      return;
-    }
-
-    setVideoOpen(false);
-    setAdWatching(false);
-    setVideoSrc(null);
+  const claimReward = async () => {
+    stopWatching();
     setClaiming(true);
-
     const { data, error } = await supabase.rpc("claim_ad_reward");
     setClaiming(false);
 
@@ -227,6 +194,104 @@ const AdRewards = () => {
       });
     }
   };
+
+  const startAd = () => {
+    if (cooldown > 0 || claiming || adWatching) return;
+    ensureSocialBar();
+    awayMsRef.current = 0;
+    lastBlurAtRef.current = null;
+    engageDeadlineRef.current = Date.now() + ENGAGE_TIMEOUT_MS;
+    setDwellSeconds(0);
+    watchingRef.current = true;
+    setAdWatching(true);
+    toast({
+      title: "Ad starting…",
+      description: `Watch the full ad (~${MIN_WATCH_SECONDS}s) to earn your reward.`,
+    });
+  };
+
+  const cancelAd = (reason: "no-ad" | "too-short") => {
+    stopWatching();
+    if (reason === "no-ad") {
+      toast({
+        title: "No ad served",
+        description: "Disable any ad-blocker and try again.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Ad closed too early",
+        description: `You must watch at least ${MIN_WATCH_SECONDS}s of the ad to earn.`,
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Track off-tab dwell while watching. Adsterra SocialBar/Popunder opens
+  // a new tab/window — we measure how long the user stayed there.
+  useEffect(() => {
+    if (!adWatching) return;
+
+    const accumulate = () => {
+      if (lastBlurAtRef.current != null) {
+        awayMsRef.current += Date.now() - lastBlurAtRef.current;
+        lastBlurAtRef.current = null;
+      }
+    };
+
+    const onHidden = () => {
+      // User left tab → ad opened. Clear engage deadline.
+      lastBlurAtRef.current = Date.now();
+      engageDeadlineRef.current = null;
+    };
+
+    const onVisible = () => {
+      accumulate();
+      const seconds = Math.floor(awayMsRef.current / 1000);
+      setDwellSeconds(seconds);
+      if (seconds >= MIN_WATCH_SECONDS) {
+        claimReward();
+      } else if (awayMsRef.current > 0) {
+        // They came back early
+        cancelAd("too-short");
+      }
+    };
+
+    const onVisChange = () => {
+      if (document.hidden) onHidden();
+      else onVisible();
+    };
+
+    window.addEventListener("blur", onHidden);
+    window.addEventListener("focus", onVisible);
+    document.addEventListener("visibilitychange", onVisChange);
+
+    // Watchdog: if user never engages with an ad within ENGAGE_TIMEOUT_MS, abort.
+    const watchdog = setInterval(() => {
+      if (!watchingRef.current) return;
+      // live dwell counter
+      let total = awayMsRef.current;
+      if (lastBlurAtRef.current != null) total += Date.now() - lastBlurAtRef.current;
+      setDwellSeconds(Math.floor(total / 1000));
+
+      if (
+        engageDeadlineRef.current != null &&
+        Date.now() > engageDeadlineRef.current &&
+        awayMsRef.current === 0 &&
+        lastBlurAtRef.current == null
+      ) {
+        cancelAd("no-ad");
+      }
+    }, 500);
+
+    return () => {
+      window.removeEventListener("blur", onHidden);
+      window.removeEventListener("focus", onVisible);
+      document.removeEventListener("visibilitychange", onVisChange);
+      clearInterval(watchdog);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adWatching]);
 
   if (!authChecked) {
     return (
