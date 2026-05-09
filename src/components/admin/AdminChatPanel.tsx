@@ -47,6 +47,8 @@ const playBuzz = () => {
   } catch {/* ignore */}
 };
 
+type UserInfo = { email: string | null; full_name: string | null };
+
 const AdminChatPanel = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -54,6 +56,7 @@ const AdminChatPanel = () => {
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
   const [pushEnabled, setPushEnabled] = useState(false);
+  const [userInfo, setUserInfo] = useState<Record<string, UserInfo>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Push permission state
