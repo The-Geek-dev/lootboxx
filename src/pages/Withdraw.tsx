@@ -44,14 +44,30 @@ const LiveWithdrawView = () => {
   const [loading, setLoading] = useState(false);
   const [winnings, setWinnings] = useState<number>(0);
   const [accountLocked, setAccountLocked] = useState(false);
+  const [pendingWithdrawal, setPendingWithdrawal] = useState<{ id: string; amount: number; status: string; created_at: string } | null>(null);
 
   const minWithdraw = 1000;
   const fee = 0.05;
+
+  const refreshPending = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    const { data } = await supabase
+      .from("withdrawals")
+      .select("id, amount, status, created_at")
+      .eq("user_id", session.user.id)
+      .in("status", ["pending", "approved"])
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    setPendingWithdrawal(data ?? null);
+  };
 
   useEffect(() => {
     supabase.rpc("get_winnings_balance").then(({ data }) => {
       if (typeof data === "number") setWinnings(Number(data));
     });
+    refreshPending();
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
@@ -70,6 +86,14 @@ const LiveWithdrawView = () => {
   }, []);
 
   const handleWithdraw = async () => {
+    if (pendingWithdrawal) {
+      toast({
+        title: "Withdrawal already in progress",
+        description: `Your previous request of ₦${Number(pendingWithdrawal.amount).toLocaleString()} is still being processed. Please wait until it's completed or rejected.`,
+        variant: "destructive",
+      });
+      return;
+    }
     const amt = Number(amount);
     if (!amt || amt < minWithdraw) {
       toast({ title: `Minimum withdrawal is ₦${minWithdraw.toLocaleString()}`, variant: "destructive" });
@@ -155,10 +179,21 @@ const LiveWithdrawView = () => {
       <p className="text-muted-foreground text-center mb-1">Withdrawable winnings: <span className="font-bold text-primary">₦{winnings.toLocaleString()}</span></p>
       <p className="text-xs text-muted-foreground text-center mb-6">Only winnings (not deposits) are withdrawable • Sat-Sun, 6-7 PM • 5% fee</p>
 
+      {pendingWithdrawal && (
+        <Card className="p-4 mb-4 bg-amber-500/10 border-amber-500/30">
+          <p className="text-sm font-semibold text-amber-500 mb-1">⏳ Withdrawal in progress</p>
+          <p className="text-xs text-muted-foreground">
+            Your request of <span className="font-semibold text-foreground">₦{Number(pendingWithdrawal.amount).toLocaleString()}</span> submitted on{" "}
+            {new Date(pendingWithdrawal.created_at).toLocaleString("en-NG", { timeZone: "Africa/Lagos", dateStyle: "medium", timeStyle: "short" })} is awaiting admin approval (48–72 hours).
+            You can submit a new withdrawal once it's completed or rejected.
+          </p>
+        </Card>
+      )}
+
       <Card className="p-6 space-y-4">
         <div>
           <Label>Amount (₦)</Label>
-          <Input type="number" placeholder="Min ₦1,000" value={amount} onChange={(e) => setAmount(e.target.value)} />
+          <Input type="number" placeholder="Min ₦1,000" value={amount} onChange={(e) => setAmount(e.target.value)} disabled={!!pendingWithdrawal} />
           {Number(amount) > 0 && (
             <p className="text-xs text-muted-foreground mt-1">
               You'll receive: ₦{Math.floor(Number(amount) * (1 - fee)).toLocaleString()} (after 5% fee)
@@ -172,18 +207,18 @@ const LiveWithdrawView = () => {
         )}
         <div>
           <Label>Bank Name</Label>
-          <Input placeholder="e.g. GTBank, Access Bank" value={bankName} onChange={(e) => setBankName(e.target.value)} disabled={accountLocked} />
+          <Input placeholder="e.g. GTBank, Access Bank" value={bankName} onChange={(e) => setBankName(e.target.value)} disabled={accountLocked || !!pendingWithdrawal} />
         </div>
         <div>
           <Label>Account Number</Label>
-          <Input placeholder="10-digit account number" maxLength={10} value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} disabled={accountLocked} />
+          <Input placeholder="10-digit account number" maxLength={10} value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} disabled={accountLocked || !!pendingWithdrawal} />
         </div>
         <div>
           <Label>Account Name</Label>
-          <Input placeholder="Name on your bank account" value={accountName} onChange={(e) => setAccountName(e.target.value)} disabled={accountLocked} />
+          <Input placeholder="Name on your bank account" value={accountName} onChange={(e) => setAccountName(e.target.value)} disabled={accountLocked || !!pendingWithdrawal} />
         </div>
-        <Button className="button-gradient w-full py-3" onClick={handleWithdraw} disabled={loading}>
-          {loading ? "Submitting..." : "Submit Withdrawal"}
+        <Button className="button-gradient w-full py-3" onClick={handleWithdraw} disabled={loading || !!pendingWithdrawal}>
+          {pendingWithdrawal ? "Withdrawal already in progress" : loading ? "Submitting..." : "Submit Withdrawal"}
         </Button>
       </Card>
     </motion.div>
