@@ -44,14 +44,30 @@ const LiveWithdrawView = () => {
   const [loading, setLoading] = useState(false);
   const [winnings, setWinnings] = useState<number>(0);
   const [accountLocked, setAccountLocked] = useState(false);
+  const [pendingWithdrawal, setPendingWithdrawal] = useState<{ id: string; amount: number; status: string; created_at: string } | null>(null);
 
   const minWithdraw = 1000;
   const fee = 0.05;
+
+  const refreshPending = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    const { data } = await supabase
+      .from("withdrawals")
+      .select("id, amount, status, created_at")
+      .eq("user_id", session.user.id)
+      .in("status", ["pending", "approved"])
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    setPendingWithdrawal(data ?? null);
+  };
 
   useEffect(() => {
     supabase.rpc("get_winnings_balance").then(({ data }) => {
       if (typeof data === "number") setWinnings(Number(data));
     });
+    refreshPending();
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
@@ -70,6 +86,14 @@ const LiveWithdrawView = () => {
   }, []);
 
   const handleWithdraw = async () => {
+    if (pendingWithdrawal) {
+      toast({
+        title: "Withdrawal already in progress",
+        description: `Your previous request of ₦${Number(pendingWithdrawal.amount).toLocaleString()} is still being processed. Please wait until it's completed or rejected.`,
+        variant: "destructive",
+      });
+      return;
+    }
     const amt = Number(amount);
     if (!amt || amt < minWithdraw) {
       toast({ title: `Minimum withdrawal is ₦${minWithdraw.toLocaleString()}`, variant: "destructive" });
