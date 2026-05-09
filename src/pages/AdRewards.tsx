@@ -356,6 +356,10 @@ const AdRewards = () => {
                 onEnded={() => {
                   setVideoEnded(true);
                   setVideoRemaining(0);
+                  // auto-close & claim shortly after the ad finishes
+                  setTimeout(() => {
+                    setVideoOpen(false);
+                  }, 800);
                 }}
               />
 
