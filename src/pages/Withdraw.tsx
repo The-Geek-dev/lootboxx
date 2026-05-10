@@ -78,6 +78,19 @@ const LiveWithdrawView = () => {
     refreshPending();
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { setEligibilityChecked(true); return; }
+      const { data: firstGame } = await supabase
+        .from("game_results")
+        .select("created_at")
+        .eq("user_id", session.user.id)
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      setFirstPlayAt(firstGame?.created_at ? new Date(firstGame.created_at) : null);
+      setEligibilityChecked(true);
+    })();
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
       const { data } = await supabase
         .from("user_wallets")
