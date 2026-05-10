@@ -221,10 +221,26 @@ const LiveWithdrawView = () => {
         </Card>
       )}
 
+      {eligibilityChecked && !playEligible && (
+        <Card className="p-4 mb-4 bg-destructive/10 border-destructive/30">
+          <p className="text-sm font-semibold text-destructive mb-1">🔒 Withdrawals locked</p>
+          <p className="text-xs text-muted-foreground">
+            {firstPlayAt ? (
+              <>
+                You need to play for at least 7 days before you can withdraw.{" "}
+                <span className="font-semibold text-foreground">{daysLeft} day{daysLeft === 1 ? "" : "s"} left</span> until your account is eligible.
+              </>
+            ) : (
+              <>You haven't played any game yet. Play at least one game to start your 7-day countdown to withdrawal eligibility.</>
+            )}
+          </p>
+        </Card>
+      )}
+
       <Card className="p-6 space-y-4">
         <div>
           <Label>Amount (₦)</Label>
-          <Input type="number" placeholder="Min ₦1,000" value={amount} onChange={(e) => setAmount(e.target.value)} disabled={!!pendingWithdrawal} />
+          <Input type="number" placeholder="Min ₦1,000" value={amount} onChange={(e) => setAmount(e.target.value)} disabled={formLocked} />
           {Number(amount) > 0 && (
             <p className="text-xs text-muted-foreground mt-1">
               You'll receive: ₦{Math.floor(Number(amount) * (1 - fee)).toLocaleString()} (after 5% fee)
@@ -238,18 +254,22 @@ const LiveWithdrawView = () => {
         )}
         <div>
           <Label>Bank Name</Label>
-          <Input placeholder="e.g. GTBank, Access Bank" value={bankName} onChange={(e) => setBankName(e.target.value)} disabled={accountLocked || !!pendingWithdrawal} />
+          <Input placeholder="e.g. GTBank, Access Bank" value={bankName} onChange={(e) => setBankName(e.target.value)} disabled={accountLocked || formLocked} />
         </div>
         <div>
           <Label>Account Number</Label>
-          <Input placeholder="10-digit account number" maxLength={10} value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} disabled={accountLocked || !!pendingWithdrawal} />
+          <Input placeholder="10-digit account number" maxLength={10} value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} disabled={accountLocked || formLocked} />
         </div>
         <div>
           <Label>Account Name</Label>
-          <Input placeholder="Name on your bank account" value={accountName} onChange={(e) => setAccountName(e.target.value)} disabled={accountLocked || !!pendingWithdrawal} />
+          <Input placeholder="Name on your bank account" value={accountName} onChange={(e) => setAccountName(e.target.value)} disabled={accountLocked || formLocked} />
         </div>
-        <Button className="button-gradient w-full py-3" onClick={handleWithdraw} disabled={loading || !!pendingWithdrawal}>
-          {pendingWithdrawal ? "Withdrawal already in progress" : loading ? "Submitting..." : "Submit Withdrawal"}
+        <Button className="button-gradient w-full py-3" onClick={handleWithdraw} disabled={loading || formLocked}>
+          {eligibilityChecked && !playEligible
+            ? (firstPlayAt ? `Unlocks in ${daysLeft} day${daysLeft === 1 ? "" : "s"}` : "Play a game to unlock")
+            : pendingWithdrawal
+            ? "Withdrawal already in progress"
+            : loading ? "Submitting..." : "Submit Withdrawal"}
         </Button>
       </Card>
     </motion.div>
