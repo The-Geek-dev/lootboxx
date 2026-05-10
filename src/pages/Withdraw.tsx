@@ -45,6 +45,7 @@ const LiveWithdrawView = () => {
   const [winnings, setWinnings] = useState<number>(0);
   const [accountLocked, setAccountLocked] = useState(false);
   const [pendingWithdrawal, setPendingWithdrawal] = useState<{ id: string; amount: number; status: string; created_at: string } | null>(null);
+  const [history, setHistory] = useState<Array<{ id: string; amount: number; status: string; created_at: string; updated_at: string; bank_name: string; account_number: string; admin_note: string | null }>>([]);
   const [firstPlayAt, setFirstPlayAt] = useState<Date | null>(null);
   const [eligibilityChecked, setEligibilityChecked] = useState(false);
 
