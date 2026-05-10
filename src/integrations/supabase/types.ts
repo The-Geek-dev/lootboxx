@@ -1079,6 +1079,7 @@ export type Database = {
           total_won: number
           updated_at: string
           user_id: string
+          withdrawal_eligibility_notified_at: string | null
           xp_last_refill_at: string
           xp_lives: number
         }
@@ -1104,6 +1105,7 @@ export type Database = {
           total_won?: number
           updated_at?: string
           user_id: string
+          withdrawal_eligibility_notified_at?: string | null
           xp_last_refill_at?: string
           xp_lives?: number
         }
@@ -1129,6 +1131,7 @@ export type Database = {
           total_won?: number
           updated_at?: string
           user_id?: string
+          withdrawal_eligibility_notified_at?: string | null
           xp_last_refill_at?: string
           xp_lives?: number
         }
