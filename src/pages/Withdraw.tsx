@@ -45,9 +45,17 @@ const LiveWithdrawView = () => {
   const [winnings, setWinnings] = useState<number>(0);
   const [accountLocked, setAccountLocked] = useState(false);
   const [pendingWithdrawal, setPendingWithdrawal] = useState<{ id: string; amount: number; status: string; created_at: string } | null>(null);
+  const [firstPlayAt, setFirstPlayAt] = useState<Date | null>(null);
+  const [eligibilityChecked, setEligibilityChecked] = useState(false);
 
   const minWithdraw = 1000;
   const fee = 0.05;
+  const REQUIRED_DAYS = 7;
+
+  const daysPlayed = firstPlayAt ? (Date.now() - firstPlayAt.getTime()) / 86400000 : 0;
+  const daysLeft = firstPlayAt ? Math.max(0, Math.ceil(REQUIRED_DAYS - daysPlayed)) : REQUIRED_DAYS;
+  const playEligible = !!firstPlayAt && daysPlayed >= REQUIRED_DAYS;
+  const formLocked = !!pendingWithdrawal || (eligibilityChecked && !playEligible);
 
   const refreshPending = async () => {
     const { data: { session } } = await supabase.auth.getSession();
