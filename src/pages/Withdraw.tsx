@@ -107,6 +107,16 @@ const LiveWithdrawView = () => {
   }, []);
 
   const handleWithdraw = async () => {
+    if (eligibilityChecked && !playEligible) {
+      toast({
+        title: "Withdrawals locked",
+        description: firstPlayAt
+          ? `Play for ${daysLeft} more day${daysLeft === 1 ? "" : "s"} to unlock withdrawals.`
+          : "Play at least one game to start your 7-day withdrawal countdown.",
+        variant: "destructive",
+      });
+      return;
+    }
     if (pendingWithdrawal) {
       toast({
         title: "Withdrawal already in progress",
