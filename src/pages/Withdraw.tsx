@@ -64,7 +64,7 @@ const LiveWithdrawView = () => {
       .from("withdrawals")
       .select("id, amount, status, created_at")
       .eq("user_id", session.user.id)
-      .in("status", ["pending", "approved"])
+      .in("status", ["pending"])
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
