@@ -61,7 +61,7 @@ const LiveWithdrawView = () => {
   const refreshPending = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
-    const { data } = await supabase
+    const { data: pendingData } = await supabase
       .from("withdrawals")
       .select("id, amount, status, created_at")
       .eq("user_id", session.user.id)
@@ -69,7 +69,15 @@ const LiveWithdrawView = () => {
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
-    setPendingWithdrawal(data ?? null);
+    setPendingWithdrawal(pendingData ?? null);
+
+    const { data: histData } = await supabase
+      .from("withdrawals")
+      .select("id, amount, status, created_at, updated_at, bank_name, account_number, admin_note")
+      .eq("user_id", session.user.id)
+      .order("created_at", { ascending: false })
+      .limit(10);
+    setHistory((histData as any) ?? []);
   };
 
   useEffect(() => {
