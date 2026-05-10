@@ -45,6 +45,7 @@ const LiveWithdrawView = () => {
   const [winnings, setWinnings] = useState<number>(0);
   const [accountLocked, setAccountLocked] = useState(false);
   const [pendingWithdrawal, setPendingWithdrawal] = useState<{ id: string; amount: number; status: string; created_at: string } | null>(null);
+  const [history, setHistory] = useState<Array<{ id: string; amount: number; status: string; created_at: string; updated_at: string; bank_name: string; account_number: string; admin_note: string | null }>>([]);
   const [firstPlayAt, setFirstPlayAt] = useState<Date | null>(null);
   const [eligibilityChecked, setEligibilityChecked] = useState(false);
 
@@ -60,7 +61,7 @@ const LiveWithdrawView = () => {
   const refreshPending = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
-    const { data } = await supabase
+    const { data: pendingData } = await supabase
       .from("withdrawals")
       .select("id, amount, status, created_at")
       .eq("user_id", session.user.id)
@@ -68,7 +69,15 @@ const LiveWithdrawView = () => {
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
-    setPendingWithdrawal(data ?? null);
+    setPendingWithdrawal(pendingData ?? null);
+
+    const { data: histData } = await supabase
+      .from("withdrawals")
+      .select("id, amount, status, created_at, updated_at, bank_name, account_number, admin_note")
+      .eq("user_id", session.user.id)
+      .order("created_at", { ascending: false })
+      .limit(10);
+    setHistory((histData as any) ?? []);
   };
 
   useEffect(() => {
@@ -286,6 +295,60 @@ const LiveWithdrawView = () => {
             : loading ? "Submitting..." : "Submit Withdrawal"}
         </Button>
       </Card>
+
+      <Card className="p-5 mt-4">
+        <p className="text-sm font-semibold mb-3">📍 How withdrawal status works</p>
+        <ol className="space-y-3">
+          {[
+            { key: "pending", icon: "⏳", title: "Pending", desc: "Submitted and waiting for admin review. New withdrawals are blocked while one is pending." },
+            { key: "approved", icon: "✅", title: "Approved", desc: "Admin approved your request. Bank transfer is being initiated. You can submit new withdrawals." },
+            { key: "completed", icon: "💸", title: "Completed", desc: "Funds have been sent to your bank and a receipt has been emailed to you." },
+            { key: "rejected", icon: "❌", title: "Rejected", desc: "Admin rejected the request (see note in history). The held amount is returned to your balance." },
+          ].map((s) => {
+            const active = pendingWithdrawal?.status === s.key || (s.key === "pending" && !!pendingWithdrawal);
+            return (
+              <li key={s.key} className={`flex gap-3 items-start ${active ? "" : "opacity-60"}`}>
+                <span className="text-lg leading-none">{s.icon}</span>
+                <div className="flex-1">
+                  <p className="text-xs font-semibold text-foreground">{s.title}{active && <span className="ml-2 text-[10px] uppercase tracking-wide text-amber-500">Current</span>}</p>
+                  <p className="text-xs text-muted-foreground">{s.desc}</p>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </Card>
+
+      {history.length > 0 && (
+        <Card className="p-5 mt-4">
+          <p className="text-sm font-semibold mb-3">🧾 Past withdrawals</p>
+          <ul className="space-y-3">
+            {history.map((w) => {
+              const statusColor =
+                w.status === "completed" ? "text-emerald-500 bg-emerald-500/10 border-emerald-500/30" :
+                w.status === "approved" ? "text-blue-500 bg-blue-500/10 border-blue-500/30" :
+                w.status === "rejected" ? "text-destructive bg-destructive/10 border-destructive/30" :
+                "text-amber-500 bg-amber-500/10 border-amber-500/30";
+              return (
+                <li key={w.id} className="border border-border/50 rounded p-3">
+                  <div className="flex justify-between items-start gap-2">
+                    <div>
+                      <p className="text-sm font-semibold">₦{Number(w.amount).toLocaleString()}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {new Date(w.created_at).toLocaleString("en-NG", { timeZone: "Africa/Lagos", dateStyle: "medium", timeStyle: "short" })} • {w.bank_name} •••{w.account_number?.slice(-4)}
+                      </p>
+                    </div>
+                    <span className={`text-[10px] uppercase font-semibold px-2 py-1 rounded border ${statusColor}`}>{w.status}</span>
+                  </div>
+                  {w.admin_note && (
+                    <p className="text-[11px] text-muted-foreground mt-2 italic">Admin note: {w.admin_note}</p>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </Card>
+      )}
     </motion.div>
   );
 };
