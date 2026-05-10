@@ -234,6 +234,20 @@ const LiveWithdrawView = () => {
               <>You haven't played any game yet. Play at least one game to start your 7-day countdown to withdrawal eligibility.</>
             )}
           </p>
+          <div className="mt-3 pt-3 border-t border-destructive/20">
+            <p className="text-xs font-semibold text-foreground mb-1">How to unlock</p>
+            <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
+              <li>The 7-day clock starts the moment you play your <span className="font-semibold text-foreground">first game</span> on LootBoxx (your earliest game record).</li>
+              <li>
+                {firstPlayAt ? (
+                  <>You first played on <span className="font-semibold text-foreground">{firstPlayAt.toLocaleString("en-NG", { timeZone: "Africa/Lagos", dateStyle: "medium", timeStyle: "short" })}</span>, so withdrawals unlock on <span className="font-semibold text-foreground">{new Date(firstPlayAt.getTime() + 7 * 86400000).toLocaleString("en-NG", { timeZone: "Africa/Lagos", dateStyle: "medium", timeStyle: "short" })}</span>.</>
+                ) : (
+                  <>Play any game (even a 20-point bet) to start your timer — no need to keep playing every day.</>
+                )}
+              </li>
+              <li>Once unlocked, normal rules apply: weekends 6–7 PM, 5% fee, only winnings are withdrawable.</li>
+            </ul>
+          </div>
         </Card>
       )}
 
