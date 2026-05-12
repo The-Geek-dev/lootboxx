@@ -6,6 +6,7 @@ import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
 import MascotBackground from "@/components/MascotBackground";
 import { Link } from "react-router-dom";
+import { getActivationPriceText } from "@/config/promo";
 
 const HowItWorks = () => {
   const steps = [
