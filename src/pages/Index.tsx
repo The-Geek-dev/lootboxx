@@ -14,6 +14,7 @@ import HexagonGrid from "@/components/HexagonGrid";
 import MascotBackground from "@/components/MascotBackground";
 import TutorialVideoButton from "@/components/TutorialVideoButton";
 import AdSlot from "@/components/AdSlot";
+import PromoCountdownSection from "@/components/PromoCountdownSection";
 import dashboardPreview from "@/assets/dashboard-preview-new.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
