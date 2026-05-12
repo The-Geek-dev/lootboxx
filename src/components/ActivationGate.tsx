@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import Navigation from "@/components/Navigation";
 import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
+import { getActivationAmount, isPromoActive, PROMO } from "@/config/promo";
 
 interface ActivationGateProps {
   reason?: "new" | "expired" | null;
