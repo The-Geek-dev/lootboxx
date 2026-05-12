@@ -4,6 +4,7 @@ import Navigation from "@/components/Navigation";
 import AppSidebar from "@/components/AppSidebar";
 import Footer from "@/components/Footer";
 import MascotBackground from "@/components/MascotBackground";
+import { getActivationPriceText } from "@/config/promo";
 
 const Features = () => {
   const featureCategories = [
