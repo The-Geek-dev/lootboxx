@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { getActivationPriceText } from "@/config/promo";
 import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
 import { useDepositGate } from "@/hooks/useDepositGate";
