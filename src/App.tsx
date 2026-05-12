@@ -85,10 +85,12 @@ const AppRoutes = () => {
   return (
     <>
       <LoadingScreen isLoading={isLoading} />
+      <PromoBanner />
       {!isGameRoute && <WinnerMarquee />}
       <CouponRenewalBanner />
       <PushAutoPrompt />
       <AdsterraLoader />
+      <PromoPopup />
       <Suspense fallback={null}>
         <Routes>
           <Route path="/" element={<Index />} />
