@@ -143,6 +143,9 @@ const Index = () => {
       {/* Logo Carousel */}
       <LogoCarousel />
 
+      {/* Promo Countdown */}
+      <PromoCountdownSection />
+
       {/* Ad Slot - after hero */}
       <div className="bg-black"><AdSlot id="ad-home-top" size="medium" /></div>
 
