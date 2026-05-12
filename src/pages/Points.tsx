@@ -175,7 +175,7 @@ const Points = () => {
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 { title: "Daily Free Bonus", desc: "Login each day", pts: "100 pts/day", icon: "🎁" },
-                { title: "Activation Deposit", desc: "₦7,000 one-time", pts: "1,000 pts", icon: "💰" },
+                { title: "Activation Deposit", desc: `${getActivationPriceText()} one-time`, pts: "1,000 pts", icon: "💰" },
                 { title: "Weekly Renewal", desc: "₦2,000 renewal", pts: "300 pts", icon: "📅" },
                 { title: "Top-up Deposit", desc: "Reload your wallet", pts: "100–500 pts", icon: "⬆️" },
                 { title: "Play Streak (3 days)", desc: "Play daily", pts: "100 pts", icon: "🔥" },
