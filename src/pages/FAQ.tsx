@@ -55,13 +55,13 @@ const FAQ = () => {
       id: "deposit-1",
       category: "Deposits",
       question: "How do I deposit funds?",
-      answer: "Go to your dashboard and click 'Deposit Now'. We accept multiple payment methods. The minimum deposit is ₦7,000. Your balance updates instantly after payment confirmation."
+      answer: `Go to your dashboard and click 'Deposit Now'. We accept multiple payment methods. The minimum deposit is ${getActivationPriceText()}. Your balance updates instantly after payment confirmation.`
     },
     {
       id: "deposit-2",
       category: "Deposits",
       question: "What is the minimum deposit amount?",
-      answer: "The minimum deposit is ₦7,000. This gives you enough balance to buy coupons and start playing multiple games."
+      answer: `The minimum deposit is ${getActivationPriceText()}. This gives you enough balance to buy coupons and start playing multiple games.`
     },
     {
       id: "games-1",
