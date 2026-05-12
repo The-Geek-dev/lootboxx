@@ -42,7 +42,7 @@ const Features = () => {
       title: "Account & Referrals",
       icon: <Users className="w-8 h-8" />,
       features: [
-        { icon: "💳", title: "Easy Deposits", description: "Deposit funds quickly with multiple payment options. Minimum deposit of ₦7,000 to get started." },
+        { icon: "💳", title: "Easy Deposits", description: `Deposit funds quickly with multiple payment options. Activation from ${getActivationPriceText()} to get started.` },
         { icon: "💸", title: "Fast Withdrawals", description: "Withdraw your winnings anytime directly to your bank account or wallet. Quick processing." },
         { icon: "👥", title: "Referral Program", description: "Invite friends and earn bonus rewards. No limit on referrals — the more you invite, the more you earn." },
         { icon: "📊", title: "Dashboard", description: "Track your balance, game history, wins, and referral earnings all from your personal dashboard." }
