@@ -13,6 +13,8 @@ import Index from "./pages/Index";
 import CouponRenewalBanner from "@/components/CouponRenewalBanner";
 import PushAutoPrompt from "@/components/PushAutoPrompt";
 import AdsterraLoader from "@/components/AdsterraLoader";
+import PromoBanner from "@/components/PromoBanner";
+import PromoPopup from "@/components/PromoPopup";
 
 // Lazy-loaded routes — split bundle so each page only loads when visited.
 // Big perf win on low-end devices: initial JS shrinks dramatically.
@@ -83,10 +85,12 @@ const AppRoutes = () => {
   return (
     <>
       <LoadingScreen isLoading={isLoading} />
+      <PromoBanner />
       {!isGameRoute && <WinnerMarquee />}
       <CouponRenewalBanner />
       <PushAutoPrompt />
       <AdsterraLoader />
+      <PromoPopup />
       <Suspense fallback={null}>
         <Routes>
           <Route path="/" element={<Index />} />
