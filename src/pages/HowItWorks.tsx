@@ -19,7 +19,7 @@ const HowItWorks = () => {
     {
       number: "02",
       title: "Deposit Funds",
-      description: "Add funds to your LootBoxx wallet. We accept multiple payment methods for easy deposits starting from ₦7,000.",
+      description: `Add funds to your LootBoxx wallet. We accept multiple payment methods for easy deposits starting from ${getActivationPriceText()}.`,
       details: ["Multiple payment options", "Secure transactions", "Instant balance updates"]
     },
     {
