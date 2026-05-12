@@ -15,6 +15,12 @@ export const isPromoActive = () => PROMO.enabled && Date.now() < PROMO.endDate.g
 export const getActivationAmount = () =>
   isPromoActive() ? PROMO.discountedAmount : PROMO.originalAmount;
 
+/** Inline text label for activation price, used inside string descriptions. */
+export const getActivationPriceText = () =>
+  isPromoActive()
+    ? `₦${PROMO.discountedAmount.toLocaleString()} (Promo — was ₦${PROMO.originalAmount.toLocaleString()})`
+    : `₦${PROMO.originalAmount.toLocaleString()}`;
+
 export const getPromoTimeLeft = () => {
   const diff = PROMO.endDate.getTime() - Date.now();
   if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, ended: true };
