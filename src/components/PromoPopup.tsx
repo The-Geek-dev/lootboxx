@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PROMO, getPromoTimeLeft, isPromoActive } from "@/config/promo";
+import { requestPushSubscription } from "@/components/PushAutoPrompt";
 
 const STORAGE_KEY = "lootboxx_promo_popup_dismissed_v1";
 
@@ -82,6 +83,7 @@ const PromoPopup = () => {
             className="w-full button-gradient text-base font-semibold"
             onClick={() => {
               close();
+              requestPushSubscription();
               navigate("/deposit");
             }}
           >

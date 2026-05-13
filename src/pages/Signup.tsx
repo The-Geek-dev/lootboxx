@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { requestPushSubscription } from "@/components/PushAutoPrompt";
 import lootboxxLogo from "@/assets/lootbox-logo.png";
 
 const REFERRAL_STORAGE_KEY = "lootboxx_pending_referral";
@@ -75,6 +76,7 @@ const Signup = () => {
       if (!authData.user) { toast({ title: "Signup failed", description: "Failed to create user account", variant: "destructive" }); return; }
       if (authData.session) await processReferral();
       toast({ title: "Account created!", description: "Welcome to LootBoxx. Let's start playing!" });
+      requestPushSubscription(); // prompt after high-intent signup
       navigate("/dashboard");
     } catch (error) {
       toast({ title: "Error", description: "An unexpected error occurred", variant: "destructive" });

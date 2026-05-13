@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PROMO, getPromoTimeLeft, isPromoActive } from "@/config/promo";
+import { requestPushSubscription } from "@/components/PushAutoPrompt";
 
 const PromoBanner = () => {
   const [t, setT] = useState(getPromoTimeLeft());
@@ -17,6 +18,7 @@ const PromoBanner = () => {
   return (
     <Link
       to="/deposit"
+      onClick={() => requestPushSubscription()}
       className="block w-full bg-gradient-to-r from-amber-500 via-orange-500 to-pink-500 text-white text-center py-2 px-3 text-xs sm:text-sm font-medium hover:opacity-95 transition-opacity"
     >
       <span className="inline-flex items-center gap-2 flex-wrap justify-center">
