@@ -768,6 +768,27 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_push_log: {
+        Row: {
+          campaign: string
+          id: string
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          campaign?: string
+          id?: string
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          campaign?: string
+          id?: string
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       push_subscriptions: {
         Row: {
           auth: string
