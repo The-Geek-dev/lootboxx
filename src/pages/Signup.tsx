@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { requestPushSubscription } from "@/components/PushAutoPrompt";
 import lootboxxLogo from "@/assets/lootbox-logo.png";
 
 const REFERRAL_STORAGE_KEY = "lootboxx_pending_referral";
