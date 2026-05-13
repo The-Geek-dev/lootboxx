@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PROMO, getPromoTimeLeft, isPromoActive } from "@/config/promo";
+import { requestPushSubscription } from "@/components/PushAutoPrompt";
 
 const PromoBanner = () => {
   const [t, setT] = useState(getPromoTimeLeft());
