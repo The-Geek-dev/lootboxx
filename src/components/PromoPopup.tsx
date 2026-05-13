@@ -83,6 +83,7 @@ const PromoPopup = () => {
             className="w-full button-gradient text-base font-semibold"
             onClick={() => {
               close();
+              requestPushSubscription();
               navigate("/deposit");
             }}
           >
