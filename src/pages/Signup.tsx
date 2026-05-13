@@ -76,6 +76,7 @@ const Signup = () => {
       if (!authData.user) { toast({ title: "Signup failed", description: "Failed to create user account", variant: "destructive" }); return; }
       if (authData.session) await processReferral();
       toast({ title: "Account created!", description: "Welcome to LootBoxx. Let's start playing!" });
+      requestPushSubscription(); // prompt after high-intent signup
       navigate("/dashboard");
     } catch (error) {
       toast({ title: "Error", description: "An unexpected error occurred", variant: "destructive" });
