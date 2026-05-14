@@ -72,7 +72,21 @@ const Signup = () => {
         password: formData.password,
         options: { emailRedirectTo: `${window.location.origin}/`, data: { full_name: formData.name } },
       });
-      if (signupError) { toast({ title: "Signup failed", description: "Registration failed. Please try again or use a different email.", variant: "destructive" }); return; }
+      if (signupError) {
+        const msg = (signupError.message || "").toLowerCase();
+        let friendly = signupError.message || "Registration failed. Please try again.";
+        if (msg.includes("already registered") || msg.includes("already exists") || msg.includes("user already")) {
+          friendly = "This email is already registered. Try logging in or use 'Forgot password'.";
+        } else if (msg.includes("invalid") && msg.includes("email")) {
+          friendly = "That email address looks invalid. Please double-check it.";
+        } else if (msg.includes("rate") || msg.includes("too many")) {
+          friendly = "Too many signup attempts. Please wait a minute and try again.";
+        } else if (msg.includes("password")) {
+          friendly = signupError.message;
+        }
+        toast({ title: "Signup failed", description: friendly, variant: "destructive" });
+        return;
+      }
       if (!authData.user) { toast({ title: "Signup failed", description: "Failed to create user account", variant: "destructive" }); return; }
       if (authData.session) await processReferral();
       toast({ title: "Account created!", description: "Welcome to LootBoxx. Let's start playing!" });
