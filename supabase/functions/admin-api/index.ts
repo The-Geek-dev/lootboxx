@@ -62,9 +62,23 @@ Deno.serve(async (req) => {
 
     switch (action) {
       case "get_users": {
-        const { data: authUsers } = await serviceClient.auth.admin.listUsers({
-          perPage: 100,
-        });
+        // Paginate through ALL users (listUsers caps at 1000 per page)
+        const allAuthUsers: any[] = [];
+        let page = 1;
+        const perPage = 1000;
+        // hard safety cap to avoid runaway loops
+        while (page <= 50) {
+          const { data: pageData, error: pageErr } = await serviceClient.auth.admin.listUsers({
+            page,
+            perPage,
+          });
+          if (pageErr) break;
+          const batch = pageData?.users || [];
+          allAuthUsers.push(...batch);
+          if (batch.length < perPage) break;
+          page++;
+        }
+        const authUsers = { users: allAuthUsers };
         const { data: wallets } = await serviceClient
           .from("user_wallets")
           .select("*");
