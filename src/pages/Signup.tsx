@@ -137,6 +137,10 @@ const Signup = () => {
             <div>
               <label htmlFor="password" className="block text-sm font-medium mb-2">Password</label>
               <Input id="password" type="password" placeholder="••••••••" value={formData.password} onChange={handleChange} required className="bg-background/50" />
+              <p className="text-xs text-muted-foreground mt-1.5">
+                Avoid common passwords like <em>Password123</em> — we check against leaked-password databases.
+                Use at least 8 characters with upper, lower, and number.
+              </p>
             </div>
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">Confirm Password</label>
