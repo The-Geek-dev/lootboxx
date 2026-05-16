@@ -206,7 +206,17 @@ const LiveWithdrawView = () => {
       });
       navigate("/withdraw/processing", { state: { details } });
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      const msg = String(err?.message || "");
+      if (msg.includes("withdrawals_one_pending_per_user") || msg.toLowerCase().includes("duplicate key")) {
+        await refreshPending();
+        toast({
+          title: "Withdrawal already in progress",
+          description: "You already have a pending withdrawal. Please wait until it's approved or rejected before submitting a new one.",
+          variant: "destructive",
+        });
+      } else {
+        toast({ title: "Error", description: msg || "Could not submit withdrawal", variant: "destructive" });
+      }
     } finally {
       setLoading(false);
     }

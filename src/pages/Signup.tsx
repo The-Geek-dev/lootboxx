@@ -88,6 +88,18 @@ const Signup = () => {
         return;
       }
       if (!authData.user) { toast({ title: "Signup failed", description: "Failed to create user account", variant: "destructive" }); return; }
+      // Supabase returns success for repeated signups but with empty `identities` array.
+      // Detect this and guide the user to login / reset password instead of silently failing.
+      const identities = (authData.user as any).identities;
+      if (Array.isArray(identities) && identities.length === 0) {
+        toast({
+          title: "Email already registered",
+          description: "This email already has an account. Please sign in, or use 'Forgot password' if you don't remember it.",
+          variant: "destructive",
+        });
+        navigate("/login");
+        return;
+      }
       if (authData.session) await processReferral();
       toast({ title: "Account created!", description: "Welcome to LootBoxx. Let's start playing!" });
       requestPushSubscription(); // prompt after high-intent signup
