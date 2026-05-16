@@ -52,7 +52,14 @@ const Login = () => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
-        toast({ title: "Login failed", description: "Invalid email or password. Please try again.", variant: "destructive" });
+        const msg = (error.message || "").toLowerCase();
+        let friendly = "Invalid email or password. If you just signed up, your account may already exist — try 'Forgot password' to reset it.";
+        if (msg.includes("email not confirmed") || msg.includes("not confirmed")) {
+          friendly = "Please confirm your email first — check your inbox for the verification link.";
+        } else if (msg.includes("rate") || msg.includes("too many")) {
+          friendly = "Too many login attempts. Please wait a minute and try again.";
+        }
+        toast({ title: "Login failed", description: friendly, variant: "destructive" });
         return;
       }
       if (data.user) {
