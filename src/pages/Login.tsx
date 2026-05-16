@@ -16,7 +16,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  
+  const [showPassword, setShowPassword] = useState(false);
+
   const [requires2FA, setRequires2FA] = useState(false);
   const [pendingUserId, setPendingUserId] = useState<string>("");
   const [otpValue, setOtpValue] = useState("");
