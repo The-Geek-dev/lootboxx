@@ -2,13 +2,54 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { requestPushSubscription } from "@/components/PushAutoPrompt";
+import { Eye, EyeOff } from "lucide-react";
 import lootboxxLogo from "@/assets/lootbox-logo.png";
 
 const REFERRAL_STORAGE_KEY = "lootboxx_pending_referral";
+
+type StrengthScore = 0 | 1 | 2 | 3 | 4;
+
+function getStrength(password: string): { score: StrengthScore; label: string; color: string } {
+  if (!password) return { score: 0, label: "", color: "bg-gray-700" };
+  let points = 0;
+  if (password.length >= 8) points++;
+  if (password.length >= 12) points++;
+  if (/[A-Z]/.test(password)) points++;
+  if (/[a-z]/.test(password)) points++;
+  if (/[0-9]/.test(password)) points++;
+  if (/[^A-Za-z0-9]/.test(password)) points++;
+
+  if (points <= 2) return { score: 1, label: "Weak", color: "bg-red-500" };
+  if (points <= 4) return { score: 2, label: "Fair", color: "bg-orange-500" };
+  if (points <= 5) return { score: 3, label: "Good", color: "bg-yellow-500" };
+  return { score: 4, label: "Strong", color: "bg-emerald-500" };
+}
+
+const StrengthBar = ({ password }: { password: string }) => {
+  const { score, label, color } = getStrength(password);
+  if (!password) return null;
+  return (
+    <div className="mt-2">
+      <div className="flex gap-1 h-1.5 mb-1.5">
+        {[1, 2, 3, 4].map((segment) => (
+          <div
+            key={segment}
+            className={`flex-1 rounded-full transition-colors duration-300 ${
+              segment <= score ? color : "bg-gray-700"
+            }`}
+          />
+        ))}
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Strength: <span className={`font-semibold ${color.replace("bg-", "text-")}`}>{label}</span>
+      </p>
+    </div>
+  );
+};
 
 const Signup = () => {
   const { toast } = useToast();
@@ -18,6 +59,10 @@ const Signup = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [referralCode, setReferralCode] = useState<string>("");
   const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const passwordStrength = useMemo(() => getStrength(formData.password), [formData.password]);
 
   useEffect(() => {
     // Capture ref code from URL or localStorage
@@ -148,7 +193,26 @@ const Signup = () => {
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium mb-2">Password</label>
-              <Input id="password" type="password" placeholder="••••••••" value={formData.password} onChange={handleChange} required className="bg-background/50" />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="bg-background/50 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white focus:outline-none"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              <StrengthBar password={formData.password} />
               <p className="text-xs text-muted-foreground mt-1.5">
                 Avoid common passwords like <em>Password123</em> — we check against leaked-password databases.
                 Use at least 8 characters with upper, lower, and number.
@@ -156,7 +220,25 @@ const Signup = () => {
             </div>
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">Confirm Password</label>
-              <Input id="confirmPassword" type="password" placeholder="••••••••" value={formData.confirmPassword} onChange={handleChange} required className="bg-background/50" />
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  type={showConfirm ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  className="bg-background/50 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm((s) => !s)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white focus:outline-none"
+                  aria-label={showConfirm ? "Hide confirm password" : "Show confirm password"}
+                >
+                  {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
             <div>
               <label htmlFor="referralCode" className="block text-sm font-medium mb-2">
