@@ -349,6 +349,17 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleSetInfluencer = async (userId: string, enabled: boolean) => {
+    try {
+      await adminCall("set_influencer", { user_id: userId, enabled });
+      toast({ title: enabled ? "Influencer enabled" : "Influencer revoked", description: enabled ? "User now earns 20% on every activation." : "Standard referral rewards restored." });
+      const uRes = await adminCall("get_users");
+      setUsers(uRes?.users || []);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
+
   if (!isAdmin || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
