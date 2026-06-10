@@ -106,9 +106,15 @@ const Referrals = () => {
             <Users className="w-8 h-8 inline-block mr-2 text-primary" />
             Referral <span className="text-gradient">Program</span>
           </h1>
-          <p className="text-muted-foreground text-center mb-8">
+          <p className="text-muted-foreground text-center mb-4">
             Invite friends and earn cash + points!
           </p>
+          <div className="text-center mb-8">
+            <Button variant="outline" size="sm" onClick={() => navigate("/influencer")}>
+              <Star className="w-4 h-4 mr-2 text-primary" />
+              View Influencer Earnings
+            </Button>
+          </div>
 
           {/* Stats */}
           <div className="grid grid-cols-2 gap-3 mb-6">
