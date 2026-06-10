@@ -502,6 +502,15 @@ const AdminDashboard = () => {
                                 Expire
                               </Button>
                             )}
+                            {u.roles?.includes("influencer") ? (
+                              <Button size="sm" variant="ghost" className="text-yellow-500" onClick={() => handleSetInfluencer(u.id, false)}>
+                                ★ Revoke Influencer
+                              </Button>
+                            ) : (
+                              <Button size="sm" variant="outline" onClick={() => handleSetInfluencer(u.id, true)}>
+                                ☆ Make Influencer
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
