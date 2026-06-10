@@ -974,6 +974,41 @@ Deno.serve(async (req) => {
         );
       }
 
+      case "set_influencer": {
+        const { user_id: infUserId, enabled } = params;
+        if (!infUserId) {
+          return new Response(JSON.stringify({ error: "Missing user_id" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if (enabled) {
+          const { error: upErr } = await serviceClient
+            .from("user_roles")
+            .upsert({ user_id: infUserId, role: "influencer" as any }, { onConflict: "user_id,role" });
+          if (upErr) {
+            return new Response(JSON.stringify({ error: upErr.message }), {
+              status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+          await serviceClient.from("notifications").insert({
+            user_id: infUserId,
+            title: "🌟 You're now an Influencer!",
+            message: "You now earn 20% cash commission on every referral that activates.",
+            type: "info",
+          });
+        } else {
+          await serviceClient
+            .from("user_roles")
+            .delete()
+            .eq("user_id", infUserId)
+            .eq("role", "influencer" as any);
+        }
+        return new Response(
+          JSON.stringify({ success: true, enabled: !!enabled }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400,

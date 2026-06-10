@@ -1363,7 +1363,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      app_role: "admin" | "moderator" | "user" | "influencer"
       prediction_currency: "points" | "cash"
       prediction_outcome: "yes" | "no" | "void"
       prediction_region: "nigeria" | "global"
@@ -1496,7 +1496,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user"],
+      app_role: ["admin", "moderator", "user", "influencer"],
       prediction_currency: ["points", "cash"],
       prediction_outcome: ["yes", "no", "void"],
       prediction_region: ["nigeria", "global"],
