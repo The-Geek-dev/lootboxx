@@ -101,6 +101,13 @@ const Login = () => {
       if (response.error || !response.data?.success) throw new Error(response.data?.error || "Verification failed");
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
+      try {
+        const pending = localStorage.getItem("lootboxx_pending_referral");
+        if (pending) {
+          await supabase.rpc("process_referral_signup", { p_referral_code: pending });
+          localStorage.removeItem("lootboxx_pending_referral");
+        }
+      } catch {}
       toast({ title: "Login successful!", description: "Welcome back to LootBoxx." });
       navigate("/dashboard");
     } catch (error: any) {
