@@ -53,6 +53,7 @@ const WithdrawalProcessing = lazy(() => import("./pages/WithdrawalProcessing"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const AdRewards = lazy(() => import("./pages/AdRewards"));
 const Predictions = lazy(() => import("./pages/Predictions"));
+const InfluencerEarnings = lazy(() => import("./pages/InfluencerEarnings"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
