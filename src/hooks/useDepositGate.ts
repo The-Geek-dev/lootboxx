@@ -41,19 +41,13 @@ export const useDepositGate = () => {
 
       const { data: wallet } = await supabase
         .from("user_wallets")
-        .select("is_activated, coupon_expires_at")
+        .select("is_activated")
         .eq("user_id", session.user.id)
         .single();
 
       if (!wallet?.is_activated) {
         setNeedsActivation(true);
         setActivationReason("new");
-      } else if (
-        wallet.coupon_expires_at &&
-        new Date(wallet.coupon_expires_at) <= new Date()
-      ) {
-        setNeedsActivation(true);
-        setActivationReason("expired");
       } else {
         setNeedsActivation(false);
         setActivationReason(null);

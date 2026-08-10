@@ -10,7 +10,6 @@ import WinnerMarquee from "@/components/WinnerMarquee";
 import LaunchCountdown from "@/components/LaunchCountdown";
 import AgeVerification from "@/components/AgeVerification";
 import Index from "./pages/Index";
-import CouponRenewalBanner from "@/components/CouponRenewalBanner";
 import PushAutoPrompt from "@/components/PushAutoPrompt";
 import AdsterraLoader from "@/components/AdsterraLoader";
 import PromoBanner from "@/components/PromoBanner";
@@ -88,7 +87,6 @@ const AppRoutes = () => {
       <LoadingScreen isLoading={isLoading} />
       <PromoBanner />
       {!isGameRoute && <WinnerMarquee />}
-      <CouponRenewalBanner />
       <PushAutoPrompt />
       <AdsterraLoader />
       <PromoPopup />
