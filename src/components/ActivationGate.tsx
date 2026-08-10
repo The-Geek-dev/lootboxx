@@ -13,7 +13,7 @@ interface ActivationGateProps {
 }
 
 const ActivationGate = ({ reason, title = "Activation Required" }: ActivationGateProps) => {
-  const isExpired = reason === "expired";
+  const isExpired = false;
   const amount = getActivationAmount();
   const promo = isPromoActive();
   const amountStr = `₦${amount.toLocaleString()}`;

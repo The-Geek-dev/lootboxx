@@ -919,32 +919,6 @@ const AdminDashboard = () => {
                   </div>
                 </Card>
 
-                {/* Generate Renewal Codes */}
-                <Card className="glass p-6">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <RefreshCw className="w-5 h-5" /> Weekly Renewal Codes
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Generate unique renewal codes for all activated users. Each code is valid for 7 days and costs ₦2,000 to redeem.
-                  </p>
-                  <Button
-                    className="button-gradient w-full"
-                    disabled={generatingCodes}
-                    onClick={handleGenerateRenewalCodes}
-                  >
-                    {generatingCodes ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <RefreshCw className="w-4 h-4 mr-2" />
-                        Generate Codes for All Activated Users
-                      </>
-                    )}
-                  </Button>
-                </Card>
               </div>
 
               {/* User selector for points */}
