@@ -126,14 +126,10 @@ Deno.serve(async (req) => {
 
     if (depositType === "activation" && !wallet.is_activated) {
       updates.is_activated = true;
-      updates.coupon_expires_at = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+      // Lifetime access — weekly renewal has been removed.
+      updates.coupon_expires_at = null;
     }
 
-    if (depositType === "renewal") {
-      const currentExpiry = wallet.coupon_expires_at ? new Date(wallet.coupon_expires_at) : new Date();
-      const base = currentExpiry > new Date() ? currentExpiry : new Date();
-      updates.coupon_expires_at = new Date(base.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
-    }
 
     await supabase.from("user_wallets").update(updates).eq("user_id", userId);
 

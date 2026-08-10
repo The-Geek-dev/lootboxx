@@ -26,7 +26,6 @@ const Dashboard = () => {
   const [recentGames, setRecentGames] = useState<any[]>([]);
   const [lastBonusAt, setLastBonusAt] = useState<string | null>(null);
   const [points, setPoints] = useState(0);
-  const [couponExpiresAt, setCouponExpiresAt] = useState<string | null>(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const [now, setNow] = useState(() => Date.now());
   const [winnings, setWinnings] = useState(0);
@@ -40,17 +39,6 @@ const Dashboard = () => {
     return () => clearInterval(t);
   }, []);
 
-  const couponInfo = useMemo(() => {
-    if (!couponExpiresAt) return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true };
-    const exp = new Date(couponExpiresAt).getTime();
-    if (exp <= now) return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true };
-    const diffMs = exp - now;
-    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
-    return { days, hours, minutes, seconds, expired: false };
-  }, [couponExpiresAt, now]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -87,7 +75,7 @@ const Dashboard = () => {
         supabase.from("profiles").select("full_name").eq("user_id", userId).single(),
         supabase.from("game_results").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(5),
         supabase.from("referrals").select("*").eq("referrer_id", userId),
-        supabase.from("user_wallets").select("total_won, total_referral_bonus, last_weekly_bonus_at, points, coupon_expires_at, current_streak, longest_streak, daily_bonus_points, daily_bonus_date").eq("user_id", userId).single(),
+        supabase.from("user_wallets").select("total_won, total_referral_bonus, last_weekly_bonus_at, points, current_streak, longest_streak, daily_bonus_points, daily_bonus_date").eq("user_id", userId).single(),
       ]);
 
       if (profileRes.data) setUserName(profileRes.data.full_name);
@@ -100,7 +88,6 @@ const Dashboard = () => {
         setTotalBonuses(Number(walletRes.data.total_referral_bonus));
         setLastBonusAt(walletRes.data.last_weekly_bonus_at as string | null);
         setPoints(Number(walletRes.data.points));
-        setCouponExpiresAt((walletRes.data as any).coupon_expires_at ?? null);
         setCurrentStreak(Number((walletRes.data as any).current_streak ?? 0));
         setLongestStreak(Number((walletRes.data as any).longest_streak ?? 0));
         setDailyBonus(Number((walletRes.data as any).daily_bonus_points ?? 0));
@@ -141,15 +128,11 @@ const Dashboard = () => {
           { event: "UPDATE", schema: "public", table: "user_wallets", filter: `user_id=eq.${session.user.id}` },
           (payload: any) => {
             dlog("UPDATE payload", {
-              old_coupon: payload.old?.coupon_expires_at,
-              new_coupon: payload.new?.coupon_expires_at,
               old_points: payload.old?.points,
               new_points: payload.new?.points,
               commit_ts: payload.commit_timestamp,
               full: payload,
             });
-            const next = payload.new?.coupon_expires_at ?? null;
-            setCouponExpiresAt(next);
             if (payload.new?.points != null) setPoints(Number(payload.new.points));
           }
         )
@@ -253,28 +236,6 @@ const Dashboard = () => {
             <XpLifeBar />
           </div>
 
-          {/* Coupon Expiry Banner */}
-          <Card className={`glass p-4 mb-6 ${couponInfo.expired ? "border-destructive/30 bg-destructive/5" : "border-primary/30 bg-primary/5"}`}>
-            <div className="flex items-center gap-3 flex-wrap">
-              <Clock className={`w-6 h-6 ${couponInfo.expired ? "text-destructive" : "text-primary"} shrink-0`} />
-              <div className="flex-1">
-                {couponInfo.expired ? (
-                  <>
-                    <p className="font-semibold text-sm text-destructive">Coupon Expired!</p>
-                    <p className="text-xs text-muted-foreground">Renew for ₦2,000/week to keep playing</p>
-                  </>
-                ) : (
-                  <>
-                    <p className="font-semibold text-sm">Coupon expires in: <span className="text-primary font-mono">{couponInfo.days}d {String(couponInfo.hours).padStart(2,"0")}h {String(couponInfo.minutes).padStart(2,"0")}m {String(couponInfo.seconds).padStart(2,"0")}s</span></p>
-                    <p className="text-xs text-muted-foreground">Renew for ₦2,000/week to extend access</p>
-                  </>
-                )}
-              </div>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/deposit">Renew Coupon</Link>
-              </Button>
-            </div>
-          </Card>
 
           {/* Daily bonus + Streak */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">

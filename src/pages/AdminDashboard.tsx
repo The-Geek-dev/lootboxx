@@ -61,7 +61,6 @@ const AdminDashboard = () => {
   const [pointsUserId, setPointsUserId] = useState("");
   const [pointsAmount, setPointsAmount] = useState("");
   const [pointsOperation, setPointsOperation] = useState<"add" | "subtract">("add");
-  const [generatingCodes, setGeneratingCodes] = useState(false);
   // Game control state
   const [gameSettings, setGameSettings] = useState<any[]>([]);
   const [gsUserId, setGsUserId] = useState("");
@@ -283,16 +282,6 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleGenerateRenewalCodes = async () => {
-    setGeneratingCodes(true);
-    try {
-      const res = await adminCall("generate_renewal_codes");
-      toast({ title: res.message });
-    } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
-    }
-    setGeneratingCodes(false);
-  };
 
   const handleSaveGameSettings = async () => {
     if (!gsUserId) {
@@ -446,7 +435,6 @@ const AdminDashboard = () => {
                       <TableHead>Lucky Hour</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Roles</TableHead>
-                      <TableHead>Coupon expires</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -476,30 +464,11 @@ const AdminDashboard = () => {
                               ))
                             : <span className="text-muted-foreground text-xs">user</span>}
                         </TableCell>
-                        <TableCell className="text-xs">
-                          {u.coupon_expires_at ? (
-                            <span className={new Date(u.coupon_expires_at) > new Date() ? "text-green-400" : "text-red-400"}>
-                              {new Date(u.coupon_expires_at).toLocaleDateString()}
-                            </span>
-                          ) : (
-                            <span className="text-muted-foreground">—</span>
-                          )}
-                        </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap gap-1">
                             {!u.is_activated && (
-                              <Button size="sm" variant="outline" onClick={() => handleCouponAction(u.id, "activate_coupon", 7)}>
-                                Activate (7d)
-                              </Button>
-                            )}
-                            {u.is_activated && (
-                              <Button size="sm" variant="outline" onClick={() => handleCouponAction(u.id, "renew_coupon", 7)}>
-                                Renew +7d
-                              </Button>
-                            )}
-                            {u.coupon_expires_at && new Date(u.coupon_expires_at) > new Date() && (
-                              <Button size="sm" variant="ghost" onClick={() => handleCouponAction(u.id, "expire_coupon")}>
-                                Expire
+                              <Button size="sm" variant="outline" onClick={() => handleCouponAction(u.id, "activate_coupon", 3650)}>
+                                Activate account
                               </Button>
                             )}
                             {u.roles?.includes("influencer") ? (
@@ -919,32 +888,6 @@ const AdminDashboard = () => {
                   </div>
                 </Card>
 
-                {/* Generate Renewal Codes */}
-                <Card className="glass p-6">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <RefreshCw className="w-5 h-5" /> Weekly Renewal Codes
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Generate unique renewal codes for all activated users. Each code is valid for 7 days and costs ₦2,000 to redeem.
-                  </p>
-                  <Button
-                    className="button-gradient w-full"
-                    disabled={generatingCodes}
-                    onClick={handleGenerateRenewalCodes}
-                  >
-                    {generatingCodes ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <RefreshCw className="w-4 h-4 mr-2" />
-                        Generate Codes for All Activated Users
-                      </>
-                    )}
-                  </Button>
-                </Card>
               </div>
 
               {/* User selector for points */}

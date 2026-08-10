@@ -1,7 +1,7 @@
 // Engagement nudge — runs in two slots per day:
 //   morning + evening = in-app notifications (twice/day)
 //   morning slot only = email nudge (once/day)
-// Tailors message to user state: not activated, expired coupon, or active.
+// Tailors message to user state: not activated or active.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
 
   const { data: wallets, error } = await supabase
     .from("user_wallets")
-    .select("user_id, is_activated, coupon_expires_at, current_streak");
+    .select("user_id, is_activated, current_streak");
 
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), {
@@ -81,11 +81,6 @@ Deno.serve(async (req) => {
     if (!w.is_activated) {
       title = slot === "morning" ? "Complete your account setup" : "Your account is waiting";
       message = "You haven't finished setting up your account yet. Sign in to complete the one-time setup and access your dashboard.";
-      ctaLabel = "Open dashboard";
-      ctaUrl = `${APP_URL}/deposit`;
-    } else if (w.coupon_expires_at && new Date(w.coupon_expires_at) <= now) {
-      title = slot === "morning" ? "Your weekly access has ended" : "Renew your weekly access";
-      message = "Your weekly access period has ended. You can renew it from your dashboard whenever you're ready.";
       ctaLabel = "Open dashboard";
       ctaUrl = `${APP_URL}/deposit`;
     } else {
