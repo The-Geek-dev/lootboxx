@@ -22,7 +22,7 @@ const ALL_TESTIMONIALS = [
   { name: "Folake Adeyemi", role: "Lagos Player", content: "Referred 6 friends and got ₦12,000 in referral bonuses. The dashboard makes it so easy to track everything.", rating: 4, totalWon: "₦78K+" },
   { name: "Ibrahim Musa", role: "Kano Player", content: "The Plinko and Pachinko engines are smooth — no lag even on my budget phone. Cyberpunk theme looks beautiful at night.", rating: 5, totalWon: "₦27K+" },
   { name: "Blessing Okonkwo", role: "Owerri Player", content: "Over 20 games to choose from. Penalty Shootout is my new obsession. Multipliers keep climbing every round.", rating: 5, totalWon: "₦52K+" },
-  { name: "Segun Adebayo", role: "Akure Player", content: "Hit a ₦20,000 win on Baccarat last week. Card animations feel like a real casino. Renewal is only ₦2,000 — totally worth it.", rating: 5, totalWon: "₦88K+" },
+  { name: "Segun Adebayo", role: "Akure Player", content: "Hit a ₦20,000 win on Baccarat last week. Card animations feel like a real casino. And activation is one-time — no weekly renewals.", rating: 5, totalWon: "₦88K+" },
   { name: "Halima Yusuf", role: "Kaduna Player", content: "I tell all my friends about LootBoxx. The XP lives system makes you take each game seriously.", rating: 4, totalWon: "₦19K+" },
   { name: "Daniel Ojo", role: "Benin Player", content: "Transaction history shows every kobo. Zero hidden fees beyond the 5% withdrawal cut. Transparent platform.", rating: 5, totalWon: "₦64K+" },
   { name: "Chiamaka Obi", role: "Asaba Player", content: "Started with the ₦7K activation, now I withdraw every weekend. The treasure chest mascot makes me smile every time.", rating: 5, totalWon: "₦105K+" },
