@@ -1299,6 +1299,8 @@ export type Database = {
           win_rate_modifier: number
         }[]
       }
+      get_or_create_referral_code: { Args: never; Returns: string }
+      get_referral_stats: { Args: never; Returns: Json }
       get_winnings_balance: { Args: never; Returns: number }
       has_role: {
         Args: {
