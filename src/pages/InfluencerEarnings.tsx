@@ -7,7 +7,8 @@ import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { Sparkles, TrendingUp, Clock, CheckCircle2, Users } from "lucide-react";
+import { Sparkles, TrendingUp, Clock, CheckCircle2, Users, Percent } from "lucide-react";
+import { getActivationAmount, isPromoActive } from "@/config/promo";
 
 type ReferralRow = {
   id: string;
@@ -18,6 +19,8 @@ type ReferralRow = {
   activation_bonus_awarded: boolean;
   created_at: string;
 };
+
+const INFLUENCER_PCT = 0.2;
 
 const InfluencerEarnings = () => {
   const navigate = useNavigate();
@@ -30,8 +33,8 @@ const InfluencerEarnings = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { navigate("/login"); return; }
 
-      const [{ data: roles }, { data: refs }] = await Promise.all([
-        supabase.from("user_roles").select("role").eq("user_id", session.user.id),
+      const [{ data: stats }, { data: refs }] = await Promise.all([
+        supabase.rpc("get_referral_stats"),
         supabase
           .from("referrals")
           .select("id, referred_id, referral_code, bonus_amount, status, activation_bonus_awarded, created_at")
@@ -39,20 +42,24 @@ const InfluencerEarnings = () => {
           .order("created_at", { ascending: false }),
       ]);
 
-      setIsInfluencer((roles || []).some((r: any) => r.role === "influencer"));
+      setIsInfluencer(!!(stats as any)?.is_influencer);
       setRows((refs as ReferralRow[]) || []);
       setLoading(false);
     };
     run();
   }, [navigate]);
 
-  const paid = rows.filter((r) => r.activation_bonus_awarded);
-  const pending = rows.filter((r) => !r.activation_bonus_awarded && r.referred_id);
+  // Only referrals that actually attached to a user count as real activity
+  const signups = rows.filter((r) => r.referred_id);
+  const paid = signups.filter((r) => r.activation_bonus_awarded);
+  const pending = signups.filter((r) => !r.activation_bonus_awarded);
   const totalPaid = paid.reduce((s, r) => s + Number(r.bonus_amount || 0), 0);
-  // For pending, we don't know the future activation amount; show expected min (20% of ₦7,000 = ₦1,400)
-  const expectedPerPending = 1400;
+
+  // Estimate uses the activation price live today (promo-aware)
+  const expectedPerPending = Math.round(getActivationAmount() * INFLUENCER_PCT);
   const totalPending = pending.length * expectedPerPending;
-  const totalSignups = rows.filter((r) => r.referred_id).length;
+  const conversion = signups.length > 0 ? Math.round((paid.length / signups.length) * 100) : 0;
+  const avgCommission = paid.length > 0 ? Math.round(totalPaid / paid.length) : 0;
 
   if (loading) {
     return (
@@ -83,7 +90,7 @@ const InfluencerEarnings = () => {
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-3 mb-6">
+          <div className="grid grid-cols-2 gap-3 mb-3">
             <Card className="p-4 bg-card/50 text-center">
               <TrendingUp className="w-4 h-4 mx-auto mb-1 text-green-500" />
               <p className="text-xs text-muted-foreground mb-1">Total Paid</p>
@@ -106,20 +113,34 @@ const InfluencerEarnings = () => {
             <Card className="p-4 bg-card/50 text-center">
               <Users className="w-4 h-4 mx-auto mb-1 text-primary" />
               <p className="text-xs text-muted-foreground mb-1">Total Signups</p>
-              <p className="text-xl sm:text-2xl font-bold text-primary">{totalSignups}</p>
+              <p className="text-xl sm:text-2xl font-bold text-primary">{signups.length}</p>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <Card className="p-4 bg-card/50 text-center">
+              <Percent className="w-4 h-4 mx-auto mb-1 text-primary" />
+              <p className="text-xs text-muted-foreground mb-1">Conversion Rate</p>
+              <p className="text-xl sm:text-2xl font-bold text-primary">{conversion}%</p>
+            </Card>
+            <Card className="p-4 bg-card/50 text-center">
+              <TrendingUp className="w-4 h-4 mx-auto mb-1 text-green-400" />
+              <p className="text-xs text-muted-foreground mb-1">Avg. Commission</p>
+              <p className="text-xl sm:text-2xl font-bold text-green-400">
+                ₦{avgCommission.toLocaleString()}
+              </p>
             </Card>
           </div>
 
           <Card className="p-4 sm:p-6 bg-card/50">
             <h3 className="font-semibold mb-4">Commission History</h3>
-            {rows.length === 0 ? (
+            {signups.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">
                 No referrals yet. Share your code from the Referrals page to start earning.
               </p>
             ) : (
               <div className="space-y-2">
-                {rows.map((r) => {
-                  const signedUp = !!r.referred_id;
+                {signups.map((r) => {
                   const isPaid = r.activation_bonus_awarded;
                   return (
                     <div
@@ -128,7 +149,7 @@ const InfluencerEarnings = () => {
                     >
                       <div className="min-w-0">
                         <p className="text-sm font-medium truncate">
-                          {signedUp ? `Referred user ${r.referred_id?.slice(0, 8)}…` : "Unclaimed code"}
+                          Referred user {r.referred_id?.slice(0, 8)}…
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {new Date(r.created_at).toLocaleDateString("en-NG", {
@@ -148,17 +169,15 @@ const InfluencerEarnings = () => {
                               PAID
                             </span>
                           </>
-                        ) : signedUp ? (
+                        ) : (
                           <>
-                            <p className="font-bold text-yellow-500">Pending</p>
+                            <p className="font-bold text-yellow-500">
+                              ~₦{expectedPerPending.toLocaleString()}
+                            </p>
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-yellow-500/15 text-yellow-400 border-yellow-500/30">
                               AWAITING ACTIVATION
                             </span>
                           </>
-                        ) : (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-muted text-muted-foreground border-border">
-                            NOT SIGNED UP
-                          </span>
                         )}
                       </div>
                     </div>
@@ -169,8 +188,9 @@ const InfluencerEarnings = () => {
           </Card>
 
           <p className="text-xs text-muted-foreground text-center mt-4">
-            Pending estimate assumes the standard ₦7,000 activation (20% = ₦1,400). Actual commission is
-            credited to your wallet the moment the referred user completes their first activation.
+            Pending estimate assumes today’s activation price of ₦{getActivationAmount().toLocaleString()}
+            {isPromoActive() ? " (promo)" : ""} — 20% = ₦{expectedPerPending.toLocaleString()}. Actual commission is
+            credited to your wallet the moment the referred user completes their activation.
           </p>
         </motion.div>
       </main>
