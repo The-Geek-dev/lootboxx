@@ -14,6 +14,16 @@ Deno.serve(async (req) => {
   const created: string[] = [];
 
   try {
+    // purge leftover manual test accounts
+    const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
+    for (const u of list?.users ?? []) {
+      if (u.email?.startsWith("reftest_") || u.email?.startsWith("selftest_")) {
+        await admin.from("referrals").delete().eq("referrer_id", u.id);
+        await admin.from("referrals").delete().eq("referred_id", u.id);
+        await admin.auth.admin.deleteUser(u.id);
+      }
+    }
+
     const mk = async (tag: string) => {
       const email = `selftest_${tag}_${crypto.randomUUID().slice(0, 8)}@example.com`;
       const password = `Tz9!${crypto.randomUUID()}`;
