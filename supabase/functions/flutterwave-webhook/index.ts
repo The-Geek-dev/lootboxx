@@ -1,11 +1,9 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, verif-hash',
-};
+import { buildCors } from "../_shared/cors.ts";
 
 Deno.serve(async (req) => {
+  const corsHeaders = buildCors(req, "verif-hash");
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -26,7 +24,13 @@ Deno.serve(async (req) => {
   // Verify webhook signature
   const secretHash = Deno.env.get("FLUTTERWAVE_WEBHOOK_HASH");
   const signature = req.headers.get("verif-hash");
-  if (secretHash && signature !== secretHash) {
+  if (!secretHash) {
+    return new Response(JSON.stringify({ error: "Webhook not configured" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  if (signature !== secretHash) {
     return new Response(JSON.stringify({ error: "Invalid signature" }), {
       status: 401,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

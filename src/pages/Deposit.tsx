@@ -86,23 +86,19 @@ const LiveDepositView = () => {
     setStep("confirm");
   };
 
-  // On mount, if URL has a callback ref from Squad or Flutterwave, auto-verify
+  // On mount, if URL has a callback ref from Flutterwave, auto-verify
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const fwTxId = params.get("transaction_id");
     const fwTxRef = params.get("tx_ref");
-    const squadRef = params.get("reference") || params.get("transaction_ref");
-    const provider = fwTxId ? "flutterwave" : squadRef ? "squad" : null;
-    if (!provider) return;
+    if (!fwTxId) return;
 
     (async () => {
       setStep("verifying");
       try {
-        const fnName = provider === "flutterwave" ? "flutterwave-verify" : "squad-verify";
-        const body = provider === "flutterwave"
-          ? { transaction_id: fwTxId, tx_ref: fwTxRef }
-          : { transaction_ref: squadRef };
-        const { data, error } = await supabase.functions.invoke(fnName, { body });
+        const { data, error } = await supabase.functions.invoke("flutterwave-verify", {
+          body: { transaction_id: fwTxId, tx_ref: fwTxRef },
+        });
         if (error) throw error;
         if (data?.success) {
           setResultMsg("Your wallet has been credited.");

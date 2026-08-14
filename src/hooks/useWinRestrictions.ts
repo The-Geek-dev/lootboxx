@@ -91,20 +91,11 @@ export const useWinRestrictions = () => {
     return isInWindow && winData.fullWinCount < maxWins;
   };
 
+  // NOTE: the daily full-win counter is now incremented server-side inside
+  // apply_game_result. This only refreshes local state so the UI stays in sync.
   const recordFullWin = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session || !winData) return;
-
-    const today = new Date().toISOString().split("T")[0];
-    const newCount = winData.fullWinCount + 1;
-
-    await supabase
-      .from("daily_win_tracking")
-      .update({ full_win_count: newCount })
-      .eq("user_id", session.user.id)
-      .eq("win_date", today);
-
-    setWinData({ ...winData, fullWinCount: newCount });
+    if (!winData) return;
+    setWinData({ ...winData, fullWinCount: winData.fullWinCount + 1 });
   };
 
   // Reduce win amount if not in win window or max wins reached
