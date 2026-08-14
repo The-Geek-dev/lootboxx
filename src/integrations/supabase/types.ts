@@ -412,6 +412,24 @@ export type Database = {
         }
         Relationships: []
       }
+      game_payout_caps: {
+        Row: {
+          game_type: string
+          max_win: number
+          updated_at: string
+        }
+        Insert: {
+          game_type: string
+          max_win: number
+          updated_at?: string
+        }
+        Update: {
+          game_type?: string
+          max_win?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       game_results: {
         Row: {
           bet_amount: number
