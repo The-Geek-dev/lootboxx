@@ -79,8 +79,9 @@ const DiceEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fro
 
     const outcome = data as { dice: number[]; total: number; won: boolean; win_amount: number; points: number; balance: number };
     setDice(outcome.dice);
-    setPointsFromServer(outcome.points);
-    setBalanceFromServer(outcome.balance);
+    await fetchPoints();
+    await fetchBalance();
+
     setLastWon(outcome.won && outcome.win_amount > 0);
 
     if (outcome.won) play("win"); else play("lose");
