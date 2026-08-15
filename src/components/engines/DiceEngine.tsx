@@ -1,17 +1,16 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import { useWallet } from "@/hooks/useWallet";
 import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
-import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
-import { DICE_PAYOUTS } from "@/config/payouts";
 import GameBackground from "./GameBackground";
 import RoundHistory from "./RoundHistory";
-import BetControls from "./BetControls";
+
 
 interface Props {
   gameId: string;
@@ -26,10 +25,10 @@ interface Props {
 const DICE_FACES = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
 
 const DiceEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'from-purple-900 to-black', accentColor: 'text-purple-400', description: '', variant: 'classic' }, diceCount = 2, targetRange = [5, 6, 7, 8, 9] }: Props) => {
-  const { updateBalance, recordGameResult } = useWallet();
-  const { points, spendPoints } = usePoints();
+  const { fetchBalance } = useWallet();
+  const { points, fetchPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
-  const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
+
   const { toast } = useToast();
   const { play } = useGameSounds();
   const [dice, setDice] = useState(Array(diceCount).fill(1));
@@ -45,42 +44,56 @@ const DiceEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'fro
     if (points < pointCost) { toast({ title: "Insufficient points", variant: "destructive" }); return; }
     const lifeConsumed = await consumeLife();
     if (!lifeConsumed) return;
-    await spendPoints(pointCost);
     setRolling(true);
     setResult(null);
     setLastWon(false);
     play("spin");
 
-    let count = 0;
+    // Cosmetic shuffle while the server resolves the round
     const interval = setInterval(() => {
       setDice(Array.from({ length: diceCount }, () => Math.floor(Math.random() * 6) + 1));
-      count++;
-      if (count > 15) {
-        clearInterval(interval);
-        const finalDice = Array.from({ length: diceCount }, () => Math.floor(Math.random() * 6) + 1);
-        setDice(finalDice);
-        const total = finalDice.reduce((s, d) => s + d, 0);
-        const won = betType === "over" ? total > target : total < target;
-
-        let winnings = 0;
-        if (won) {
-          const diff = Math.abs(total - target);
-          winnings = diff >= 4 ? DICE_PAYOUTS.bigDiff : diff >= 2 ? DICE_PAYOUTS.midDiff : DICE_PAYOUTS.smallDiff;
-          if (diceCount === 3) winnings = Math.floor(winnings * DICE_PAYOUTS.threeDiceBonus);
-          winnings = adjustWinAmount(winnings);
-          if (canFullyWin() && winnings >= 1000) recordFullWin();
-          if (winnings > 0) updateBalance(winnings);
-          setLastWon(true);
-        }
-
-        if (won) play("win"); else play("lose");
-        setResult(won ? `🎉 ${total}! You won ₦${winnings.toLocaleString()}!` : `${total}. Not this time!`);
-        setHistory(prev => [...prev, { value: total, won }]);
-        recordGameResult(gameId, pointCost, winnings, { dice: finalDice, total, bet: betType, target });
-        setRolling(false);
-      }
     }, 80);
+
+    const started = Date.now();
+    const { data, error } = await supabase.rpc("resolve_dice_round", {
+      p_game_type: gameId,
+      p_point_cost: pointCost,
+      p_bet_type: betType,
+      p_target: target,
+      p_dice_count: diceCount,
+    });
+
+    // Keep the animation running for at least ~1.2s
+    const elapsed = Date.now() - started;
+    if (elapsed < 1200) await new Promise((r) => setTimeout(r, 1200 - elapsed));
+    clearInterval(interval);
+
+    if (error || !data) {
+      console.error("resolve_dice_round failed:", error);
+      toast({ title: "Round failed", description: error?.message ?? "Please try again", variant: "destructive" });
+      await fetchBalance();
+      await fetchPoints();
+      setRolling(false);
+      return;
+    }
+
+    const outcome = data as { dice: number[]; total: number; won: boolean; win_amount: number; points: number; balance: number };
+    setDice(outcome.dice);
+    await fetchPoints();
+    await fetchBalance();
+
+    setLastWon(outcome.won && outcome.win_amount > 0);
+
+    if (outcome.won) play("win"); else play("lose");
+    setResult(
+      outcome.won
+        ? `🎉 ${outcome.total}! You won ₦${Number(outcome.win_amount).toLocaleString()}!`
+        : `${outcome.total}. Not this time!`
+    );
+    setHistory(prev => [...prev, { value: outcome.total, won: outcome.won }]);
+    setRolling(false);
   };
+
 
   const sum = dice.reduce((s, d) => s + d, 0);
 
