@@ -1,17 +1,16 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import { useWallet } from "@/hooks/useWallet";
 import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
-import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
-import { DICE_PAYOUTS } from "@/config/payouts";
 import GameBackground from "./GameBackground";
 import RoundHistory from "./RoundHistory";
-import BetControls from "./BetControls";
+
 
 interface Props {
   gameId: string;
