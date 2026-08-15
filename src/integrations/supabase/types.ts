@@ -1366,11 +1366,31 @@ export type Database = {
         }
         Returns: Json
       }
+      resolve_dice_round: {
+        Args: {
+          p_bet_type: string
+          p_dice_count: number
+          p_game_type: string
+          p_point_cost: number
+          p_target: number
+        }
+        Returns: Json
+      }
       resolve_prediction_market: {
         Args: {
           p_market_id: string
           p_notes?: string
           p_outcome: Database["public"]["Enums"]["prediction_outcome"]
+        }
+        Returns: Json
+      }
+      settle_game_round: {
+        Args: {
+          p_game_type: string
+          p_point_cost: number
+          p_result?: Json
+          p_user_id: string
+          p_win_amount: number
         }
         Returns: Json
       }
