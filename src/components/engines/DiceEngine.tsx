@@ -25,10 +25,10 @@ interface Props {
 const DICE_FACES = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
 
 const DiceEngine = ({ gameId, name, emoji, pointCost, theme = { bgGradient: 'from-purple-900 to-black', accentColor: 'text-purple-400', description: '', variant: 'classic' }, diceCount = 2, targetRange = [5, 6, 7, 8, 9] }: Props) => {
-  const { updateBalance, recordGameResult } = useWallet();
-  const { points, spendPoints } = usePoints();
+  const { fetchBalance } = useWallet();
+  const { points, fetchPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
-  const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
+
   const { toast } = useToast();
   const { play } = useGameSounds();
   const [dice, setDice] = useState(Array(diceCount).fill(1));
