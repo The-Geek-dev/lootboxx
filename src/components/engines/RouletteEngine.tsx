@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { useWallet } from "@/hooks/useWallet";
 import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
-import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
-import { PAYOUT_COEF } from "@/config/payouts";
+import { supabase } from "@/integrations/supabase/client";
 import GameBackground from "./GameBackground";
 import BetControls from "./BetControls";
+
 
 interface Props {
   gameId: string;
