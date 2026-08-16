@@ -1384,6 +1384,15 @@ export type Database = {
         }
         Returns: Json
       }
+      resolve_roulette_round: {
+        Args: {
+          p_bet_kind: string
+          p_bet_value: string
+          p_game_type: string
+          p_point_cost: number
+        }
+        Returns: Json
+      }
       settle_game_round: {
         Args: {
           p_game_type: string

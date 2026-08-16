@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { useWallet } from "@/hooks/useWallet";
 import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
-import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
-import { PAYOUT_COEF } from "@/config/payouts";
+import { supabase } from "@/integrations/supabase/client";
 import GameBackground from "./GameBackground";
 import BetControls from "./BetControls";
+
 
 interface Props {
   gameId: string;
@@ -43,10 +43,9 @@ type BetType =
   | { kind: "number"; value: number };
 
 const RouletteEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME, variant = "european" }: Props) => {
-  const { updateBalance, recordGameResult } = useWallet();
-  const { points, spendPoints } = usePoints();
+  const { fetchBalance } = useWallet();
+  const { points, fetchPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
-  const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
   const { play } = useGameSounds();
 
@@ -61,60 +60,59 @@ const RouletteEngine = ({ gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
 
   const colorOf = (n: number) => (n === 0 ? "green" : RED_NUMBERS.has(n) ? "red" : "black");
 
-  const payoutMultiplier = (b: BetType, n: number): number => {
-    if (b.kind === "color") return colorOf(n) === b.value ? 2 : 0;
-    if (b.kind === "parity") {
-      if (n === 0) return 0;
-      const isEven = n % 2 === 0;
-      return (b.value === "even" && isEven) || (b.value === "odd" && !isEven) ? 2 : 0;
-    }
-    if (b.kind === "dozen") {
-      if (n === 0) return 0;
-      const d = Math.ceil(n / 12);
-      return d === b.value ? 3 : 0;
-    }
-    if (b.kind === "number") return b.value === n ? 36 : 0;
-    return 0;
-  };
-
   const spin = async () => {
     if (isSpinning || !bet) return;
     if (xpLives <= 0) { toast({ title: "No XP lives! ⚡", variant: "destructive" }); return; }
     if (points < pointCost) { toast({ title: "Insufficient points", variant: "destructive" }); return; }
     const lifeConsumed = await consumeLife();
     if (!lifeConsumed) return;
-    await spendPoints(pointCost);
 
     setIsSpinning(true);
     setResult(null);
     setWinningNumber(null);
     play("spin");
 
-    const winIdx = Math.floor(Math.random() * segCount);
-    const winNum = WHEEL_ORDER[winIdx];
+    const { data, error } = await supabase.rpc("resolve_roulette_round", {
+      p_game_type: gameId,
+      p_point_cost: pointCost,
+      p_bet_kind: bet.kind,
+      p_bet_value: String(bet.value),
+    });
+
+    if (error || !data) {
+      console.error("resolve_roulette_round failed:", error);
+      toast({ title: "Round failed", description: error?.message ?? "Please try again", variant: "destructive" });
+      await fetchPoints();
+      await fetchBalance();
+      setIsSpinning(false);
+      return;
+    }
+
+    const outcome = data as { number: number; color: string; multiplier: number; win_amount: number };
+    const winNum = outcome.number;
+    const winIdx = WHEEL_ORDER.indexOf(winNum);
     const targetAngle = 360 - (winIdx * segAngle + segAngle / 2);
     const spins = 5 + Math.random() * 3;
-    const finalRot = rotation + spins * 360 + targetAngle;
-    setRotation(finalRot);
+    setRotation((prev) => prev + spins * 360 + ((targetAngle - (prev % 360)) % 360));
+
+    await fetchPoints();
 
     setTimeout(async () => {
       setWinningNumber(winNum);
-      const mult = payoutMultiplier(bet, winNum);
-      let winnings = Math.floor(pointCost * mult * PAYOUT_COEF.roulette);
-      winnings = adjustWinAmount(winnings);
-      if (winnings > 0 && canFullyWin() && mult >= 3) recordFullWin();
-      if (winnings > 0) await updateBalance(winnings);
+      const mult = outcome.multiplier;
+      const winnings = Number(outcome.win_amount) || 0;
+      await fetchBalance();
       play(winnings > 0 ? (mult >= 10 ? "bigwin" : "win") : "lose");
-      const colorEmoji = colorOf(winNum) === "red" ? "🔴" : colorOf(winNum) === "black" ? "⚫" : "🟢";
+      const colorEmoji = outcome.color === "red" ? "🔴" : outcome.color === "black" ? "⚫" : "🟢";
       setResult(
         winnings > 0
           ? `🎉 ${colorEmoji} ${winNum}! ${mult}x → ₦${winnings.toLocaleString()}`
           : `${colorEmoji} ${winNum} — No win this round`
       );
-      await recordGameResult(gameId, pointCost, winnings, { number: winNum, bet });
       setIsSpinning(false);
     }, 4000);
   };
+
 
   const centerEmoji = variant === "vegas" ? "🎰" : variant === "midnight" ? "🌙" : emoji;
 
