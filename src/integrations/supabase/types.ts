@@ -1376,6 +1376,14 @@ export type Database = {
         }
         Returns: Json
       }
+      resolve_keno_round: {
+        Args: { p_game_type: string; p_picks: number[]; p_point_cost: number }
+        Returns: Json
+      }
+      resolve_plinko_round: {
+        Args: { p_game_type: string; p_point_cost: number }
+        Returns: Json
+      }
       resolve_prediction_market: {
         Args: {
           p_market_id: string

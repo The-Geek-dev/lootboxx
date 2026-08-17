@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import { useWallet } from "@/hooks/useWallet";
 import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
-import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
-import { PAYOUT_COEF } from "@/config/payouts";
 import GameBackground from "./GameBackground";
 import BetControls from "./BetControls";
+
 
 interface Props {
   gameId: string;
@@ -38,10 +38,10 @@ const KenoEngine = ({
   gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
   maxNumber = 80, pickCount = 8, drawCount = 20, payouts,
 }: Props) => {
-  const { updateBalance, recordGameResult } = useWallet();
-  const { points, spendPoints } = usePoints();
+  const { fetchBalance } = useWallet();
+  const { points, fetchPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
-  const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
+
   const { toast } = useToast();
   const { play } = useGameSounds();
 
@@ -80,36 +80,43 @@ const KenoEngine = ({
     if (points < pointCost) { toast({ title: "Insufficient points", variant: "destructive" }); return; }
     const lifeConsumed = await consumeLife();
     if (!lifeConsumed) return;
-    await spendPoints(pointCost);
 
     setIsPlaying(true);
     setResult(null);
     setRevealCount(0);
-
-    // Draw numbers
-    const pool = Array.from({ length: maxNumber }, (_, i) => i + 1);
-    for (let i = pool.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [pool[i], pool[j]] = [pool[j], pool[i]];
-    }
-    const newDraw = pool.slice(0, drawCount).sort((a, b) => a - b);
-    setDrawn(newDraw);
+    setDrawn([]);
     play("spin");
 
+    const { data, error } = await supabase.rpc("resolve_keno_round", {
+      p_game_type: gameId,
+      p_point_cost: pointCost,
+      p_picks: Array.from(picks),
+    });
+
+    if (error || !data) {
+      console.error("resolve_keno_round failed:", error);
+      toast({ title: "Round failed", description: error?.message ?? "Please try again", variant: "destructive" });
+      await fetchPoints();
+      await fetchBalance();
+      setIsPlaying(false);
+      return;
+    }
+
+    const outcome = data as unknown as { drawn: number[]; hits: number; multiplier: number; win_amount: number };
+    const newDraw = outcome.drawn ?? [];
+    setDrawn(newDraw);
+    await fetchPoints();
+
     // Reveal one-by-one
-    for (let i = 0; i < drawCount; i++) {
+    for (let i = 0; i < newDraw.length; i++) {
       await new Promise((r) => setTimeout(r, 140));
       setRevealCount(i + 1);
     }
 
-    const drawnSet = new Set(newDraw);
-    let hits = 0;
-    picks.forEach((p) => { if (drawnSet.has(p)) hits++; });
-    const mult = payTable[hits] ?? 0;
-    let winnings = Math.floor(pointCost * mult * PAYOUT_COEF.keno);
-    winnings = adjustWinAmount(winnings);
-    if (winnings > 0 && canFullyWin() && mult >= 10) recordFullWin();
-    if (winnings > 0) await updateBalance(winnings);
+    const hits = outcome.hits;
+    const mult = Number(outcome.multiplier) || 0;
+    const winnings = Number(outcome.win_amount) || 0;
+    await fetchBalance();
 
     play(winnings > 0 ? (mult >= 25 ? "bigwin" : "win") : "lose");
     setResult(
@@ -117,9 +124,9 @@ const KenoEngine = ({
         ? `🎉 ${hits}/${pickCount} hits — ${mult}x → ₦${winnings.toLocaleString()}!`
         : `${hits}/${pickCount} hits — No prize this round`
     );
-    await recordGameResult(gameId, pointCost, winnings, { picks: Array.from(picks), drawn: newDraw, hits });
     setIsPlaying(false);
   };
+
 
   const reset = () => {
     if (isPlaying) return;

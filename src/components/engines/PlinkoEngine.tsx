@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 import { useWallet } from "@/hooks/useWallet";
 import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
-import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { GameTheme } from "@/config/gameThemes";
 import { useGameSounds } from "@/hooks/useGameSounds";
-import { PAYOUT_COEF } from "@/config/payouts";
 import GameBackground from "./GameBackground";
 import BetControls from "./BetControls";
+
 
 interface Props {
   gameId: string;
@@ -43,10 +43,10 @@ const PlinkoEngine = ({
   pegEmoji = "•",
   multipliers,
 }: Props) => {
-  const { updateBalance, recordGameResult } = useWallet();
-  const { points, spendPoints } = usePoints();
+  const { fetchBalance } = useWallet();
+  const { points, fetchPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
-  const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
+
   const { toast } = useToast();
   const { play } = useGameSounds();
 
@@ -65,23 +65,32 @@ const PlinkoEngine = ({
     if (points < pointCost) { toast({ title: "Insufficient points", variant: "destructive" }); return; }
     const lifeConsumed = await consumeLife();
     if (!lifeConsumed) return;
-    await spendPoints(pointCost);
 
     setIsDropping(true);
     setResult(null);
     setLandedSlot(null);
+    setBallPath([]);
     play("spin");
 
-    // Generate path: at each row, ball drifts left (-0.5) or right (+0.5).
-    // Final slot index = number of right moves (0..rows).
-    const moves: number[] = [];
-    let slotIndex = 0;
-    for (let i = 0; i < rows; i++) {
-      const right = Math.random() < 0.5 ? 0 : 1;
-      moves.push(right);
-      slotIndex += right;
+    const { data, error } = await supabase.rpc("resolve_plinko_round", {
+      p_game_type: gameId,
+      p_point_cost: pointCost,
+    });
+
+    if (error || !data) {
+      console.error("resolve_plinko_round failed:", error);
+      toast({ title: "Round failed", description: error?.message ?? "Please try again", variant: "destructive" });
+      await fetchPoints();
+      await fetchBalance();
+      setIsDropping(false);
+      return;
     }
+
+    const outcome = data as unknown as { slot: number; moves: number[]; multiplier: number; win_amount: number };
+    const moves = outcome.moves ?? [];
+    const slotIndex = outcome.slot;
     setBallPath(moves);
+    await fetchPoints();
 
     // Animate row-by-row
     const stepMs = 220;
@@ -90,11 +99,9 @@ const PlinkoEngine = ({
     }
 
     setLandedSlot(slotIndex);
-    const mult = slots[slotIndex];
-    let winnings = Math.floor(pointCost * mult * PAYOUT_COEF.plinko);
-    winnings = adjustWinAmount(winnings);
-    if (winnings > 0 && canFullyWin() && mult >= 3) recordFullWin();
-    if (winnings > 0) await updateBalance(winnings);
+    const mult = Number(outcome.multiplier) || 0;
+    const winnings = Number(outcome.win_amount) || 0;
+    await fetchBalance();
 
     play(winnings > 0 ? (mult >= 3 ? "bigwin" : "win") : "lose");
     setResult(
@@ -102,9 +109,9 @@ const PlinkoEngine = ({
         ? `🎉 ${mult}x → ₦${winnings.toLocaleString()}!`
         : `${mult}x — Better luck next drop!`
     );
-    await recordGameResult(gameId, pointCost, winnings, { slot: slotIndex, multiplier: mult });
     setIsDropping(false);
   };
+
 
   // For visual: progressive horizontal offset of the ball over time
   const ballRow = ballPath.length;
