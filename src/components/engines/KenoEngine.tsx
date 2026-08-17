@@ -38,10 +38,10 @@ const KenoEngine = ({
   gameId, name, emoji, pointCost, theme = DEFAULT_THEME,
   maxNumber = 80, pickCount = 8, drawCount = 20, payouts,
 }: Props) => {
-  const { updateBalance, recordGameResult } = useWallet();
-  const { points, spendPoints } = usePoints();
+  const { fetchBalance } = useWallet();
+  const { points, fetchPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
-  const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
+
   const { toast } = useToast();
   const { play } = useGameSounds();
 
