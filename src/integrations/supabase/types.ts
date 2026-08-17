@@ -957,6 +957,27 @@ export type Database = {
         }
         Relationships: []
       }
+      slot_configs: {
+        Row: {
+          game_id: string
+          has_wild: boolean
+          reel_count: number
+          symbols: string[]
+        }
+        Insert: {
+          game_id: string
+          has_wild?: boolean
+          reel_count: number
+          symbols: string[]
+        }
+        Update: {
+          game_id?: string
+          has_wild?: boolean
+          reel_count?: number
+          symbols?: string[]
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -1399,6 +1420,10 @@ export type Database = {
           p_game_type: string
           p_point_cost: number
         }
+        Returns: Json
+      }
+      resolve_slots_round: {
+        Args: { p_game_type: string; p_point_cost: number }
         Returns: Json
       }
       settle_game_round: {
