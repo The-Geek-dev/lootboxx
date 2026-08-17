@@ -43,10 +43,10 @@ const PlinkoEngine = ({
   pegEmoji = "•",
   multipliers,
 }: Props) => {
-  const { updateBalance, recordGameResult } = useWallet();
-  const { points, spendPoints } = usePoints();
+  const { fetchBalance } = useWallet();
+  const { points, fetchPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
-  const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
+
   const { toast } = useToast();
   const { play } = useGameSounds();
 
