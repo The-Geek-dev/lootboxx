@@ -33,6 +33,8 @@ export const SLOTS_ENGINE = {
   twoPair: 800,
 };
 
+export const SLOTS_PAYOUT_TIERS = [5000, 3000, 1500, 1000, 500, 300];
+
 // ============================================================
 // SCORE-BASED ARCADE GAMES
 // ============================================================
@@ -187,6 +189,7 @@ const OVERRIDE_TARGETS: Record<string, any> = {
   WHEEL,
   DICE_PAYOUTS,
   INSTANT,
+  SLOTS_PAYOUT_TIERS
 };
 
 /** Snapshot of the original (code-default) values, for "Reset to default" */

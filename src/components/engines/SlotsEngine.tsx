@@ -1,18 +1,18 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import GameBackground from "./GameBackground";
+import { supabase } from "@/integrations/supabase/client";
 import { useWallet } from "@/hooks/useWallet";
 import { usePoints } from "@/hooks/usePoints";
 import { useXpLives } from "@/hooks/useXpLives";
-import { useWinRestrictions } from "@/hooks/useWinRestrictions";
 import { useToast } from "@/hooks/use-toast";
 import { useGameSounds } from "@/hooks/useGameSounds";
 import { GameTheme } from "@/config/gameThemes";
 import { SLOT_CONFIGS, SlotConfig } from "@/config/engineConfig";
 import { useJackpot } from "@/hooks/useJackpot";
 import JackpotCounter from "@/components/JackpotCounter";
-import { SLOTS_ENGINE } from "@/config/payouts";
+import { SLOTS_PAYOUT_TIERS } from "@/config/payouts";
 
 interface Props {
   gameId: string;
@@ -26,11 +26,20 @@ interface Props {
 const DEFAULT_SYMBOLS = ["🍒", "🍋", "🔔", "⭐", "💎", "7️⃣"];
 const DEFAULT_THEME: GameTheme = { bgGradient: 'from-purple-900 to-black', accentColor: 'purple', description: 'Spin to win!', variant: 'classic' };
 
+interface SlotsOutcome {
+  reels: string[];
+  effective: string[];
+  wilds: number[];
+  payout: number;
+  is_jackpot: boolean;
+  points: number;
+  balance: number;
+}
+
 const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS, theme = DEFAULT_THEME }: Props) => {
-  const { updateBalance, recordGameResult } = useWallet();
-  const { points, spendPoints } = usePoints();
+  const { fetchBalance } = useWallet();
+  const { points, fetchPoints } = usePoints();
   const { xpLives, consumeLife } = useXpLives();
-  const { adjustWinAmount, recordFullWin, canFullyWin } = useWinRestrictions();
   const { toast } = useToast();
   const { play } = useGameSounds();
   const { contribute: contributeToJackpot } = useJackpot();
@@ -42,79 +51,32 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [lastWin, setLastWin] = useState(false);
-  const [bonusActive, setBonusActive] = useState(false);
-  const [bonusSpinsLeft, setBonusSpinsLeft] = useState(0);
-  const [bonusWinnings, setBonusWinnings] = useState(0);
+  const [bonusFlash, setBonusFlash] = useState(false);
   const [wildPositions, setWildPositions] = useState<number[]>([]);
-  const [multiplier, setMultiplier] = useState(1);
   const [showPaytable, setShowPaytable] = useState(false);
 
-  const payoutMultipliers = [5000, 3000, 1500, 1000, 500, 300];
-
-  const resolveReels = useCallback((finalReels: string[]): { payout: number; isJackpot: boolean; wilds: number[] } => {
-    const wilds: number[] = [];
-    const wildSymbol = "🃏";
-    
-    // Check for wilds
-    if (config.hasWild) {
-      finalReels.forEach((s, i) => { if (s === wildSymbol) wilds.push(i); });
-    }
-
-    // Replace wilds with most common non-wild symbol for matching
-    const nonWild = finalReels.filter(s => s !== wildSymbol);
-    const freq: Record<string, number> = {};
-    nonWild.forEach(s => { freq[s] = (freq[s] || 0) + 1; });
-    const bestSymbol = Object.entries(freq).sort((a, b) => b[1] - a[1])[0]?.[0] || finalReels[0];
-    const effective = finalReels.map(s => s === wildSymbol ? bestSymbol : s);
-
-    const allMatch = effective.every(r => r === effective[0]);
-    const pairs = reelCount >= 3 ? (
-      (effective[0] === effective[1] ? 1 : 0) +
-      (effective[1] === effective[2] ? 1 : 0) +
-      (effective[0] === effective[2] ? 1 : 0)
-    ) : 0;
-
-    let payout = 0;
-    let isJackpot = false;
-
-    if (allMatch) {
-      const idx = symbols.indexOf(effective[0]);
-      payout = payoutMultipliers[idx % payoutMultipliers.length] || 500;
-      if (reelCount >= 4) payout = Math.floor(payout * 1.5);
-      if (reelCount >= 5) payout = Math.floor(payout * 2);
-      if (wilds.length > 0) payout = Math.floor(payout * (1 + wilds.length * 0.5));
-      if (effective[0] === symbols[0] || effective[0] === "7️⃣") isJackpot = true;
-    } else if (pairs > 0) {
-      payout = pairs === 1 ? SLOTS_ENGINE.onePair : SLOTS_ENGINE.twoPair; // 2 pairs = bigger win
-    }
-
-    return { payout, isJackpot, wilds };
-  }, [config, reelCount, symbols, payoutMultipliers]);
-
-  const doSpin = useCallback(async (isBonusSpin = false) => {
+  const doSpin = useCallback(async () => {
     if (isSpinning) return;
-    
-    if (!isBonusSpin) {
-      if (xpLives <= 0) { toast({ title: "No XP lives left! ⚡", variant: "destructive" }); return; }
-      if (points < pointCost) { toast({ title: "Insufficient points", description: `Need ${pointCost} pts`, variant: "destructive" }); return; }
-      const lifeConsumed = await consumeLife();
-      if (!lifeConsumed) return;
-      await spendPoints(pointCost);
-    }
+
+    if (xpLives <= 0) { toast({ title: "No XP lives left! ⚡", variant: "destructive" }); return; }
+    if (points < pointCost) { toast({ title: "Insufficient points", description: `Need ${pointCost} pts`, variant: "destructive" }); return; }
+    const lifeConsumed = await consumeLife();
+    if (!lifeConsumed) return;
 
     setIsSpinning(true);
     setResult(null);
     setLastWin(false);
     setWildPositions([]);
+    setBonusFlash(false);
     play("spin");
 
     let count = 0;
     const tickInterval = config.spinStyle === "cascade" ? 60 : config.spinStyle === "avalanche" ? 70 : 80;
     const maxTicks = config.spinStyle === "cascade" ? 25 : 20;
 
+    // Cosmetic mid-spin ticks only — the real result comes from the server below.
     const interval = setInterval(() => {
       const randomReels = Array.from({ length: reelCount }, () => {
-        // Occasionally inject wild symbol
         if (config.hasWild && Math.random() < 0.08) return "🃏";
         return symbols[Math.floor(Math.random() * symbols.length)];
       });
@@ -124,82 +86,71 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
 
       if (count > maxTicks) {
         clearInterval(interval);
-        const finalReels = Array.from({ length: reelCount }, () => {
-          if (config.hasWild && Math.random() < 0.06) return "🃏";
-          return symbols[Math.floor(Math.random() * symbols.length)];
-        });
-        setReels(finalReels);
-
-        const { payout: rawPayout, isJackpot, wilds } = resolveReels(finalReels);
-        setWildPositions(wilds);
-
-        let payout = Math.floor(rawPayout * multiplier);
-
-        // Check for bonus trigger (3+ bonus symbols)
-        if (config.hasBonus && !bonusActive) {
-          const bonusSymbol = "⭐";
-          const bonusCount = finalReels.filter(s => s === bonusSymbol).length;
-          if (bonusCount >= 3) {
-            play("bonus");
-            setBonusActive(true);
-            setBonusSpinsLeft(bonusCount + 2);
-            setBonusWinnings(0);
-            setMultiplier(2);
-            toast({ title: "🎰 BONUS ROUND!", description: `${bonusCount + 2} free spins with 2x multiplier!` });
-          }
-        }
-
-        if (payout > 0) {
-          payout = adjustWinAmount(payout);
-          if (rawPayout >= 1000 && canFullyWin()) recordFullWin();
-        }
-
-        if (payout > 0) {
-          updateBalance(payout);
-          if (isJackpot) {
-            play("bigwin");
-            setResult(`🎰 JACKPOT! ₦${payout.toLocaleString()}!`);
-          } else {
-            play("win");
-            setResult(`🎉 You won ₦${payout.toLocaleString()}!`);
-          }
-          setLastWin(true);
-          if (bonusActive) setBonusWinnings(prev => prev + payout);
-        } else {
-          play("lose");
-          setResult(bonusActive ? "No match - keep spinning!" : "No match. Try again!");
-        }
-
-        // Contribute to progressive jackpot
-        if (!isBonusSpin) {
-          contributeToJackpot(pointCost).then(jp => {
-            if (jp.won) {
-              play("bigwin");
-              toast({ title: "🏆 PROGRESSIVE JACKPOT!", description: `You won ₦${jp.winAmount.toLocaleString()}!` });
-            }
-          });
-        }
-
-        recordGameResult(gameId, isBonusSpin ? 0 : pointCost, payout, { reels: finalReels, bonus: bonusActive });
-        setIsSpinning(false);
-
-        // Handle bonus spins countdown
-        if (bonusActive) {
-          setBonusSpinsLeft(prev => {
-            const next = prev - 1;
-            if (next <= 0) {
-              setTimeout(() => {
-                setBonusActive(false);
-                setMultiplier(1);
-                toast({ title: "Bonus Complete!", description: `Total bonus winnings: ₦${bonusWinnings.toLocaleString()}` });
-              }, 1000);
-            }
-            return next;
-          });
-        }
+        void resolveOnServer();
       }
     }, tickInterval);
-  }, [isSpinning, xpLives, points, pointCost, consumeLife, spendPoints, play, config, reelCount, symbols, resolveReels, multiplier, bonusActive, bonusWinnings, adjustWinAmount, canFullyWin, recordFullWin, updateBalance, recordGameResult, gameId, toast]);
+  }, [isSpinning, xpLives, points, pointCost, consumeLife, play, config, reelCount, symbols]);
+
+  const resolveOnServer = async () => {
+    const { data, error } = await supabase.rpc("resolve_slots_round", {
+      p_game_type: gameId,
+      p_point_cost: pointCost,
+    });
+
+    if (error || !data) {
+      console.error("resolve_slots_round failed:", error);
+      toast({ title: "Spin failed", description: error?.message ?? "Please try again", variant: "destructive" });
+      await fetchPoints();
+      await fetchBalance();
+      setIsSpinning(false);
+      return;
+    }
+
+    const outcome = data as unknown as SlotsOutcome;
+    setReels(outcome.reels);
+    setWildPositions(outcome.wilds ?? []);
+    await fetchPoints();
+    await fetchBalance();
+
+    const payout = Number(outcome.payout) || 0;
+
+    if (payout > 0) {
+      if (outcome.is_jackpot) {
+        play("bigwin");
+        setResult(`🎰 JACKPOT! ₦${payout.toLocaleString()}!`);
+      } else {
+        play("win");
+        setResult(`🎉 You won ₦${payout.toLocaleString()}!`);
+      }
+      setLastWin(true);
+    } else {
+      play("lose");
+      setResult("No match. Try again!");
+    }
+
+    // Cosmetic-only: the ⭐ bonus symbols still show the celebratory banner,
+    // but no free (p_point_cost: 0) real spins are granted — that needs its
+    // own server-side session design before it can pay out for real.
+    if (config.hasBonus) {
+      const bonusSymbol = "⭐";
+      const bonusCount = outcome.reels.filter((s) => s === bonusSymbol).length;
+      if (bonusCount >= 3) {
+        play("bonus");
+        setBonusFlash(true);
+        toast({ title: "🎰 Bonus symbols!", description: "Bonus rounds are coming soon — this spin paid out at normal odds." });
+      }
+    }
+
+    // Progressive jackpot contribution — separate, already server-authoritative, untouched.
+    contributeToJackpot(pointCost).then((jp) => {
+      if (jp.won) {
+        play("bigwin");
+        toast({ title: "🏆 PROGRESSIVE JACKPOT!", description: `You won ₦${jp.winAmount.toLocaleString()}!` });
+      }
+    });
+
+    setIsSpinning(false);
+  };
 
   // Spin style animations
   const getSpinAnimation = () => {
@@ -247,9 +198,9 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
       <h1 className="text-2xl sm:text-4xl font-bold text-center mb-1">{emoji} {name}</h1>
       <p className={`${theme.accentColor} text-center text-sm mb-2`}>{theme.description}</p>
 
-      {/* Bonus / Multiplier bar */}
+      {/* Bonus symbol flash (cosmetic only — no free spins granted yet) */}
       <AnimatePresence>
-        {bonusActive && (
+        {bonusFlash && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -257,7 +208,7 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
             className="mb-3 p-2 rounded-lg bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 text-center"
           >
             <span className="text-yellow-400 font-bold text-sm">
-              🎰 BONUS ROUND • {bonusSpinsLeft} spins left • {multiplier}x multiplier • Won: ₦{bonusWinnings.toLocaleString()}
+              🎰 Bonus symbols landed! Full bonus rounds coming soon.
             </span>
           </motion.div>
         )}
@@ -269,7 +220,7 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
           <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300">🃏 Wilds</span>
         )}
         {config.hasBonus && (
-          <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-500/20 border border-yellow-500/30 text-yellow-300">⭐ Bonus Rounds</span>
+          <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-500/20 border border-yellow-500/30 text-yellow-300">⭐ Bonus Symbols</span>
         )}
         {reelCount > 3 && (
           <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-500/30 text-cyan-300">{reelCount} Reels</span>
@@ -325,7 +276,6 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
             className={`text-lg sm:text-xl font-bold text-center mt-4 ${lastWin ? (result.includes("JACKPOT") ? "text-yellow-400" : theme.accentColor) : "text-muted-foreground"}`}
           >
             {result}
-            {lastWin && multiplier > 1 && <span className="block text-sm text-yellow-400/70">{multiplier}x multiplier applied!</span>}
           </motion.div>
         )}
       </AnimatePresence>
@@ -350,12 +300,12 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
               {symbols.slice(0, 6).map((sym, i) => (
                 <div key={i} className="flex justify-between px-2 py-1 bg-background/40 rounded border border-primary/10">
                   <span>{sym}{sym}{sym}</span>
-                  <span className="text-primary font-bold">₦{(payoutMultipliers[i] || 300).toLocaleString()}</span>
+                  <span className="text-primary font-bold">₦{(SLOTS_PAYOUT_TIERS[i] || 300).toLocaleString()}</span>
                 </div>
               ))}
               <div className="flex justify-between px-2 py-1 bg-background/40 rounded border border-primary/10 col-span-2 sm:col-span-1">
                 <span>Any 2 match</span>
-                <span className="text-primary font-bold">₦50</span>
+                <span className="text-primary font-bold">₦300</span>
               </div>
               {config.hasWild && (
                 <div className="flex justify-between px-2 py-1 bg-purple-500/10 rounded border border-purple-500/20 col-span-2 sm:col-span-3">
@@ -364,7 +314,7 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
               )}
               {config.hasBonus && (
                 <div className="flex justify-between px-2 py-1 bg-yellow-500/10 rounded border border-yellow-500/20 col-span-2 sm:col-span-3">
-                  <span>⭐⭐⭐ = Bonus Round (free spins + 2x multiplier)</span>
+                  <span>⭐⭐⭐ = Bonus symbols (full bonus rounds coming soon)</span>
                 </div>
               )}
             </div>
@@ -374,10 +324,10 @@ const SlotsEngine = ({ gameId, name, emoji, pointCost, symbols = DEFAULT_SYMBOLS
 
       <Button
         className="button-gradient px-8 py-3 text-lg w-full mt-4"
-        onClick={() => doSpin(bonusActive)}
-        disabled={isSpinning || (!bonusActive && xpLives <= 0)}
+        onClick={() => doSpin()}
+        disabled={isSpinning || xpLives <= 0}
       >
-        {isSpinning ? "Spinning..." : bonusActive ? `Free Spin (${bonusSpinsLeft} left)` : xpLives <= 0 ? "No XP Lives" : `Spin (${pointCost} pts)`}
+        {isSpinning ? "Spinning..." : xpLives <= 0 ? "No XP Lives" : `Spin (${pointCost} pts)`}
       </Button>
     </motion.div>
   );
